@@ -1,28 +1,159 @@
-<!DOCTYPE html>
-
-      font-size: 18px;
-      line-height: 1.6;
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RJ Papad - स्वाद में खास, RJ पापड़ का विश्वास</title>
+  <style>
+    :root{
+      --yellow:#ffd54a;
+      --dark:#222;
+      --accent:#ffcc00;
+      --bg:#fff8e6;
+      --cta:#ff8a00;
     }
-    footer {
-      background: #ffcc00;
-      padding: 10px;
-      font-weight: bold;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Noto Sans", "Poppins", sans-serif;
+      background:var(--bg);
+      color:var(--dark);
+      text-align:center;
+      line-height:1.5;
+    }
+    header{
+      background:var(--yellow);
+      padding:16px 12px;
+      font-weight:700;
+      font-size:20px;
+      color:#000;
+      box-shadow: inset 0 -4px 8px rgba(0,0,0,0.03);
+    }
+    .container{
+      max-width:720px;
+      margin:24px auto;
+      padding:0 16px;
+    }
+    .banner-img{
+      width:220px;
+      height:auto;
+      margin:14px auto;
+      border-radius:8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      background: #fff;
+      display:block;
+    }
+    h1.product{
+      color:#b86d00;
+      font-size:28px;
+      margin:8px 0 8px;
+      font-weight:800;
+    }
+    .info{
+      font-size:18px;
+      color:#333;
+      margin:8px 0 18px;
+    }
+    .price{
+      font-weight:700;
+      font-size:20px;
+      margin-top:6px;
+    }
+    .cta-row{
+      margin:20px 0;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-block;
+      padding:12px 18px;
+      border-radius:8px;
+      text-decoration:none;
+      color:#fff;
+      font-weight:700;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    }
+    .btn-whatsapp{ background:#25D366; }
+    .btn-call{ background:#1976D2; }
+    .small-row{
+      background:var(--yellow);
+      padding:12px;
+      margin-top:20px;
+      border-radius:8px;
+      display:flex;
+      justify-content:center;
+      gap:18px;
+      align-items:center;
+      flex-wrap:wrap;
+      font-weight:700;
+    }
+    footer{
+      margin-top:36px;
+      padding:16px 8px;
+      font-size:14px;
+      color:#666;
+    }
+    .float-wa{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      z-index:999;
+    }
+    .float-wa a{
+      display:inline-block;
+      background:#25D366;
+      color:#fff;
+      padding:12px 14px;
+      border-radius:50px;
+      box-shadow:0 8px 18px rgba(0,0,0,0.15);
+      font-weight:800;
+      text-decoration:none;
+    }
+    @media (max-width:420px){
+      h1.product{ font-size:22px;}
+      .info{ font-size:16px;}
+      .btn{ padding:10px 14px; font-size:14px;}
     }
   </style>
 </head>
 <body>
   <header>स्वाद में खास RJ पापड़ का विश्वास</header>
 
-  <img src="A_digital_advertisement_showcases_RJ_Papad_on_a_vi.png" alt="RJ Papad Banner" />
+  <div class="container">
+    <img class="banner-img" src="./banner.png" alt="RJ Papad Banner" />
 
-  <h2>उड़द मरी पापड़</h2>
-  <p>Price: ₹330 प्रति किलो<br>
-  Only Surat Free Delivery<br>
-  Homemade Taste</p>
+    <h1 class="product">उड़द मरी पापड़</h1>
 
-  <footer>
-    📞 WhatsApp: <a href="https://wa.me/916353745646" target="_blank">6353745646</a><br>
-    📍 Location: Surat, Gujarat
-  </footer>
+    <div class="info">
+      <div class="price">Price: ₹330 प्रति किलो</div>
+      <div>Only Surat — Free Delivery</div>
+      <div>Homemade Taste</div>
+    </div>
+
+    <div class="cta-row">
+      <a class="btn btn-whatsapp" 
+         href="https://wa.me/916353745646?text=नमस्ते,%20मुझे%20RJ%20पापड़%20से%201%20किलो%20उड़द%20मरी%20पापड़%20ऑर्डर%20करना%20है।"
+         target="_blank" rel="noopener noreferrer">
+        Order on WhatsApp
+      </a>
+
+      <a class="btn btn-call" href="tel:+916353745646">Call / SMS (+91 6353745646)</a>
+    </div>
+
+    <div class="small-row">
+      <div>📞 WhatsApp: <a href="https://wa.me/916353745646" target="_blank" style="color:#000; text-decoration:underline;">+91 6353745646</a></div>
+      <div>📍 Location: Surat, Gujarat</div>
+    </div>
+
+    <footer>
+      <div>स्वाद में खास — RJ Papad | Homemade | Only Surat Delivery</div>
+    </footer>
+  </div>
+
+  <div class="float-wa">
+    <a href="https://wa.me/916353745646" target="_blank" aria-label="WhatsApp">🟢</a>
+  </div>
 </body>
 </html>

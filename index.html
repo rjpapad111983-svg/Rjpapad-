@@ -94,14 +94,39 @@
   <p>उड़द मरी पापड़ • ₹330/kg • Only Surat Free Delivery</p>
   <p>होममेड टेस्ट • शुद्ध सामग्री • RJ Papad Surat की खासियत</p>
 
-  <!-- WhatsApp और फ़ोन दोनों दिखाई देंगे -->
-<div style="text-align:center; margin:20px 0;">
-  <p style="font-size:1.1rem;">📞 Order / WhatsApp: <strong>+91 63537 45646</strong></p>
-  <a href="https://wa.me/916353745646?text=नमस्ते%20RJ%20Papad%20Surat%2C%20मैं%201kg%20मरी%20पापड़%20ऑर्डर%20करना%20चाहता%20हूं%20/%20चाहती%20हूं।" 
-   target="_blank" 
-   style="display:inline-block; background-color:#25D366; color:white; padding:12px 25px; border-radius:25px; text-decoration:none; font-weight:bold; font-size:1rem;">
-   📲 1kg मरी पापड़ ऑर्डर करें
-</a>
+  <!-- Customer Details Form -->
+<div style="text-align:center; margin:30px 0;">
+  <h3>अपना ऑर्डर विवरण भरें</h3>
+
+  <input type="text" id="name" placeholder="नाम" style="margin:5px; padding:8px; width:80%; border-radius:5px;"><br>
+  <input type="text" id="address" placeholder="पता" style="margin:5px; padding:8px; width:80%; border-radius:5px;"><br>
+  <input type="text" id="pincode" placeholder="पिनकोड" style="margin:5px; padding:8px; width:80%; border-radius:5px;"><br>
+  <input type="text" id="mobile" placeholder="मोबाइल नंबर" style="margin:5px; padding:8px; width:80%; border-radius:5px;"><br><br>
+
+  <button onclick="sendWhatsApp()" 
+    style="background-color:#25D366; color:white; padding:12px 25px; border:none; border-radius:25px; font-size:1rem; font-weight:bold;">
+    📲 WhatsApp पर ऑर्डर करें
+  </button>
+</div>
+
+<script>
+function sendWhatsApp() {
+  var name = document.getElementById('name').value;
+  var address = document.getElementById('address').value;
+  var pincode = document.getElementById('pincode').value;
+  var mobile = document.getElementById('mobile').value;
+
+  var message = `नमस्ते RJ Papad Surat, मैं 1kg मरी पापड़ ऑर्डर करना चाहता हूं / चाहती हूं।
+नाम: ${name}
+पता: ${address}
+पिनकोड: ${pincode}
+मोबाइल नंबर: ${mobile}`;
+
+  var encodedMessage = encodeURIComponent(message);
+  var whatsappURL = `https://wa.me/916353745646?text=${encodedMessage}`;
+  window.open(whatsappURL, '_blank');
+}
+</script>
 </div>
 
   <footer>© 2025 RJ Papad Surat | स्वाद में खास RJ पापड़ का विश्वास</footer>

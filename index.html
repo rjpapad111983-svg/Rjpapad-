@@ -178,16 +178,15 @@
       }, 900);
     }
 
-    // On page load: apply saved language (if any)
     window.addEventListener('load', () => {
-      const saved = localStorage.getItem('rjpap_lang');
-      if (saved && translations[saved]) {
-        applyLanguage(saved);
-        // hide logo-screen immediately (user already chose)
-        const logo = document.getElementById('logo-screen');
-        if (logo) { logo.style.display = 'none'; logo.setAttribute('aria-hidden','true'); }
-      }
-    });
+  const saved = localStorage.getItem('rjpapad-lang');
+  if (saved && translations[saved]) {
+    applyLanguage(saved);
+    // अगर पहले से language saved है, तो लोगो भी fade करके हटाएं ताकि content दिखे
+    fadeOutLogo();
+  }
+  // नॉट: अब हम logo.style.display = 'none' तुरंत नहीं कर रहे
+});
   </script>
 
 </body>

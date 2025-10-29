@@ -6,7 +6,7 @@
   <title>RJ Papad - Order</title>
 
   <style>
-    /* BASIC STYLES */
+    /* ===== BASIC STYLES ===== */
     body {
       font-family: "Noto Sans Devanagari", "Noto Sans", Arial, sans-serif;
       background-color: #fffbe6;
@@ -29,7 +29,7 @@
 
     input { width:90%; max-width:320px; padding:8px; margin:6px 0; }
 
-    /* LANG BUTTONS */
+    /* ===== LANG BUTTONS ===== */
     .lang-btn {
       background-color: #4a2e00;
       color: white;
@@ -45,7 +45,7 @@
     }
     .lang-btn:hover { opacity:0.9; }
 
-    /* FULLSCREEN LOGO */
+    /* ===== FULLSCREEN LOGO ===== */
     #logo-screen {
       position: fixed;
       top: 0;
@@ -68,7 +68,7 @@
     /* MAIN content hidden initially */
     #main-content { display: none; }
 
-    /* small responsive tweak */
+    /* responsive tweak */
     @media (max-width:420px) {
       #logo-screen img { width: 180px; }
       .lang-btn { padding: 8px 12px; font-size:0.95rem; }
@@ -77,13 +77,13 @@
 </head>
 <body>
 
-  <!-- ===== FULL SCREEN LOGO SECTION ===== -->
+  <!-- ===== FULL SCREEN LOGO (यहाँ logo तब तक दिखेगा जब तक user चुने नहीं) ===== -->
   <div id="logo-screen" aria-hidden="false">
-    <!-- TODO: replace the src below with your actual raw image link if different -->
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png"alt="RJ Papad Logo">
+    <!-- अपने logo का raw/hosted URL लगाएँ -->
+    <img src="https://raw.githubusercontent.com/rjpapad/rjpapad/main/logo.png" alt="RJ Papad Logo">
     <h2>RJ Papad Surat</h2>
 
-    <!-- Language selection buttons -->
+    <!-- भाषा चुनने के बटन -->
     <div style="margin-top:28px;">
       <button class="lang-btn" data-lang="hi" type="button">हिन्दी</button>
       <button class="lang-btn" data-lang="en" type="button">English</button>
@@ -92,24 +92,24 @@
     <small style="margin-top:12px; display:block; color:#444;">कृपया भाषा चुनें</small>
   </div>
 
-  <!-- ===== MAIN SITE CONTENT (initially hidden) ===== -->
+  <!-- ===== MAIN SITE CONTENT (शुरू में hidden रहेगी) ===== -->
   <div id="main-content">
     <header>
       <h1 id="header-text">स्वाद में खास RJ पापड़</h1>
     </header>
 
-    <!-- BANNERS SECTION -->
+    <!-- BANNERS SECTION (यहाँ अपना banner URL डालें) -->
     <div style="text-align:center; padding:14px;">
-      <img src="https://raw.githubusercontent.com/rjpapad/rjpapad/main/banner.png" alt="banner">
+      <img id="banner-img" src="https://raw.githubusercontent.com/rjpapad/rjpapad/main/banner.png" alt="banner">
     </div>
 
-    <!-- DESCRIPTION SECTION -->
+    <!-- DESCRIPTION -->
     <div style="text-align:center; padding:6px 12px;">
       <p id="desc1"><strong>उद्दद मरी पापड़</strong></p>
       <p id="desc2"><strong>हॉममेड टेस्ट • ताज़ा स्वाद</strong></p>
     </div>
 
-    <!-- ORDER FORM SECTION -->
+    <!-- ORDER FORM -->
     <div style="text-align:center; padding:12px;">
       <h3 id="orderTitle">अपना ऑर्डर भिजवाएँ</h3>
       <p id="orderHint">कृपया नीचे अपनी जानकारी भरें</p>
@@ -130,7 +130,7 @@
     <footer id="footer">© 2025 RJ Papad Surat</footer>
   </div>
 
-  <!-- ===== EXISTING / WHATSAPP HELPER ===== -->
+  <!-- ===== WHATSAPP HELPER ===== -->
   <script>
     function sendWhatsApp() {
       var name = document.getElementById('name')?.value || '';
@@ -139,7 +139,7 @@
       var mobile = document.getElementById('mobile')?.value || '';
 
       var message = `नमस्ते RJ Papad, मेरा ऑर्डर:\nName: ${name}\nAddress: ${address}\nPincode: ${pincode}\nMobile: ${mobile}`;
-      // TODO: बदलें अपना फोन नंबर नीचे (country code के साथ, e.g. 91XXXXXXXXXX)
+      // TODO: अपना फोन नंबर यहाँ डालें (country code के साथ)
       var phoneNumber = "91XXXXXXXXXX";
       var whatsappURL = `https://wa.me/${phoneNumber.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`;
 
@@ -147,7 +147,7 @@
     }
   </script>
 
-  <!-- ===== LANGUAGE TRANSLATIONS & LOGIC ===== -->
+  <!-- ===== LANGUAGE TRANSLATIONS & LOGIC (NO auto-hide) ===== -->
   <script>
     const translations = {
       hi: {
@@ -202,10 +202,11 @@
       if (!translations[lang]) return;
       localStorage.setItem('rjpapad_lang', lang);
       applyLanguage(lang);
-      fadeOutLogo(); // hide logo and show main
+      // logo को hide करने के लिए fadeOutLogo() call करें
+      fadeOutLogo();
     }
 
-    // Fade out & hide logo screen, then show main content
+    // Fade out logo and show main content (this only runs when user clicks button)
     function fadeOutLogo() {
       const logo = document.getElementById('logo-screen');
       if (!logo) return;
@@ -213,25 +214,20 @@
       // fade out
       logo.style.opacity = '0';
 
-      // after CSS transition, remove and show main
+      // transition के बाद hide और main दिखाओ
       setTimeout(() => {
         logo.style.display = 'none';
         const main = document.getElementById('main-content');
-        if (main) {
-          main.style.display = 'block';
-          // optional: smooth in (uncomment if want)
-          // main.style.opacity = '0';
-          // setTimeout(()=> main.style.opacity = '1', 10);
-        }
-      }, 900); // 800ms transition + small buffer
+        if (main) main.style.display = 'block';
+      }, 900); // 800ms transition के हिसाब से थोड़ा buffer
     }
 
-    // On page load: apply saved language (if exists) and show main content
+    // On load: अगर पहले से language selected है, apply करके main दिखाओ और logo hide करो
     window.addEventListener('load', () => {
       const saved = localStorage.getItem('rjpapad_lang');
       if (saved && translations[saved]) {
         applyLanguage(saved);
-        // skip logo if language already chosen
+        // अगर पहले से language saved है तो logo skip करें
         const logo = document.getElementById('logo-screen');
         if (logo) {
           logo.style.display = 'none';
@@ -240,11 +236,11 @@
         const main = document.getElementById('main-content');
         if (main) main.style.display = 'block';
       } else {
-        // no saved language: keep logo visible, main hidden
+        // saved language नहीं है → logo दिखेगी (कोई auto-hide नहीं है)
       }
     });
 
-    // ===== Attach click handlers to language buttons (ensure buttons work) =====
+    // ===== Attach click handlers to language buttons =====
     // Expose setLanguage globally (safe)
     if (typeof setLanguage === 'function') {
       window.setLanguage = setLanguage;
@@ -262,7 +258,8 @@
       });
     });
 
-    // (NOTE: auto-hide timeout removed - logo will hide only when user picks a language)
+    /* NOTE: कोई भी auto-hide setTimeout यहाँ नहीं है — logo तभी hide होगा
+       जब user language button दबायेगा (या saved language मौजूद हो)। */
   </script>
 </body>
 </html>

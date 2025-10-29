@@ -212,15 +212,7 @@
       applyLanguage(saved);
 
       // Auto-hide logo after 2s (if user doesn't choose)
-      setTimeout(() => {
-        const logo = document.getElementById('logo-screen');
-        if (!logo) return;
-        // If logo is still visible (user didn't click), hide it
-        if (logo.style.display !== 'none') {
-          fadeOutLogo();
-        }
-      }, 2000);
-    });
+  
   </script>
 
 </body>

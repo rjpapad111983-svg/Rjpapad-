@@ -141,7 +141,7 @@
       var pincode = document.getElementById('pincode')?.value || '';
       var mobile = document.getElementById('mobile')?.value || '';
 
-      var message = `नमस्ते RJ Papad, मेरा ऑर्डर:\nName: ${name}\nAddress: ${address}\nPincode: ${pincode}\nMobile: ${mobile}`;
+      var message = `नमस्ते RJ Papad, मेरा ऑर्डर:\n1kg मरी पापड़\nName: ${name}\nAddress: ${address}\nPincode: ${pincode}\nMobile: ${mobile}`;
       // TODO: अपना फोन नंबर यहाँ डालें (country code के साथ)
       var phoneNumber = "916353745646";
       var whatsappURL = `https://wa.me/${phoneNumber.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`;

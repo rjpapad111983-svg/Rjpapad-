@@ -198,12 +198,24 @@
 
     // Fade out & hide logo screen
     function fadeOutLogo() {
-      const logo = document.getElementById('logo-screen');
-      if (!logo) return;
-      logo.style.opacity = '0';
-      setTimeout(() => {
-        logo.style.display = 'none';
-      }, 900);
+  const logo = document.getElementById('logo-screen');
+  if (!logo) return;
+
+  // fade out
+  logo.style.opacity = '0';
+
+  // CSS transition के बाद hide और फिर main content दिखाओ
+  setTimeout(() => {
+    logo.style.display = 'none';
+
+    const main = document.getElementById('main-content');
+    if (main) {
+      main.style.display = 'block';
+      // optional: smooth fade-in
+      // main.style.opacity = '0';
+      // setTimeout(() => main.style.opacity = '1', 10);
+    }
+  }, 900); // CSS transition 0.8s है; थोड़ा buffer रखा है
     }
 
     // On page load: apply saved language (if any) and auto-hide logo after 2s

@@ -4,7 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>RJ Papad - Multilang Demo</title>
+
   <style>
+    /* ---------- basic page styles ---------- */
     body {
       font-family: "Noto Sans", Arial, sans-serif;
       background-color: #fffbe6;
@@ -13,144 +15,183 @@
       margin: 0;
       padding: 0;
     }
-    header { background: #fff; padding: 18px 12px; box-shadow: 0 1px 0 rgba(0,0,0,0.06);}
+
+    header { background: #fff; padding: 12px 16px; }
+
+    main { padding: 24px; }
+
+    .btn { display:inline-block; padding: 10px 18px; text-decoration:none; border-radius:8px; cursor:pointer; }
+
+    /* ---------- FULL SCREEN LOGO SCREEN ---------- */
     #logo-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #ffeb3b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 1;                      /* शुरुआत में दिखे */
-  transition: opacity 0.9s ease;   /* धीरे fade out हो */
-  z-index: 9999;                   /* ऊपर रहे ताकि content छिपा रहे */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #ffeb3b;        /* yellow background */
+      display: flex;
+      flex-direction: column;           /* vertical layout */
+      align-items: center;              /* horizontal center */
+      justify-content: center;          /* vertical center */
+      gap: 14px;
+      text-align: center;
+      opacity: 1;                       /* visible initially */
+      transition: opacity 0.9s ease;    /* fade animation */
+      z-index: 9999;                    /* above page content */
     }
+
+    #logo-img {
+      width: 120px;       /* adjust as needed */
+      height: auto;
+      object-fit: contain;
+    }
+
+    #logo-screen h2 {
+      margin: 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1f1f1f;
+    }
+
+    /* language buttons stacked vertically */
+    #language-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
     .lang-btn {
       background-color: #4a2e00;
-      color: white; border: none;
-      padding: 10px 18px; margin: 6px;
-      border-radius: 20px; cursor: pointer; font-weight:bold;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 22px;
       font-size: 1rem;
+      cursor: pointer;
+      min-width: 140px;
     }
-    .lang-btn:hover { opacity: .85; }
-    main { padding: 24px; }
-    .order-input { width: 90%; max-width: 380px; padding:10px; margin:6px 0; border-radius:8px; border:1px solid #ddd; }
-    .btn { display:inline-block; background:#25D366; color:white; padding:10px 16px; border-radius:12px; text-decoration:none; margin-top:12px;}
-    footer { margin-top:30px; font-size:0.9rem; color:#444; padding:14px 6px;}
+
+    .lang-btn:hover { opacity: 0.9; }
+
+    .choose-text {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    /* ---------- page content (hidden under logo until fade) ---------- */
+    .banner { text-align:center; margin-top: 14px; }
+    .banner img { width: 90%; max-width: 600px; height: auto; border-radius: 8px; }
+
+    #content { opacity: 1; } /* content always present, but logo overlays it */
+
+    /* order form */
+    .order-input { width: 90%; max-width: 420px; padding:10px; margin:6px 0; border-radius:6px; border:1px solid #ccc; }
+    .btn-order { background:#4a2e00; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; }
+
+    footer { margin-top:30px; padding:20px 10px; color:#666; font-size:0.9rem; }
   </style>
 </head>
 <body>
 
-  <!-- FULL SCREEN LOGO (shows once until language chosen) -->
+  <!-- ========== FULL SCREEN LOGO (shows on page load) ========== -->
   <div id="logo-screen" aria-hidden="false">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="logo" style="width:150px;max-width:60%;">
+    <!-- Replace src with your actual logo path or GitHub raw URL -->
+    <img id="logo-img" src="images/logo.png" alt="RJ Papad Logo" />
     <h2>RJ Papad Surat</h2>
 
-    <!-- language buttons -->
-    <div style="margin-top:18px;">
-      <button class="lang-btn" onclick="setLanguage('hi')">हिंदी</button>
+    <div id="language-buttons">
+      <button class="lang-btn" onclick="setLanguage('hi')">हिन्दी</button>
       <button class="lang-btn" onclick="setLanguage('en')">English</button>
       <button class="lang-btn" onclick="setLanguage('gu')">ગુજરાતી</button>
     </div>
 
-    <small style="margin-top:12px; display:block;">भाषा चुनें — Choose language</small>
+    <small class="choose-text">भाषा चुनें / Choose Language</small>
   </div>
 
+  <!-- ========== PAGE HEADER & MAIN CONTENT ========== -->
   <header>
-    <h1 id="header-text">स्वाद में खास RJ पापड़</h1>
+    <h1 id="header-text">RJ Papad</h1>
   </header>
 
-  <main>
-    <!-- Banners -->
-    <div style="text-align:center; margin-bottom:18px;">
-      <img src="https://raw.githubusercontent.com/rjpap/example/main/banner1.jpg" alt="banner" style="max-width:100%;height:auto;">
+  <main id="content">
+    <div class="banner">
+      <!-- Replace banner src as needed -->
+      <img id="banner-img" src="images/banner.png" alt="Banner" />
     </div>
 
-    <!-- Description -->
-    <div style="text-align:center;">
-      <p id="desc1"><strong>उद्दद मरी पापड़ — घर का स्वाद</strong></p>
-      <p id="desc2"><strong>होममेड टेस्ट • किफायती दाम</strong></p>
-    </div>
-
-    <!-- ORDER FORM -->
-    <div style="text-align:center; margin-top:18px;">
-      <h3 id="orderTitle">अपना ऑर्डर भरें</h3>
-      <p id="orderHint">कृपया नीचे अपनी जानकारी भरें</p>
-
-      <div style="margin-top:10px;">
-        <input class="order-input" type="text" id="name" placeholder="नाम / Name">
-        <input class="order-input" type="text" id="address" placeholder="पता / Address">
-        <input class="order-input" type="text" id="pincode" placeholder="पिनकोड / Pincode">
-        <input class="order-input" type="text" id="mobile" placeholder="मोबाइल / Mobile">
+    <section style="margin-top:18px;">
+      <div>
+        <p id="desc1"><strong>उद्दद मरी पापड़ — ताज़ा और स्वादिष्ट</strong></p>
+        <p id="desc2"><strong>होममेड टेस्ट, देसी स्वाद</strong></p>
       </div>
 
-      <div style="margin-top:14px;">
-        <a href="#" class="btn" onclick="sendWhatsApp(event)">WhatsApp से भेजें</a>
-      </div>
-    </div>
+      <!-- ORDER FORM -->
+      <div style="margin-top:18px;">
+        <h3 id="orderTitle">अपना ऑर्डर भरें</h3>
+        <p id="orderHint">कृपया नीचे अपनी जानकारी भरें</p>
 
-    <footer id="footer">© 2025 RJ Papad Surat</footer>
+        <div style="margin-top:10px;">
+          <input id="name" class="order-input" placeholder="Name" />
+          <input id="address" class="order-input" placeholder="Address" />
+          <input id="pincode" class="order-input" placeholder="Pincode" />
+          <input id="mobile" class="order-input" placeholder="Mobile" />
+        </div>
+
+        <div style="margin-top:12px;">
+          <button class="btn-order" onclick="sendWhatsApp(event)">Send via WhatsApp</button>
+        </div>
+      </div>
+    </section>
+
+    <footer id="footer">© 2025 RJ Papad</footer>
   </main>
 
-  <!-- ===== existing / whatsapp send (basic) ===== -->
+  <!-- ========== SCRIPTS: translations, language functions, fadeOut ========== -->
   <script>
-    function sendWhatsApp(e) {
-      e.preventDefault();
-      var name = document.getElementById('name').value || '';
-      var address = document.getElementById('address').value || '';
-      var pincode = document.getElementById('pincode').value || '';
-      var mobile = document.getElementById('mobile').value || '';
-      var message = `नमस्ते RJ Papad,\nनाम: ${name}\nपता: ${address}\nपिनकोड: ${pincode}\nमोबाइल: ${mobile}\nमैं ऑर्डर करना चाहता/चाहती हूँ।`;
-      var phoneNumber = "91XXXXXXXXXX"; // <- अपना नंबर यहाँ डालें (country code सहित)
-      var whatsappURL = "https://wa.me/" + phoneNumber.replace(/\D/g,'') + "?text=" + encodeURIComponent(message);
-      window.open(whatsappURL, "_blank");
-    }
-  </script>
-
-  <!-- ===== LANGUAGE TRANSLATIONS & APPLICATION ===== -->
-  <script>
+    // translations object (add/change text as needed)
     const translations = {
       hi: {
         header: "स्वाद में खास RJ पापड़",
-        description1: "उद्दद मरी पापड़ — घर का स्वाद",
-        description2: "होममेड टेस्ट • किफायती दाम",
+        description1: "उद्दद मरी पापड़ — ताज़ा और स्वादिष्ट",
+        description2: "होममेड टेस्ट, देसी स्वाद",
         orderTitle: "अपना ऑर्डर भरें",
         orderHint: "कृपया नीचे अपनी जानकारी भरें",
-        footer: "© 2025 RJ Papad Surat"
+        footer: "© 2025 RJ Papad"
       },
       en: {
         header: "RJ Papad - Special Taste",
-        description1: "Udad Mari Papad — Homemade taste",
-        description2: "Freshly made • Affordable price",
+        description1: "Udad Mari Papad — Freshly made",
+        description2: "Homemade taste, desi flavor",
         orderTitle: "Fill Your Order",
         orderHint: "Please fill in your details below",
-        footer: "© 2025 RJ Papad Surat"
+        footer: "© 2025 RJ Papad"
       },
       gu: {
         header: "સ્વાદમાં ખાસ RJ પાપડ",
-        description1: "ઉદ્દદ મરી પાપડ — ઘરેલું સ્વાદ",
-        description2: "હોમમેઇડ ટેસ્ટ • કિફાયતી દર",
+        description1: "ઉદ્દદ મારિ પાપડ — تازું અને સ્વાદિષ્ટ",
+        description2: "હોમમેડ ટેસ્ટ, દેશી સ્વાદ",
         orderTitle: "તમારો ઓર્ડર ભરો",
         orderHint: "કૃપા કરીને નીચે તમારી વિગતો ભરો",
-        footer: "© 2025 RJ Papad Surat"
+        footer: "© 2025 RJ Papad"
       }
     };
 
-    // Apply chosen language strings into DOM
+    // Apply chosen language texts to page elements
     function applyLanguage(lang) {
       const t = translations[lang];
       if (!t) return;
-      const headerEl = document.querySelector("#header-text");
+
+      const headerEl = document.getElementById('header-text');
       if (headerEl) headerEl.innerText = t.header;
 
-      const d1 = document.querySelector("#desc1");
-      const d2 = document.querySelector("#desc2");
-      const oT = document.querySelector("#orderTitle");
-      const oH = document.querySelector("#orderHint");
-      const f = document.querySelector("#footer");
+      const d1 = document.getElementById('desc1');
+      const d2 = document.getElementById('desc2');
+      const oT = document.getElementById('orderTitle');
+      const oH = document.getElementById('orderHint');
+      const f = document.getElementById('footer');
 
       if (d1) d1.innerText = t.description1;
       if (d2) d2.innerText = t.description2;
@@ -159,35 +200,56 @@
       if (f) f.innerText = t.footer;
     }
 
-    // Called when user clicks language buttons
+    // Called when user clicks language button
     function setLanguage(lang) {
       if (!translations[lang]) return;
-      localStorage.setItem('rjpap_lang', lang);
+      // save preference
+      localStorage.setItem('rjpapad-lang', lang);
+      // apply texts immediately
       applyLanguage(lang);
-      fadeOutLogo(); // hide logo-screen
+      // fade out logo screen (only when user explicitly clicked)
+      fadeOutLogo();
     }
 
     // Fade out & hide logo screen
     function fadeOutLogo() {
       const logo = document.getElementById('logo-screen');
       if (!logo) return;
+      // Start fade (CSS transition handles smooth opacity change)
       logo.style.opacity = '0';
+      // after transition, hide the element so underlying content is reachable
       setTimeout(() => {
         logo.style.display = 'none';
-        logo.setAttribute('aria-hidden','true');
-      }, 900);
+        logo.setAttribute('aria-hidden', 'true');
+      }, 900); // match with CSS transition duration (900ms)
     }
 
+    // On page load: apply saved language if any, BUT DO NOT HIDE LOGO automatically.
     window.addEventListener('load', () => {
-  const saved = localStorage.getItem('rjpapad-lang');
-  if (saved && translations[saved]) {
-    applyLanguage(saved);
-    // अगर पहले से language saved है, तो लोगो भी fade करके हटाएं ताकि content दिखे
-    fadeOutLogo();
-  }
-  // नॉट: अब हम logo.style.display = 'none' तुरंत नहीं कर रहे
-});
-  </script>
+      const saved = localStorage.getItem('rjpapad-lang');
+      if (saved && translations[saved]) {
+        applyLanguage(saved);
+        // NOTE: We do NOT call fadeOutLogo() here because you requested
+        // that the logo should NOT disappear immediately — only when user clicks.
+      }
+    });
 
+    // ---------- existing / whatsapp function ----------
+    function sendWhatsApp(e) {
+      e && e.preventDefault && e.preventDefault();
+      var name = document.getElementById('name').value || '';
+      var address = document.getElementById('address').value || '';
+      var pincode = document.getElementById('pincode').value || '';
+      var mobile = document.getElementById('mobile').value || '';
+      var message = `नमस्ते RJ Papad, मेरा ऑर्डर:
+Name: ${name}
+Address: ${address}
+Pincode: ${pincode}
+Mobile: ${mobile}`;
+      var phoneNumber = "91XXXXXXXXXX"; // <-- CHANGE to your number with country code
+      var whatsappURL = "https://wa.me/" + phoneNumber.replace(/\D/g,'') + "?text=" + encodeURIComponent(message);
+      window.open(whatsappURL, "_blank");
+    }
+  </script>
 </body>
-</html>
+      </html>

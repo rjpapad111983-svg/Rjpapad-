@@ -208,18 +208,14 @@
 
     // On page load: apply saved language (if any) and auto-hide logo after 2s
     window.addEventListener('load', () => {
-      const saved = localStorage.getItem('rjpapad_lang') || 'hi';
-      applyLanguage(saved);
-
-      // Auto-hide logo after 2s (if user doesn't choose)
-      setTimeout(() => {
-        const logo = document.getElementById('logo-screen');
-        if (!logo) return;
-        // If logo is still visible (user didn't click), hide it
-        if (logo.style.display !== 'none') {
-          fadeOutLogo();
-        }
-      }, 2000);
+  const saved = localStorage.getItem('rjpapad-lang');
+  if (saved) {
+    applyLanguage(saved);
+    // अगर पहले भाषा चुनी हुई थी तो logo तुरंत छुपा दो
+    fadeOutLogo();
+  }
+});
+      
     });
   </script>
 

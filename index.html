@@ -217,7 +217,24 @@
     }
   }, 900); // CSS transition 0.8s है; थोड़ा buffer रखा है
     }
+// ===== Attach click handlers to language buttons (ADD this block) =====
 
+// Ensure setLanguage is available globally (safe)
+if (typeof setLanguage === 'function') {
+  window.setLanguage = setLanguage;
+}
+
+// Attach click listeners to .lang-btn buttons
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.style.cursor = 'pointer'; // optional visual feedback
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      if (!lang) return;
+      setLanguage(lang); // calls applyLanguage() and fadeOutLogo()
+    });
+  });
+});
     // On page load: apply saved language (if any) and auto-hide logo after 2s
     window.addEventListener('load', () => {
       const saved = localStorage.getItem('rjpapad_lang') || 'hi';

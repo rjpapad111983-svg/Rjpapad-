@@ -1,15 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>स्वाद में खास RJ पापड़ का विश्वास</title>
-  <meta name="description" content="RJ Papad Surat - Homemade papad.">
-  <meta name="keywords" content="RJ Papad, papad, surat, homemade">
-  <meta name="robots" content="index, follow">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RJ Papad - Order</title>
 
   <style>
-    /* ====== BASIC STYLES ====== */
+    /* BASIC STYLES */
     body {
       font-family: "Noto Sans Devanagari", "Noto Sans", Arial, sans-serif;
       background-color: #fffbe6;
@@ -19,20 +16,20 @@
       padding: 0;
     }
 
-    header { background-color:#ffeb3b; padding:20px; border-radius:0 0 20px 20px; }
-    header h1 { margin:0; font-size:1.8rem; color:#222; }
+    header { background-color:#fff; padding:20px 10px; }
+    header h1 { margin:0; font-size:1.15rem; }
 
-    img { max-width:100%; height:auto; margin:15px 0; border-radius:10px; }
-    p { font-size:1.15rem; margin:10px; color:#3b2a18; }
+    img { max-width:100%; height:auto; }
+    p { font-size:1.05rem; margin:8px 0; }
 
-    .btn { display:inline-block; background-color:#25d366; color:white; padding:12px 25px; border-radius:25px; text-decoration:none; font-weight:bold; margin-top:15px; }
-    .btn:hover { background-color:#128c7e; }
+    .btn { display:inline-block; padding:8px 14px; border-radius:8px; background:#4a2e00; color:#fff; text-decoration:none; }
+    .btn:hover { opacity:0.9; }
 
-    footer { margin-top:30px; font-size:0.9rem; color:#777; padding:12px 8px; }
+    footer { margin-top:30px; font-size:0.9rem; color:#666; padding:18px 6px; }
 
-    input { width:90%; max-width:400px; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #ccc; font-size:1rem; }
+    input { width:90%; max-width:320px; padding:8px; margin:6px 0; }
 
-    /* ====== LANG BUTTONS ====== */
+    /* LANG BUTTONS */
     .lang-btn {
       background-color: #4a2e00;
       color: white;
@@ -43,11 +40,12 @@
       cursor: pointer;
       font-weight: bold;
       font-size: 1rem;
-      transition: background 0.2s;
+      transition: background 0.2s ease;
+      pointer-events: auto;
     }
-    .lang-btn:hover { background-color: #6d3b00; }
+    .lang-btn:hover { opacity:0.9; }
 
-    /* ====== FULLSCREEN LOGO ====== */
+    /* FULLSCREEN LOGO */
     #logo-screen {
       position: fixed;
       top: 0;
@@ -60,10 +58,15 @@
       justify-content: center;
       align-items: center;
       z-index: 9999;
+      opacity: 1;
       transition: opacity 0.8s ease;
+      pointer-events: auto;
     }
-    #logo-screen img { width: 250px; height: auto; border-radius: 50%; box-shadow: 0 0 20px rgba(0,0,0,0.25); }
-    #logo-screen h2 { margin-top: 18px; color: #4a2e00; font-size:1.4rem; }
+    #logo-screen img { width: 250px; max-width:60%; }
+    #logo-screen h2 { margin-top:12px; font-size:1.25rem; color:#333; }
+
+    /* MAIN content hidden initially */
+    #main-content { display: none; }
 
     /* small responsive tweak */
     @media (max-width:420px) {
@@ -76,101 +79,100 @@
 
   <!-- ===== FULL SCREEN LOGO SECTION ===== -->
   <div id="logo-screen" aria-hidden="false">
-    <!-- TODO: replace the src below with your raw GitHub image URL for the logo -->
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="RJ Papad Surat Logo">
+    <!-- TODO: replace the src below with your actual raw image link if different -->
+    <img src="https://raw.githubusercontent.com/rjpapad/rjpapad/main/logo.png" alt="RJ Papad Logo">
     <h2>RJ Papad Surat</h2>
 
-    <!-- Language selection buttons (visible on logo screen) -->
+    <!-- Language selection buttons -->
     <div style="margin-top:28px;">
-  <button class="lang-btn" data-lang="hi" type="button">हिन्दी</button>
-  <button class="lang-btn" data-lang="en" type="button">English</button>
-  <button class="lang-btn" data-lang="gu" type="button">ગુજરાતી</button>
+      <button class="lang-btn" data-lang="hi" type="button">हिन्दी</button>
+      <button class="lang-btn" data-lang="en" type="button">English</button>
+      <button class="lang-btn" data-lang="gu" type="button">ગુજરાતી</button>
     </div>
-    <small style="margin-top:12px; color:#4a2e00;">Select language to continue</small>
+    <small style="margin-top:12px; display:block; color:#444;">कृपया भाषा चुनें</small>
   </div>
 
-  <!-- ===== HEADER (main site content) ===== -->
-  <header>
-    <h1 id="header-text">स्वाद में खास RJ पापड़ का विश्वास</h1>
-  </header>
+  <!-- ===== MAIN SITE CONTENT (initially hidden) ===== -->
+  <div id="main-content">
+    <header>
+      <h1 id="header-text">स्वाद में खास RJ पापड़</h1>
+    </header>
 
-  <!-- ===== BANNERS SECTION ===== -->
-  <div style="text-align:center; margin:16px;">
-    <!-- Replace these banner src with your real banner images -->
-    <img src="https://raw.githubusercontent.com/yourusername/yourrepo/main/banner-top.jpg" alt="स्वाद में खास RJ Papad का विश्वास">
-    <!-- Optional second banner (comment out if not used) -->
-    <!-- <img src="https://raw.githubusercontent.com/yourusername/yourrepo/main/banner-why.jpg" alt="क्यों चुनें RJ Papad Surat"> -->
-  </div>
-
-  <!-- ===== DESCRIPTION SECTION ===== -->
-  <div style="text-align:center; padding:0 10px;">
-    <p id="desc1"><strong>उड़द मरी पापड़ • ₹330/kg</strong></p>
-    <p id="desc2"><strong>होममेड टेस्ट • शुद्ध सामग्री</strong></p>
-  </div>
-
-  <!-- ===== ORDER FORM SECTION ===== -->
-  <div style="text-align:center; margin-top:6px;">
-    <h3 id="orderTitle">अपना ऑर्डर विवरण भरें</h3>
-    <p id="orderHint">कृपया नीचे अपनी जानकारी भरें ताकि हम आपसे संपर्क कर सकें।</p>
-
-    <div>
-      <input type="text" id="name" placeholder="आपका नाम" />
-      <input type="text" id="address" placeholder="पता" />
-      <input type="text" id="pincode" placeholder="पिनकोड" />
-      <input type="text" id="mobile" placeholder="मोबाइल नंबर" />
+    <!-- BANNERS SECTION -->
+    <div style="text-align:center; padding:14px;">
+      <img src="https://raw.githubusercontent.com/rjpapad/rjpapad/main/banner.png" alt="banner">
     </div>
 
-    <!-- WhatsApp Order Button -->
-    <div style="margin-top:14px;">
-      <a href="#" class="btn" onclick="sendWhatsApp()">WhatsApp पर भेजें</a>
+    <!-- DESCRIPTION SECTION -->
+    <div style="text-align:center; padding:6px 12px;">
+      <p id="desc1"><strong>उद्दद मरी पापड़</strong></p>
+      <p id="desc2"><strong>हॉममेड टेस्ट • ताज़ा स्वाद</strong></p>
     </div>
+
+    <!-- ORDER FORM SECTION -->
+    <div style="text-align:center; padding:12px;">
+      <h3 id="orderTitle">अपना ऑर्डर भिजवाएँ</h3>
+      <p id="orderHint">कृपया नीचे अपनी जानकारी भरें</p>
+
+      <div>
+        <input type="text" id="name" placeholder="आपका नाम"><br>
+        <input type="text" id="address" placeholder="पता"><br>
+        <input type="text" id="pincode" placeholder="पिनकोड"><br>
+        <input type="text" id="mobile" placeholder="मोबाइल नंबर"><br>
+      </div>
+
+      <!-- WhatsApp Order Button -->
+      <div style="margin-top:14px;">
+        <a href="#" class="btn" onclick="sendWhatsApp()">WhatsApp पर ऑर्डर करें</a>
+      </div>
+    </div>
+
+    <footer id="footer">© 2025 RJ Papad Surat</footer>
   </div>
 
-  <!-- ===== FOOTER ===== -->
-  <footer id="footer">© 2025 RJ Papad Surat | स्वाद में खास RJ पापड़ का विश्वास</footer>
-
-  <!-- ===== EXISTING / WHATSAPP SCRIPT (send order) ===== -->
+  <!-- ===== EXISTING / WHATSAPP HELPER ===== -->
   <script>
     function sendWhatsApp() {
-      var name = document.getElementById('name').value || '';
-      var address = document.getElementById('address').value || '';
-      var pincode = document.getElementById('pincode').value || '';
-      var mobile = document.getElementById('mobile').value || '';
+      var name = document.getElementById('name')?.value || '';
+      var address = document.getElementById('address')?.value || '';
+      var pincode = document.getElementById('pincode')?.value || '';
+      var mobile = document.getElementById('mobile')?.value || '';
 
-      var message = `नमस्ते RJ Papad Surat%0Aनाम: ${encodeURIComponent(name)}%0Aपता: ${encodeURIComponent(address)}%0Aपिनकोड: ${encodeURIComponent(pincode)}%0Aमोबाइल: ${encodeURIComponent(mobile)}`;
-      var phoneNumber = "91XXXXXXXXXX"; // <- अपना WhatsApp नंबर "countryCode+number" यहाँ डालें (जैसे 9196353745646)
-      var whatsappURL = `https://wa.me/${phoneNumber}?text=${message}`;
+      var message = `नमस्ते RJ Papad, मेरा ऑर्डर:\nName: ${name}\nAddress: ${address}\nPincode: ${pincode}\nMobile: ${mobile}`;
+      // TODO: बदलें अपना फोन नंबर नीचे (country code के साथ, e.g. 91XXXXXXXXXX)
+      var phoneNumber = "91XXXXXXXXXX";
+      var whatsappURL = `https://wa.me/${phoneNumber.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`;
 
       window.open(whatsappURL, "_blank");
     }
   </script>
 
-  <!-- ===== LANGUAGE TRANSLATION SCRIPT ===== -->
+  <!-- ===== LANGUAGE TRANSLATIONS & LOGIC ===== -->
   <script>
     const translations = {
       hi: {
-        header: "स्वाद में खास RJ पापड़ का विश्वास",
-        description1: "उड़द मरी पापड़ • ₹330/kg",
-        description2: "होममेड टेस्ट • शुद्ध सामग्री",
-        orderTitle: "अपना ऑर्डर विवरण भरें",
-        orderHint: "कृपया नीचे अपनी जानकारी भरें ताकि हम आपसे संपर्क कर सकें।",
-        footer: "© 2025 RJ Papad Surat | स्वाद में खास RJ पापड़ का विश्वास"
+        header: "स्वाद में खास RJ पापड़",
+        description1: "उद्दद मरी पापड़",
+        description2: "हॉममेड टेस्ट • ताज़ा स्वाद",
+        orderTitle: "अपना ऑर्डर भिजवाएँ",
+        orderHint: "कृपया नीचे अपनी जानकारी भरें",
+        footer: "© 2025 RJ Papad Surat"
       },
       en: {
-        header: "RJ Papad Surat - The Taste You Trust",
-        description1: "Udad Mari Papad • ₹330/kg",
-        description2: "Homemade Taste • Pure Ingredients",
-        orderTitle: "Fill Your Order Details",
-        orderHint: "Please fill in your details below so we can contact you.",
-        footer: "© 2025 RJ Papad Surat | The Taste You Trust"
+        header: "RJ Papad Surat",
+        description1: "Udad Mari Papad",
+        description2: "Homemade taste • Fresh flavor",
+        orderTitle: "Fill Your Order",
+        orderHint: "Please fill in your details below",
+        footer: "© 2025 RJ Papad Surat"
       },
       gu: {
-        header: "સ્વાદમાં ખાસ RJ પાપડનો વિશ્વાસ",
-        description1: "ઉડદ મરી પાપડ • ₹330/kg",
-        description2: "ઘરેલું સ્વાદ • શુદ્ધ સામગ્રી",
-        orderTitle: "તમારો ઓર્ડર વિગત ભરો",
-        orderHint: "કૃપા કરીને નીચે તમારી માહિતી ભરો જેથી અમે સંપર્ક કરી શકીએ.",
-        footer: "© 2025 RJ Papad Surat | સ્વાદમાં ખાસ RJ પાપડનો વિશ્વાસ"
+        header: "RJ પાપડ સુરત",
+        description1: "ઉડદ મરી પાપડ",
+        description2: "હોમમેડ ટેસ્ટ • તાજો સ્વાદ",
+        orderTitle: "તમારું ઓર્ડર મોકલો",
+        orderHint: "કૃપા કરીને નીચે તમારો વિગતો ભરાવો",
+        footer: "© 2025 RJ Papad Surat"
       }
     };
 
@@ -178,14 +180,21 @@
     function applyLanguage(lang) {
       const t = translations[lang];
       if (!t) return;
-      const headerEl = document.querySelector('#header-text');
-      if (headerEl) headerEl.innerText = t.header;
+      const headerEl = document.getElementById('header-text');
+      if (headerEl && t.header) headerEl.innerText = t.header;
 
-      const d1 = document.querySelector('#desc1'); if (d1) d1.innerText = t.description1;
-      const d2 = document.querySelector('#desc2'); if (d2) d2.innerText = t.description2;
-      const oT = document.querySelector('#orderTitle'); if (oT) oT.innerText = t.orderTitle;
-      const oH = document.querySelector('#orderHint'); if (oH) oH.innerText = t.orderHint;
-      const f = document.querySelector('#footer'); if (f) f.innerText = t.footer;
+      const d1 = document.getElementById('desc1');
+      const d2 = document.getElementById('desc2');
+      if (d1 && t.description1) d1.innerText = t.description1;
+      if (d2 && t.description2) d2.innerText = t.description2;
+
+      const oT = document.getElementById('orderTitle');
+      const oH = document.getElementById('orderHint');
+      if (oT && t.orderTitle) oT.innerText = t.orderTitle;
+      if (oH && t.orderHint) oH.innerText = t.orderHint;
+
+      const f = document.getElementById('footer');
+      if (f && t.footer) f.innerText = t.footer;
     }
 
     // Called when user clicks language button
@@ -193,56 +202,67 @@
       if (!translations[lang]) return;
       localStorage.setItem('rjpapad_lang', lang);
       applyLanguage(lang);
-      fadeOutLogo(); // hide logo immediately after selection
+      fadeOutLogo(); // hide logo and show main
     }
 
-    // Fade out & hide logo screen
+    // Fade out & hide logo screen, then show main content
     function fadeOutLogo() {
-  const logo = document.getElementById('logo-screen');
-  if (!logo) return;
+      const logo = document.getElementById('logo-screen');
+      if (!logo) return;
 
-  // fade out
-  logo.style.opacity = '0';
+      // fade out
+      logo.style.opacity = '0';
 
-  // CSS transition के बाद hide और फिर main content दिखाओ
-  setTimeout(() => {
-    logo.style.display = 'none';
-
-    const main = document.getElementById('main-content');
-    if (main) {
-      main.style.display = 'block';
-      // optional: smooth fade-in
-      // main.style.opacity = '0';
-      // setTimeout(() => main.style.opacity = '1', 10);
+      // after CSS transition, remove and show main
+      setTimeout(() => {
+        logo.style.display = 'none';
+        const main = document.getElementById('main-content');
+        if (main) {
+          main.style.display = 'block';
+          // optional: smooth in (uncomment if want)
+          // main.style.opacity = '0';
+          // setTimeout(()=> main.style.opacity = '1', 10);
+        }
+      }, 900); // 800ms transition + small buffer
     }
-  }, 900); // CSS transition 0.8s है; थोड़ा buffer रखा है
-    }
-// ===== Attach click handlers to language buttons (ADD this block) =====
 
-// Ensure setLanguage is available globally (safe)
-if (typeof setLanguage === 'function') {
-  window.setLanguage = setLanguage;
-}
-
-// Attach click listeners to .lang-btn buttons
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.style.cursor = 'pointer'; // optional visual feedback
-    btn.addEventListener('click', () => {
-      const lang = btn.getAttribute('data-lang');
-      if (!lang) return;
-      setLanguage(lang); // calls applyLanguage() and fadeOutLogo()
-    });
-  });
-});
-    // On page load: apply saved language (if any) and auto-hide logo after 2s
+    // On page load: apply saved language (if exists) and show main content
     window.addEventListener('load', () => {
-      const saved = localStorage.getItem('rjpapad_lang') || 'hi';
-      applyLanguage(saved);
+      const saved = localStorage.getItem('rjpapad_lang');
+      if (saved && translations[saved]) {
+        applyLanguage(saved);
+        // skip logo if language already chosen
+        const logo = document.getElementById('logo-screen');
+        if (logo) {
+          logo.style.display = 'none';
+          logo.style.opacity = '0';
+        }
+        const main = document.getElementById('main-content');
+        if (main) main.style.display = 'block';
+      } else {
+        // no saved language: keep logo visible, main hidden
+      }
+    });
 
-      // Auto-hide logo after 2s (if user doesn't choose)
-  
+    // ===== Attach click handlers to language buttons (ensure buttons work) =====
+    // Expose setLanguage globally (safe)
+    if (typeof setLanguage === 'function') {
+      window.setLanguage = setLanguage;
+    }
+
+    // Attach listeners after DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => {
+          const lang = btn.getAttribute('data-lang');
+          if (!lang) return;
+          setLanguage(lang);
+        });
+      });
+    });
+
+    // (NOTE: auto-hide timeout removed - logo will hide only when user picks a language)
   </script>
-
 </body>
 </html>

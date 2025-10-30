@@ -115,6 +115,89 @@
       <p id="desc1"><strong>उद्दद मरी पापड़</strong></p>
       <p id="desc2"><strong>हॉममेड टेस्ट • ताज़ा स्वाद</strong></p>
     </div>
+  <!-- ===== MOBILE REGISTER + ORDER PROTECTION (Added by ChatGPT) ===== -->
+<div id="mobile-register" style="text-align:center; margin:18px auto; padding:12px; max-width:420px; border-radius:8px; border:1px solid #eee;">
+  <h3>📱 मोबाइल से रजिस्टर करें</h3>
+  <input id="regMobile" placeholder="मोबाइल नंबर (10 अंक)" style="padding:8px; width:92%; margin-top:8px;" />
+  <div style="margin-top:8px;">
+    <button id="sendOtpBtn" style="padding:8px 12px;">OTP भेजें</button>
+  </div>
+
+  <div id="otpBox" style="display:none; margin-top:12px;">
+    <input id="otpInput" placeholder="OTP दर्ज करें" style="padding:8px; width:92%;" />
+    <div style="margin-top:8px;">
+      <button id="verifyBtn" style="padding:8px 12px;">वेरिफाई करें</button>
+    </div>
+  </div>
+
+  <p id="regMsg" style="margin-top:10px;color:#333;"></p>
+</div>
+
+<script>
+// --------- CONFIG ---------
+const DEMO_OTP = '482915'; // डेमो OTP
+
+// --------- LOCAL STORAGE HELPERS ---------
+function setVerified(mobile) {
+  localStorage.setItem('rjpapad_verified', JSON.stringify({ mobile, at: Date.now() }));
+  updateOrderLockUI();
+}
+function isVerified() {
+  return !!localStorage.getItem('rjpapad_verified');
+}
+
+// --------- INIT ---------
+document.addEventListener('DOMContentLoaded', () => {
+  const sendOtpBtn = document.getElementById('sendOtpBtn');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const regMobile = document.getElementById('regMobile');
+  const regMsg = document.getElementById('regMsg');
+  const otpBox = document.getElementById('otpBox');
+
+  if (isVerified()) {
+    regMsg.innerText = '✅ आप पहले से वेरिफ़ाय हैं — अब ऑर्डर कर सकते हैं।';
+    otpBox.style.display = 'none';
+  }
+
+  sendOtpBtn.addEventListener('click', () => {
+    const mobile = regMobile.value.trim();
+    if (mobile.length !== 10) { regMsg.innerText = 'सही मोबाइल नंबर डालें (10 अंक)'; return; }
+
+    otpBox.style.display = 'block';
+    regMsg.innerText = `डेमो OTP: ${DEMO_OTP}`;
+  });
+
+  verifyBtn.addEventListener('click', () => {
+    const otp = document.getElementById('otpInput').value.trim();
+    if (otp === DEMO_OTP) {
+      setVerified(regMobile.value.trim());
+      regMsg.innerText = '🎉 वेरिफ़िकेशन सफल! अब आप पापड़ खरीद सकते हैं।';
+      otpBox.style.display = 'none';
+    } else {
+      regMsg.innerText = '❌ गलत OTP';
+    }
+  });
+
+  updateOrderLockUI();
+});
+
+// --------- LOCK ORDER FORM UNTIL VERIFIED ---------
+function updateOrderLockUI() {
+  const inputs = ['name','address','pincode','mobile'];
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = !isVerified();
+  });
+
+  const waBtn = document.querySelector('a.btn');
+  if (waBtn) {
+    waBtn.style.opacity = isVerified() ? '1' : '0.5';
+    waBtn.style.pointerEvents = isVerified() ? 'auto' : 'none';
+    waBtn.title = isVerified() ? 'Order Now' : 'पहले मोबाइल वेरिफ़ाई करें';
+  }
+}
+</script>
+<!-- ===== END MOBILE REGISTER + ORDER PROTECTION ===== -->
 <!-- ===== MOBILE REGISTER FORM (Added by ChatGPT) ===== -->
 <div id="mobile-register" style="text-align:center; margin:20px auto; border:1px solid #ddd; padding:15px; max-width:350px; border-radius:8px;">
   <h3>📱 मोबाइल से रजिस्टर करें</h3>

@@ -185,23 +185,30 @@
 
     // Apply chosen language strings to page
     function applyLanguage(lang) {
-      const t = translations[lang];
-      if (!t) return;
-      const headerEl = document.getElementById('header-text');
-      if (headerEl && t.header) headerEl.innerText = t.header;
+  const t = translations[lang];
+  if (!t) return;
 
-      const d1 = document.getElementById('desc1');
-      const d2 = document.getElementById('desc2');
-      if (d1 && t.description1) d1.innerText = t.description1;
-      if (d2 && t.description2) d2.innerText = t.description2;
+  const headerEl = document.getElementById('header-text');
+  if (headerEl && t.header) headerEl.innerText = t.header;
 
-      const oT = document.getElementById('orderTitle');
-      const oH = document.getElementById('orderHint');
-      if (oT && t.orderTitle) oT.innerText = t.orderTitle;
-      if (oH && t.orderHint) oH.innerText = t.orderHint;
+  const d1 = document.getElementById('desc1');
+  const d2 = document.getElementById('desc2');
+  if (d1 && t.description1) d1.innerText = t.description1;
+  if (d2 && t.description2) d2.innerText = t.description2;
 
-      const f = document.getElementById('footer');
-      if (f && t.footer) f.innerText = t.footer;
+  const oT = document.getElementById('orderTitle');
+  const oH = document.getElementById('orderHint');
+  if (oT && t.orderTitle) oT.innerText = t.orderTitle;
+  if (oH && t.orderHint) oH.innerText = t.orderHint;
+
+  const f = document.getElementById('footer');
+  if (f && t.footer) f.innerText = t.footer;
+
+  // 🟢 अब ये 4 लाइनें जोड़ें (copy–paste below ↓)
+  const b1 = document.getElementById('banner-img');
+  const b2 = document.getElementById('banner2-img');
+  if (b1 && t.banner1) b1.src = t.banner1;
+  if (b2 && t.banner2) b2.src = t.banner2;
     }
 
     // Called when user clicks language button

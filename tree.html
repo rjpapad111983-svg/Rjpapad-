@@ -299,12 +299,15 @@ function renderTree(subRootId) {
   }
   assign(tree);
 
-  // size svg
-  const width = Math.max(800, xCounter * 160 + 120);
-  const maxDepth = (function md(n){ if(!n) return 0; return 1 + Math.max(md(n.left), md(n.right)); })(tree);
-  const height = Math.max(400, (maxDepth+1) * levelGapY);
-  treeSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-  treeSvg.setAttribute('preserveAspectRatio','xMidYMin meet');
+  // --- SVG sizing tuned for large trees (up to 100,000 customers) ---
+const width = Math.max(2000, xCounter * 60 + 400);   // compact horizontal spacing
+const maxDepth = (function md(n){ 
+  if(!n) return 0; 
+  return 1 + Math.max(md(n.left), md(n.right)); 
+})(tree);
+const height = Math.max(800, (maxDepth + 1) * 90);   // vertical gap tuned
+treeSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+treeSvg.setAttribute('preserveAspectRatio','xMidYMin meet');
 
   // draw connectors and nodes (do a traversal)
   function drawNode(node) {

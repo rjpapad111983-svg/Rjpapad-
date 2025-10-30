@@ -115,7 +115,46 @@
       <p id="desc1"><strong>उद्दद मरी पापड़</strong></p>
       <p id="desc2"><strong>हॉममेड टेस्ट • ताज़ा स्वाद</strong></p>
     </div>
+<!-- ===== MOBILE REGISTER FORM (Added by ChatGPT) ===== -->
+<div id="mobile-register" style="text-align:center; margin:20px auto; border:1px solid #ddd; padding:15px; max-width:350px; border-radius:8px;">
+  <h3>📱 मोबाइल से रजिस्टर करें</h3>
+  <input id="regMobile" placeholder="मोबाइल नंबर (10 अंकों में)" style="padding:8px; width:90%; margin-top:8px;" />
+  <button onclick="sendOtp()" style="margin-top:8px; padding:8px 12px;">OTP भेजें</button>
 
+  <div id="otpBox" style="display:none; margin-top:12px;">
+    <input id="otpInput" placeholder="OTP दर्ज करें" style="padding:8px; width:90%;" />
+    <button onclick="verifyOtp()" style="margin-top:8px; padding:8px 12px;">OTP वेरिफाई करें</button>
+  </div>
+
+  <p id="regMsg" style="margin-top:10px; color:#333;"></p>
+</div>
+
+<script>
+  async function sendOtp() {
+    const mobile = document.getElementById('regMobile').value.trim();
+    if (mobile.length !== 10) {
+      document.getElementById('regMsg').innerText = 'सही मोबाइल नंबर डालें (10 अंक)';
+      return;
+    }
+    document.getElementById('regMsg').innerText = 'OTP भेजा जा रहा है...';
+    // demo (no real backend)
+    setTimeout(()=>{
+      document.getElementById('otpBox').style.display = 'block';
+      document.getElementById('regMsg').innerText = 'डेमो OTP: 482915 (टेस्ट के लिए)';
+    },1000);
+  }
+
+  async function verifyOtp() {
+    const otp = document.getElementById('otpInput').value.trim();
+    if (otp === '482915') {
+      document.getElementById('regMsg').innerText = 'रजिस्ट्रेशन सफल ✅';
+      document.getElementById('otpBox').style.display = 'none';
+    } else {
+      document.getElementById('regMsg').innerText = 'गलत OTP ❌';
+    }
+  }
+</script>
+<!-- ===== END MOBILE REGISTER FORM ===== -->
     <!-- ORDER FORM -->
     <div style="text-align:center; padding:12px;">
       <h3 id="orderTitle">अपना ऑर्डर भिजवाएँ</h3>

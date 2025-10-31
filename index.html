@@ -265,32 +265,39 @@ function updateOrderLockUI() {
 
   <!-- ===== LANGUAGE TRANSLATIONS & LOGIC (NO auto-hide) ===== -->
   <script>
-    const translations = {
-      hi: {
-        header: "स्वाद में खास RJ पापड़",
-        description1: "उद्दद मरी पापड़",
-        description2: "हॉममेड टेस्ट • ताज़ा स्वाद",
-        orderTitle: "अपना ऑर्डर भिजवाएँ",
-        orderHint: "कृपया नीचे अपनी जानकारी भरें",
-        footer: "© 2025 RJ Papad Surat"
-      },
-      en: {
-        header: "RJ Papad Surat",
-        description1: "Udad Mari Papad",
-        description2: "Homemade taste • Fresh flavor",
-        orderTitle: "Fill Your Order",
-        orderHint: "Please fill in your details below",
-        footer: "© 2025 RJ Papad Surat"
-      },
-      gu: {
-        header: "RJ પાપડ સુરત",
-        description1: "ઉડદ મરી પાપડ",
-        description2: "હોમમેડ ટેસ્ટ • તાજો સ્વાદ",
-        orderTitle: "તમારું ઓર્ડર મોકલો",
-        orderHint: "કૃપા કરીને નીચે તમારો વિગતો ભરાવો",
-        footer: "© 2025 RJ Papad Surat"
-      }
-    };
+const translations = {
+  hi: {
+    header: "स्वाद में खास RJ पापड़",
+    description1: "उड़द मरी पापड़ • स्वादिष्ट और कुरकुरे",
+    description2: "होममेड टेस्ट • RJ Papad Surat",
+    orderTitle: "अपना ऑर्डर भेजिए",
+    orderHint: "कृपया नीचे अपनी जानकारी भरें",
+    footer: "© 2025 RJ Papad Surat",
+    banner1: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_hi_1.jpg",
+    banner2: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_hi_2.jpg"
+  },
+  en: {
+    header: "RJ Papad Surat",
+    description1: "Udad Mari Papad • Tasty and Crunchy",
+    description2: "Homemade Taste • RJ Papad Surat",
+    orderTitle: "Fill Your Order",
+    orderHint: "Please fill below",
+    footer: "© 2025 RJ Papad Surat",
+    banner1: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_en_1.jpg",
+    banner2: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_en_2.jpg"
+  },
+  gu: {
+    header: "RJ પાપડ સુરત",
+    description1: "ઉદ્દ મરી પાપડ • સ્વાદિષ્ટ અને કરકરા",
+    description2: "હોમમેડ ટેસ્ટ • RJ Papad Surat",
+    orderTitle: "તમારું ઓર્ડર મોકલો",
+    orderHint: "કૃપા કરીને નીચે માહિતી ભરો",
+    footer: "© 2025 RJ Papad Surat",
+    banner1: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_gu_1.jpg",
+    banner2: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_gu_2.jpg"
+  }
+};
+  </script>
 
     // Apply chosen language strings to page
     function applyLanguage(lang) {

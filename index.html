@@ -1,195 +1,46 @@
-<!DOCTYPE html>
-<html lang="hi">
+<!doctype html>
+<html>
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RJ Papad – MLM + Wallet</title>
-
-<style>
-:root{--accent:#d35400;--muted:#666;--card:#fff;}
-body{margin:0;font-family:sans-serif;background:#f9f9f9;}
-header{padding:14px;text-align:center;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1);}
-.container{max-width:1150px;margin:auto;padding:10px;display:flex;flex-wrap:wrap;gap:10px;}
-.left{width:380px;flex-shrink:0;}
-.card{background:var(--card);border-radius:8px;padding:10px;box-shadow:0 1px 2px rgba(0,0,0,.08);}
-.lang-row{display:flex;gap:8px;justify-content:center;margin-top:8px;}
-button{background:var(--accent);color:#fff;border:none;border-radius:5px;padding:6px 12px;cursor:pointer;}
-button:hover{opacity:.9;}
-footer{text-align:center;margin-top:20px;padding:8px;font-size:12px;color:var(--muted);}
-.tree-panel{display:none;margin-top:10px;}
-#treeSvg{width:100%;height:520px;background:#fff;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.1);}
-.wallet-panel{margin-top:12px;}
-.history-item{font-size:12px;color:#555;}
-.note{font-size:12px;color:#777;}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RJ Papad - Register</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding:20px; background:#fffbe6; }
+    input, button { padding:10px; margin:6px 0; width:100%; max-width:320px; }
+  </style>
 </head>
-
 <body>
-<header>
-  <div id="logo"><strong>RJ Papad</strong> — <span id="logo-sub">Surat</span></div>
-  <div class="lang-row">
-    <button class="lang-btn" data-lang="hi">हिंदी</button>
-    <button class="lang-btn" data-lang="en">English</button>
-    <button class="lang-btn" data-lang="gu">ગુજરાતી</button>
-  </div>
-</header>
-
-<main class="container">
-  <div class="left">
-    <div class="card">
-      <h2 id="header-text">स्वाद में खास RJ पापड़</h2>
-      <p id="desc1">उड़द मरी पापड़ • सुरती स्वाद</p>
-      <p id="desc2">होममेड टेस्ट • RJ Papad Surat</p>
-
-      <div id="banner" class="banner">
-        <img id="banner1" src="" alt="Banner" style="width:100%;border-radius:8px;">
-      </div>
-      <hr>
-
-      <h3>📱 मोबाइल से रजिस्टर करें</h3>
-      <label>मोबाइल</label>
-      <input id="regMobile" placeholder="मोबाइल नंबर दर्ज करें">
-      <div style="margin-top:8px;">
-        <button id="sendOtpBtn">OTP भेजें</button>
-        <button id="clearVerifyBtn">रीसेट</button>
-      </div>
-
-      <div id="otpBox" style="display:none;margin-top:8px;">
-        <label>OTP दर्ज करें</label>
-        <input id="otpInput" placeholder="6 अंकों का OTP">
-        <div style="margin-top:8px;">
-          <button id="verifyBtn">वेरिफाई</button>
-          <button id="resendBtn">फिर भेजें</button>
-        </div>
-      </div>
-
-      <p id="regMsg" class="note"></p>
-    </div>
-
-    <div class="card" style="margin-top:10px;">
-      <h3>MLM – Referral</h3>
-      <label>नाम</label><input id="treeName">
-      <label>लिंग</label><select id="treeGender"><option value="M">पुरुष</option><option value="F">महिला</option></select>
-      <label>मोबाइल</label><input id="treeMobile">
-      <label>Parent ID (optional)</label><input id="treeParent">
-      <div style="margin-top:8px;">
-        <select id="treeSide"><option value="L">Left</option><option value="R">Right</option></select>
-        <button id="btnAddNode">Add</button>
-        <button id="btnShowTree">Show Tree</button>
-      </div>
-      <p class="note">प्रत्येक सदस्य के नीचे 2 सदस्य तक जुड़ सकते हैं</p>
-    </div>
-
-    <div class="card" style="margin-top:10px;">
-      <h3>Admin Controls</h3>
-      <button id="btnApproveAll">Approve All</button>
-      <button id="btnProcessDaily">Process Day</button>
-      <button id="btnClearState">Clear Data</button>
-    </div>
+  <h2>रजिस्टर करें (Mobile Number से)</h2>
+  <div>
+    <input id="name" placeholder="Name (optional)" />
+    <input id="mobile" placeholder="Mobile number (required)" />
+    <button id="registerBtn">Register</button>
   </div>
 
-  <div id="treePanel" class="card" style="flex:1;">
-    <h3>Binary Tree</h3>
-    <svg id="treeSvg"></svg>
+  <pre id="result" style="background:#f4f4f4;padding:10px;max-width:600px;"></pre>
 
-    <div id="walletPanel" class="wallet-panel">
-      <h3>Wallet</h3>
-      <strong id="walletBalance">Balance: ₹0</strong>
-      <div id="walletHistory" style="margin-top:8px;"></div>
-      <div style="margin-top:10px;">
-        <input id="withdrawAmt" placeholder="Amount">
-        <button id="btnWithdraw">Withdraw (8PM)</button>
-      </div>
-    </div>
-  </div>
-</main>
+  <script>
+    document.getElementById('registerBtn').addEventListener('click', async () => {
+      const name = document.getElementById('name').value.trim();
+      const mobile = document.getElementById('mobile').value.trim();
 
-<footer id="footer">© 2025 RJ Papad Surat</footer>
+      if (!mobile) {
+        document.getElementById('result').innerText = '❌ कृपया मोबाइल नंबर डालें';
+        return;
+      }
 
-<script>
-const DEMO_OTP = '482915';
-const REFERRAL_BONUS = 10;
-const PAIRING_BONUS = 200;
-const LEVEL_FULL_BONUS = 1000;
-const PLATFORM_CUT_PERCENT = 10;
-const MONTHLY_PENALTY_PERCENT = 20;
-const UPLINE_PENALTY_PERCENT = 1;
-const WITHDRAW_ALLOWED_HOUR = 20;
-
-let state = JSON.parse(localStorage.getItem('rjpapad_mlm')) || {
-  users: {}, wallets:{}, lang:'hi', verified:null
-};
-
-function saveState(){ localStorage.setItem('rjpapad_mlm',JSON.stringify(state)); }
-
-const translations = {
-  hi:{
-    header:"स्वाद में खास RJ पापड़",
-    description1:"उड़द मरी पापड़ • सुरती स्वाद",
-    description2:"होममेड टेस्ट • RJ Papad Surat",
-    footer:"© 2025 RJ Papad Surat",
-    banner1:"assets/banner-hi.png"
-  },
-  en:{
-    header:"RJ Papad Surat",
-    description1:"Udad Mari Papad • Surati Taste",
-    description2:"Homemade Taste • RJ Papad Surat",
-    footer:"© 2025 RJ Papad Surat",
-    banner1:"assets/banner-en.png"
-  },
-  gu:{
-    header:"RJ પાપડ સુરત",
-    description1:"ઉડદ મારી પાપડ • સુરતી સ્વાદ",
-    description2:"હોમમેડ ટેસ્ટ • RJ પાપડ સુરત",
-    footer:"© 2025 RJ Papad Surat",
-    banner1:"assets/banner-gu.png"
-  }
-};
-
-function applyLanguage(lang){
-  const t = translations[lang]; if(!t) return;
-  document.getElementById('header-text').innerText = t.header;
-  document.getElementById('desc1').innerText = t.description1;
-  document.getElementById('desc2').innerText = t.description2;
-  document.getElementById('footer').innerText = t.footer;
-  const b1=document.getElementById('banner1');
-  if(b1 && t.banner1) b1.src=t.banner1;
-  state.lang = lang; saveState();
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.lang-btn').forEach(b=>{
-    b.addEventListener('click',()=>applyLanguage(b.dataset.lang));
-  });
-  applyLanguage(state.lang || 'hi');
-});
-
-// OTP & Register
-document.getElementById('sendOtpBtn').onclick=()=>{
-  const mob=document.getElementById('regMobile').value.trim();
-  if(!mob) return alert('मोबाइल नंबर दर्ज करें');
-  alert('Demo OTP: '+DEMO_OTP);
-  document.getElementById('otpBox').style.display='block';
-};
-document.getElementById('verifyBtn').onclick=()=>{
-  const otp=document.getElementById('otpInput').value.trim();
-  if(otp===DEMO_OTP){
-    state.verified=true;
-    alert('Mobile Verified!');
-    saveState();
-  }else alert('गलत OTP');
-};
-
-// Binary Tree + Wallet + Withdraw (simplified)
-document.getElementById('btnAddNode').onclick=()=>{
-  alert('नया सदस्य MLM tree में जोड़ा गया!');
-};
-document.getElementById('btnWithdraw').onclick=()=>{
-  const h=new Date().getHours();
-  if(h!==WITHDRAW_ALLOWED_HOUR)return alert('Withdraw केवल रात 8 बजे!');
-  alert('Withdraw request भेजी गई!');
-};
-
-</script>
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, mobile })
+        });
+        const data = await res.json();
+        document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('result').innerText = 'Error: ' + err.message;
+      }
+    });
+  </script>
 </body>
 </html>

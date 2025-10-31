@@ -374,22 +374,22 @@ function applyLanguage(lang) {
     });
 
     // ===== Attach click handlers to language buttons =====
-    // Expose setLanguage globally (safe)
-    if (typeof setLanguage === 'function') {
-      window.setLanguage = setLanguage;
-    }
+    // ✅ Working setLanguage function
+function setLanguage(lang) {
+  if (!translations[lang]) return;
+  localStorage.setItem('rjpapad_lang', lang);
+  applyLanguage(lang);
+}
 
-    // Attach listeners after DOM ready
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.style.cursor = 'pointer';
-        btn.addEventListener('click', () => {
-          const lang = btn.getAttribute('data-lang');
-          if (!lang) return;
-          setLanguage(lang);
-        });
-      });
-    });
+// ✅ जब पेज खुले तो पिछली भाषा याद रखे
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('rjpapad_lang');
+  if (saved && translations[saved]) {
+    applyLanguage(saved);
+  } else {
+    applyLanguage('hi'); // default language
+  }
+});
 
     /* NOTE: कोई भी auto-hide setTimeout यहाँ नहीं है — logo तभी hide होगा
        जब user language button दबायेगा (या saved language मौजूद हो)। */

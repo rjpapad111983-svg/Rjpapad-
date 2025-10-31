@@ -12,11 +12,12 @@
       overflow: hidden;
     }
 
-    /* Full Screen Logo (Splash Screen) */
+    /* Splash Screen (Full Screen Logo + Buttons) */
     #splash {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       background: radial-gradient(circle, #fffbe6 40%, #ffe69a 100%);
@@ -31,17 +32,33 @@
     }
 
     @keyframes zoomRotate {
-      from {
-        transform: scale(0.9) rotate(0deg);
-        opacity: 0.8;
-      }
-      to {
-        transform: scale(1.2) rotate(360deg);
-        opacity: 1;
-      }
+      from { transform: scale(0.9) rotate(0deg); opacity: 0.8; }
+      to { transform: scale(1.2) rotate(360deg); opacity: 1; }
     }
 
-    /* Hidden Content (appears later) */
+    /* Language Buttons */
+    .lang-buttons {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+    }
+    .lang-buttons button {
+      padding: 10px 16px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+    .lang-buttons button:hover {
+      transform: scale(1.1);
+    }
+    .hindi { background: #ffcc33; }
+    .english { background: #33ccff; }
+    .gujarati { background: #cc99ff; }
+
+    /* Hidden content */
     #content {
       display: none;
       padding: 20px;
@@ -50,14 +67,8 @@
     }
 
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     input, button {
@@ -94,6 +105,11 @@
   <!-- Full Screen Logo -->
   <div id="splash">
     <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="RJ Papad Logo" />
+    <div class="lang-buttons">
+      <button class="hindi" onclick="selectLang('hindi')">हिंदी</button>
+      <button class="english" onclick="selectLang('english')">English</button>
+      <button class="gujarati" onclick="selectLang('gujarati')">ગુજરાતી</button>
+    </div>
   </div>
 
   <!-- Hidden Content -->
@@ -109,15 +125,28 @@
   </div>
 
   <script>
-    // Hide splash and show content after 3 seconds
-    setTimeout(() => {
+    let selectedLang = 'hindi'; // default language
+
+    function selectLang(lang) {
+      selectedLang = lang;
+      // जब user language चुने, तो splash हटे और content दिखे
       document.getElementById('splash').style.opacity = '0';
       setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
-        document.body.style.overflow = 'auto'; // enable scrolling again
+        document.body.style.overflow = 'auto';
         document.getElementById('content').style.display = 'block';
+
+        // Language अनुसार heading बदलो
+        const heading = document.querySelector('h2');
+        if (lang === 'english') {
+          heading.textContent = 'Register (Using Mobile Number)';
+        } else if (lang === 'gujarati') {
+          heading.textContent = 'નોંધણી કરો (મોબાઇલ નંબરથી)';
+        } else {
+          heading.textContent = 'रजिस्टर करें (Mobile Number से)';
+        }
       }, 1000);
-    }, 3000);
+    }
 
     // Register form logic
     document.getElementById('registerBtn').addEventListener('click', async () => {
@@ -133,7 +162,7 @@
         const res = await fetch('/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, mobile })
+          body: JSON.stringify({ name, mobile, lang: selectedLang })
         });
         const data = await res.json();
         document.getElementById('result').innerText = JSON.stringify(data, null, 2);

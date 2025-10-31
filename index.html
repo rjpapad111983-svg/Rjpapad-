@@ -114,7 +114,7 @@
 
     /* Banner Section */
     .banner {
-      margin-bottom: 20px;
+      margin: 20px auto;
     }
     .banner img {
       width: 100%;
@@ -143,9 +143,9 @@
 
   <!-- Hidden Content -->
   <div id="content">
-    <!-- ✅ Banner ऊपर है और भाषा के अनुसार बदलेगा -->
+    <!-- ✅ पहला बैनर -->
     <div class="banner">
-      <img id="bannerImage" src="banner-hindi.jpg" alt="RJ Papad Banner" />
+      <img id="bannerTop" src="banner1-hindi.jpg" alt="RJ Papad Banner Top" />
     </div>
 
     <h2 id="title">रजिस्टर करें (Mobile Number से)</h2>
@@ -157,6 +157,11 @@
     </div>
 
     <pre id="result"></pre>
+
+    <!-- ✅ दूसरा बैनर -->
+    <div class="banner">
+      <img id="bannerBottom" src="banner2-hindi.jpg" alt="RJ Papad Banner Bottom" />
+    </div>
   </div>
 
   <script>
@@ -167,7 +172,8 @@
         mobile: "मोबाइल नंबर (अनिवार्य)",
         button: "रजिस्टर करें",
         error: "❌ कृपया मोबाइल नंबर डालें",
-        banner: "banner-hindi.jpg"
+        bannerTop: "banner1-hindi.jpg",
+        bannerBottom: "banner2-hindi.jpg"
       },
       english: {
         title: "Register (Using Mobile Number)",
@@ -175,7 +181,8 @@
         mobile: "Mobile number (required)",
         button: "Register",
         error: "❌ Please enter your mobile number",
-        banner: "banner-english.jpg"
+        bannerTop: "banner1-english.jpg",
+        bannerBottom: "banner2-english.jpg"
       },
       gujarati: {
         title: "નોંધણી કરો (મોબાઇલ નંબરથી)",
@@ -183,7 +190,8 @@
         mobile: "મોબાઇલ નંબર (જરૂરી)",
         button: "નોંધણી કરો",
         error: "❌ કૃપા કરીને મોબાઇલ નંબર દાખલ કરો",
-        banner: "banner-gujarati.jpg"
+        bannerTop: "banner1-gujarati.jpg",
+        bannerBottom: "banner2-gujarati.jpg"
       }
     };
 
@@ -193,16 +201,15 @@
       selectedLang = lang;
       const t = translations[lang];
 
-      // भाषा अनुसार टेक्स्ट बदलो
+      // भाषा अनुसार टेक्स्ट और बैनर दोनों बदलें
       document.getElementById("title").textContent = t.title;
       document.getElementById("name").placeholder = t.name;
       document.getElementById("mobile").placeholder = t.mobile;
       document.getElementById("registerBtn").textContent = t.button;
+      document.getElementById("bannerTop").src = t.bannerTop;
+      document.getElementById("bannerBottom").src = t.bannerBottom;
 
-      // ✅ Banner भी भाषा अनुसार बदलेगा
-      document.getElementById("bannerImage").src = t.banner;
-
-      // Splash छुपाओ और content दिखाओ
+      // Splash छिपाओ और content दिखाओ
       document.getElementById("splash").style.opacity = "0";
       setTimeout(() => {
         document.getElementById("splash").style.display = "none";

@@ -325,6 +325,11 @@ function applyLanguage(lang) {
   if (f && t.footer) f.innerText = t.footer;
 
   // ✅ Change banners when language changes
+const b1 = document.getElementById('banner-img');    // primary banner <img id="banner-img">
+const b2 = document.getElementById('banner2-img');   // secondary banner <img id="banner2-img">
+if (b1 && t.banner1) b1.src = t.banner1;
+if (b2 && t.banner2) b2.src = t.banner2;
+  // ✅ Change banners when language changes
   const b1 = document.getElementById('banner-img');   // पहला बैनर
   const b2 = document.getElementById('banner2-img');  // दूसरा बैनर
   if (b1 && t.banner1) b1.src = t.banner1;

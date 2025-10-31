@@ -25,7 +25,6 @@
       z-index: 10;
     }
 
-    /* Logo static (no animation) */
     #splash img.logo {
       width: 180px;
       border-radius: 20px;
@@ -112,13 +111,23 @@
       border-radius: 6px;
       text-align: left;
     }
+
+    /* Banner Section */
+    .banner {
+      margin-bottom: 20px;
+    }
+    .banner img {
+      width: 100%;
+      max-width: 600px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
   </style>
 </head>
 <body>
   <!-- Splash Screen -->
   <div id="splash">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="RJ Papad Logo" class="logo" />
-
+    <img src="logo.png" alt="RJ Papad Logo" class="logo" />
     <div class="lang-buttons">
       <button class="hindi" onclick="selectLang('hindi')">
         <img src="https://flagcdn.com/w20/in.png" alt="IN"> हिंदी
@@ -134,12 +143,19 @@
 
   <!-- Hidden Content -->
   <div id="content">
+    <!-- ✅ Banner ऊपर है और भाषा के अनुसार बदलेगा -->
+    <div class="banner">
+      <img id="bannerImage" src="banner-hindi.jpg" alt="RJ Papad Banner" />
+    </div>
+
     <h2 id="title">रजिस्टर करें (Mobile Number से)</h2>
+
     <div>
       <input id="name" placeholder="नाम (वैकल्पिक)" />
       <input id="mobile" placeholder="मोबाइल नंबर (अनिवार्य)" />
       <button id="registerBtn">रजिस्टर करें</button>
     </div>
+
     <pre id="result"></pre>
   </div>
 
@@ -150,21 +166,24 @@
         name: "नाम (वैकल्पिक)",
         mobile: "मोबाइल नंबर (अनिवार्य)",
         button: "रजिस्टर करें",
-        error: "❌ कृपया मोबाइल नंबर डालें"
+        error: "❌ कृपया मोबाइल नंबर डालें",
+        banner: "banner-hindi.jpg"
       },
       english: {
         title: "Register (Using Mobile Number)",
         name: "Name (optional)",
         mobile: "Mobile number (required)",
         button: "Register",
-        error: "❌ Please enter your mobile number"
+        error: "❌ Please enter your mobile number",
+        banner: "banner-english.jpg"
       },
       gujarati: {
         title: "નોંધણી કરો (મોબાઇલ નંબરથી)",
         name: "નામ (વૈકલ્પિક)",
         mobile: "મોબાઇલ નંબર (જરૂરી)",
         button: "નોંધણી કરો",
-        error: "❌ કૃપા કરીને મોબાઇલ નંબર દાખલ કરો"
+        error: "❌ કૃપા કરીને મોબાઇલ નંબર દાખલ કરો",
+        banner: "banner-gujarati.jpg"
       }
     };
 
@@ -173,11 +192,17 @@
     function selectLang(lang) {
       selectedLang = lang;
       const t = translations[lang];
+
+      // भाषा अनुसार टेक्स्ट बदलो
       document.getElementById("title").textContent = t.title;
       document.getElementById("name").placeholder = t.name;
       document.getElementById("mobile").placeholder = t.mobile;
       document.getElementById("registerBtn").textContent = t.button;
 
+      // ✅ Banner भी भाषा अनुसार बदलेगा
+      document.getElementById("bannerImage").src = t.banner;
+
+      // Splash छुपाओ और content दिखाओ
       document.getElementById("splash").style.opacity = "0";
       setTimeout(() => {
         document.getElementById("splash").style.display = "none";

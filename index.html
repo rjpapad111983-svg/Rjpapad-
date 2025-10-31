@@ -1,83 +1,108 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RJ पापड़ रजिस्ट्रेशन</title>
-  <style>
-    body {
-      background-color: #fff8e1;
-      font-family: 'Noto Sans Devanagari', sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    h1 {
-      color: #c47f00;
-      margin-top: 10px;
-    }
-
-    form {
-      max-width: 320px;
-      margin: 20px auto;
-      background-color: #fff3cd;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      background-color: #ffc107;
-      color: black;
-      font-weight: bold;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-    }
-
-    button:hover {
-      background-color: #ffb300;
-    }
-
-    img {
-      border-radius: 10px;
-      width: 95%;
-      margin: 10px auto;
-      display: block;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RJ पापड़ Auto Save</title>
+<style>
+body {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  background-color: #fff8e1;
+  text-align: center;
+  margin: 0;
+}
+.banner {
+  width: 100%;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+h1 {
+  color: #c47f00;
+}
+form {
+  background: #fff;
+  max-width: 320px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+button {
+  background: #ffc107;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover {
+  background: #ffb300;
+}
+.note {
+  font-size: 13px;
+  color: #555;
+  margin-top: 10px;
+}
+</style>
 </head>
 <body>
 
-  <!-- 🟢 Top Banner -->
-  <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" 
-       alt="Top Banner">
+<img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
 
-  <h1>RJ पापड़ में आपका स्वागत है!</h1>
+<h1>RJ पापड़ में आपका स्वागत है!</h1>
 
-  <!-- 🟡 Bottom Banner -->
-  <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" 
-       alt="Bottom Banner">
+<form id="regForm">
+  <input id="name" type="text" placeholder="नाम (वैकल्पिक)">
+  <input id="mobile" type="number" placeholder="मोबाइल नंबर (अनिवार्य)">
+  <button type="button" onclick="saveData()">💾 सेव करें</button>
+</form>
 
-  <form>
-    <h2>रजिस्टर करें (Mobile Number से)</h2>
-    <input type="text" placeholder="नाम (वैकल्पिक)">
-    <input type="number" placeholder="मोबाइल नंबर (अनिवार्य)" required>
-    <button type="submit">रजिस्टर करें</button>
-  </form>
+<p class="note">यह पेज अपने आप हर 5 सेकंड में सेव हो जाता है!</p>
+
+<img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+
+<script>
+const nameInput = document.getElementById("name");
+const mobileInput = document.getElementById("mobile");
+const key = "rjpapad_form";
+
+function saveData() {
+  const data = {
+    name: nameInput.value,
+    mobile: mobileInput.value
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+  alert("✅ डेटा सेव हो गया!");
+}
+
+function loadData() {
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    const data = JSON.parse(saved);
+    nameInput.value = data.name || "";
+    mobileInput.value = data.mobile || "";
+  }
+}
+
+// हर 5 सेकंड में अपने आप सेव
+setInterval(() => {
+  const data = {
+    name: nameInput.value,
+    mobile: mobileInput.value
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+  console.log("Auto saved at", new Date().toLocaleTimeString());
+}, 5000);
+
+window.onload = loadData;
+</script>
 
 </body>
 </html>

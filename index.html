@@ -122,6 +122,14 @@
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
+
+    /* Welcome Text */
+    .welcome-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: #c47f00;
+      margin: 10px 0 20px 0;
+    }
   </style>
 </head>
 <body>
@@ -143,10 +151,17 @@
 
   <!-- Hidden Content -->
   <div id="content">
-    <!-- ✅ ऊपर के दो बैनर -->
+    <!-- ✅ पहला बैनर -->
     <div class="banner">
       <img id="bannerTop" src="banner1-hindi.jpg" alt="Top Banner" />
     </div>
+
+    <!-- 🌟 Welcome Text (भाषा अनुसार बदलेगा) -->
+    <div id="welcomeText" class="welcome-text">
+      RJ पापड़ में आपका स्वागत है!
+    </div>
+
+    <!-- ✅ दूसरा बैनर -->
     <div class="banner">
       <img id="bannerBottom" src="banner2-hindi.jpg" alt="Bottom Banner" />
     </div>
@@ -172,7 +187,8 @@
         button: "रजिस्टर करें",
         error: "❌ कृपया मोबाइल नंबर डालें",
         bannerTop: "banner1-hindi.jpg",
-        bannerBottom: "banner2-hindi.jpg"
+        bannerBottom: "banner2-hindi.jpg",
+        welcome: "RJ पापड़ में आपका स्वागत है!"
       },
       english: {
         title: "Register (Using Mobile Number)",
@@ -181,7 +197,8 @@
         button: "Register",
         error: "❌ Please enter your mobile number",
         bannerTop: "banner1-english.jpg",
-        bannerBottom: "banner2-english.jpg"
+        bannerBottom: "banner2-english.jpg",
+        welcome: "Welcome to RJ Papad!"
       },
       gujarati: {
         title: "નોંધણી કરો (મોબાઇલ નંબરથી)",
@@ -190,7 +207,8 @@
         button: "નોંધણી કરો",
         error: "❌ કૃપા કરીને મોબાઇલ નંબર દાખલ કરો",
         bannerTop: "banner1-gujarati.jpg",
-        bannerBottom: "banner2-gujarati.jpg"
+        bannerBottom: "banner2-gujarati.jpg",
+        welcome: "RJ પાપડમાં આપનું સ્વાગત છે!"
       }
     };
 
@@ -200,13 +218,14 @@
       selectedLang = lang;
       const t = translations[lang];
 
-      // टेक्स्ट और बैनर बदलो
+      // भाषा अनुसार content बदलो
       document.getElementById("title").textContent = t.title;
       document.getElementById("name").placeholder = t.name;
       document.getElementById("mobile").placeholder = t.mobile;
       document.getElementById("registerBtn").textContent = t.button;
       document.getElementById("bannerTop").src = t.bannerTop;
       document.getElementById("bannerBottom").src = t.bannerBottom;
+      document.getElementById("welcomeText").textContent = t.welcome;
 
       // Splash छुपाओ और content दिखाओ
       document.getElementById("splash").style.opacity = "0";

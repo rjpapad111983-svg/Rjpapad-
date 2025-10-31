@@ -25,21 +25,16 @@
       z-index: 10;
     }
 
-    /* केवल logo को animate करें */
+    /* Logo static (no animation) */
     #splash img.logo {
       width: 180px;
       border-radius: 20px;
-      animation: zoomRotate 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes zoomRotate {
-      from { transform: scale(0.9) rotate(0deg); opacity: 0.8; }
-      to { transform: scale(1.2) rotate(360deg); opacity: 1; }
+      margin-bottom: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     /* Language Buttons */
     .lang-buttons {
-      margin-top: 30px;
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
@@ -65,12 +60,10 @@
       height: 16px;
       border-radius: 3px;
       box-shadow: 0 0 3px rgba(0,0,0,0.3);
-      /* कोई animation नहीं */
-      transform: none !important;
     }
 
     .lang-buttons button:hover {
-      transform: scale(1.1);
+      transform: scale(1.08);
     }
 
     .hindi { background: #ffcc33; }
@@ -125,6 +118,7 @@
   <!-- Splash Screen -->
   <div id="splash">
     <img src="logo.png" alt="RJ Papad Logo" class="logo" />
+
     <div class="lang-buttons">
       <button class="hindi" onclick="selectLang('hindi')">
         <img src="https://flagcdn.com/w20/in.png" alt="IN"> हिंदी

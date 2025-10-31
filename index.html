@@ -1,444 +1,424 @@
 <!doctype html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RJ Papad - Order</title>
-
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>RJ Papad — MLM + Wallet + Multilang</title>
   <style>
-    /* ===== BASIC STYLES ===== */
-    body {
-      font-family: "Noto Sans Devanagari", "Noto Sans", Arial, sans-serif;
-      background-color: #fffbe6;
-      color: #333;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    header { background-color:#fff; padding:20px 10px; }
-    header h1 { margin:0; font-size:1.15rem; }
-
-    img { max-width:100%; height:auto; }
-    p { font-size:1.05rem; margin:8px 0; }
-
-    .btn { display:inline-block; padding:8px 14px; border-radius:8px; background:#4a2e00; color:#fff; text-decoration:none; }
-    .btn:hover { opacity:0.9; }
-
-    footer { margin-top:30px; font-size:0.9rem; color:#666; padding:18px 6px; }
-
-    input { width:90%; max-width:320px; padding:8px; margin:6px 0; }
-
-    /* ===== LANG BUTTONS ===== */
-    .lang-btn {
-      background-color: #4a2e00;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      margin: 6px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
-      transition: background 0.2s ease;
-      pointer-events: auto;
-    }
-    .lang-btn:hover { opacity:0.9; }
-
-    /* ===== FULLSCREEN LOGO ===== */
-    #logo-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background-color: #ffeb3b;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 1;
-      transition: opacity 0.8s ease;
-      pointer-events: auto;
-    }
-    #logo-screen img { width: 250px; max-width:60%; }
-    #logo-screen h2 { margin-top:12px; font-size:1.25rem; color:#333; }
-
-    /* MAIN content hidden initially */
-    #main-content { display: none; }
-
-    /* responsive tweak */
-    @media (max-width:420px) {
-      #logo-screen img { width: 180px; }
-      .lang-btn { padding: 8px 12px; font-size:0.95rem; }
-    }
+    :root{--accent:#d35400;--muted:#666;--card:#fff;--bg:#fff8e6}
+    body{margin:0;font-family:Inter, "Noto Sans", Arial, sans-serif;background:var(--bg);color:#222}
+    header{padding:14px;text-align:center;background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+    .container{max-width:1150px;margin:18px auto;padding:12px;display:flex;gap:16px;align-items:flex-start}
+    .left{width:380px;flex-shrink:0}.right{flex:1;min-width:320px}
+    .card{background:var(--card);padding:12px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .lang-row{display:flex;gap:8px;justify-content:center;margin-top:8px}
+    button{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .small{padding:6px 8px;font-size:13px;border-radius:6px}
+    .btn-ghost{background:#eee;color:#333}
+    label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+    input,select,textarea{width:100%;padding:8px;margin-top:6px;box-sizing:border-box;border-radius:6px;border:1px solid #ddd}
+    .banner{border-radius:10px;overflow:hidden;margin-top:12px;background:#fff;display:flex;align-items:center;justify-content:center;min-height:110px;padding:12px}
+    .muted{color:var(--muted);font-size:13px}
+    .order-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+    footer{text-align:center;margin-top:18px;color:#666;font-size:13px;padding:12px 0}
+    .tree-panel{display:none;margin-top:12px}
+    #treeSvg{width:100%;height:520px;border-radius:8px;background:#fff;border:1px solid #eee}
+    .debug{position:fixed;bottom:0;left:0;right:0;max-height:180px;overflow:auto;background:#000;color:#0f0;padding:6px;font-size:12px;z-index:9999;display:none}
+    .wallet-panel{margin-top:12px;padding:10px;background:#fff;border-radius:8px;border:1px solid #eee}
+    .history-item{font-size:12px;color:#333;padding:6px 0;border-top:1px dashed #eee}
+    .avatar-svg{width:40px;height:40px;border-radius:50%;display:inline-block}
+    .admin-panel{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .note{font-size:12px;color:#555;margin-top:8px}
   </style>
 </head>
 <body>
-
-  <!-- ===== FULL SCREEN LOGO (यहाँ logo तब तक दिखेगा जब तक user चुने नहीं) ===== -->
-  <div id="logo-screen" aria-hidden="false">
-    <!-- अपने logo का raw/hosted URL लगाएँ -->
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="RJ Papad Logo">
-    <h2>RJ Papad Surat</h2>
-
-    <!-- ===== LANGUAGE BUTTONS (FINAL WORKING CODE) ===== -->
-<div style="margin-top:28px;">
-  <button class="lang-btn" data-lang="hi">🇮🇳 हिंदी</button>
-  <button class="lang-btn" data-lang="en">🇬🇧 English</button>
-  <button class="lang-btn" data-lang="gu">🇮🇳 ગુજરાતી</button>
-</div>
+  <header>
+    <div id="logo"><strong>RJ Papad</strong> — <span id="logo-sub">Surat</span></div>
+    <div class="lang-row">
+      <button class="lang-btn" data-lang="hi">हिंदी</button>
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="gu">ગુજરાતી</button>
     </div>
-    <small style="margin-top:12px; display:block; color:#444;">कृपया भाषा चुनें</small>
-  </div>
+  </header>
 
-  <!-- ===== MAIN SITE CONTENT (शुरू में hidden रहेगी) ===== -->
-  <div id="main-content">
-    <header>
-      <h1 id="header-text">स्वाद में खास RJ पापड़</h1>
-    </header>
+  <main class="container">
+    <div class="left">
 
-    <!-- ===== BANNERS SECTION (REPLACE WITH THIS) ===== -->
-<!-- Primary banner (use id="banner-img") -->
-<div id="banner-1-wrap" style="text-align:center; padding:14px 0;">
-  <img id="banner-img" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png"alt="Banner 1" style="max-width:100%; height:auto;" />
-</div>
+      <div class="card">
+        <h2 id="header-text">स्वाद में खास RJ पापड़</h2>
+        <p id="desc1" class="muted">उड़द मरी पापड़ • स्वादिष्ट और कुरकुरे</p>
+        <p id="desc2" class="muted">होममेड टेस्ट • RJ Papad Surat</p>
 
-<!-- Secondary banner (use id="banner2-img") -->
-<div id="banner-2-wrap" style="text-align:center; padding:12px 0;">
-  <img id="banner2-img" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"alt="Banner 2" style="max-width:100%; height:auto;" />
-</div>
-</div>
-    <!-- DESCRIPTION -->
-    <div style="text-align:center; padding:6px 12px;">
-      <p id="desc1"><strong>उद्दद मरी पापड़</strong></p>
-      <p id="desc2"><strong>हॉममेड टेस्ट • ताज़ा स्वाद</strong></p>
-    </div>
-  <!-- ===== MOBILE REGISTER + ORDER PROTECTION (Added by ChatGPT) ===== -->
-<div id="mobile-register" style="text-align:center; margin:18px auto; padding:12px; max-width:420px; border-radius:8px; border:1px solid #eee;">
-  <h3>📱 मोबाइल से रजिस्टर करें</h3>
-  <input id="regMobile" placeholder="मोबाइल नंबर (10 अंक)" style="padding:8px; width:92%; margin-top:8px;" />
-  <div style="margin-top:8px;">
-    <button id="sendOtpBtn" style="padding:8px 12px;">OTP भेजें</button>
-  </div>
+        <div id="banner" class="banner"></div>
 
-  <div id="otpBox" style="display:none; margin-top:12px;">
-    <input id="otpInput" placeholder="OTP दर्ज करें" style="padding:8px; width:92%;" />
-    <div style="margin-top:8px;">
-      <button id="verifyBtn" style="padding:8px 12px;">वेरिफाई करें</button>
-    </div>
-  </div>
+        <hr style="margin:12px 0;border:none;border-top:1px solid #eee"/>
 
-  <p id="regMsg" style="margin-top:10px;color:#333;"></p>
-</div>
-
-<script>
-// --------- CONFIG ---------
-const DEMO_OTP = '482915'; // डेमो OTP
-
-// --------- LOCAL STORAGE HELPERS ---------
-function setVerified(mobile) {
-  localStorage.setItem('rjpapad_verified', JSON.stringify({ mobile, at: Date.now() }));
-  updateOrderLockUI();
-}
-function isVerified() {
-  return !!localStorage.getItem('rjpapad_verified');
-}
-
-// --------- INIT ---------
-document.addEventListener('DOMContentLoaded', () => {
-  const sendOtpBtn = document.getElementById('sendOtpBtn');
-  const verifyBtn = document.getElementById('verifyBtn');
-  const regMobile = document.getElementById('regMobile');
-  const regMsg = document.getElementById('regMsg');
-  const otpBox = document.getElementById('otpBox');
-
-  if (isVerified()) {
-    regMsg.innerText = '✅ आप पहले से वेरिफ़ाय हैं — अब ऑर्डर कर सकते हैं।';
-    otpBox.style.display = 'none';
-  }
-
-  sendOtpBtn.addEventListener('click', () => {
-    const mobile = regMobile.value.trim();
-    if (mobile.length !== 10) { regMsg.innerText = 'सही मोबाइल नंबर डालें (10 अंक)'; return; }
-
-    otpBox.style.display = 'block';
-    regMsg.innerText = `डेमो OTP: ${DEMO_OTP}`;
-  });
-
-  verifyBtn.addEventListener('click', () => {
-    const otp = document.getElementById('otpInput').value.trim();
-    if (otp === DEMO_OTP) {
-      setVerified(regMobile.value.trim());
-      regMsg.innerText = '🎉 वेरिफ़िकेशन सफल! अब आप पापड़ खरीद सकते हैं।';
-      otpBox.style.display = 'none';
-    } else {
-      regMsg.innerText = '❌ गलत OTP';
-    }
-  });
-
-  updateOrderLockUI();
-});
-
-// --------- LOCK ORDER FORM UNTIL VERIFIED ---------
-function updateOrderLockUI() {
-  const inputs = ['name','address','pincode','mobile'];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.disabled = !isVerified();
-  });
-
-  const waBtn = document.querySelector('a.btn');
-  if (waBtn) {
-    waBtn.style.opacity = isVerified() ? '1' : '0.5';
-    waBtn.style.pointerEvents = isVerified() ? 'auto' : 'none';
-    waBtn.title = isVerified() ? 'Order Now' : 'पहले मोबाइल वेरिफ़ाई करें';
-  }
-}
-</script>
-<!-- ===== END MOBILE REGISTER + ORDER PROTECTION ===== -->
-<!-- ===== MOBILE REGISTER FORM (Added by ChatGPT) ===== -->
-<script>
-  async function sendOtp() {
-    const mobile = document.getElementById('regMobile').value.trim();
-    if (mobile.length !== 10) {
-      document.getElementById('regMsg').innerText = 'सही मोबाइल नंबर डालें (10 अंक)';
-      return;
-    }
-    document.getElementById('regMsg').innerText = 'OTP भेजा जा रहा है...';
-    // demo (no real backend)
-    setTimeout(()=>{
-      document.getElementById('otpBox').style.display = 'block';
-      document.getElementById('regMsg').innerText = 'डेमो OTP: 482915 (टेस्ट के लिए)';
-    },1000);
-  }
-
-  async function verifyOtp() {
-    const otp = document.getElementById('otpInput').value.trim();
-    if (otp === '482915') {
-      document.getElementById('regMsg').innerText = 'रजिस्ट्रेशन सफल ✅';
-      document.getElementById('otpBox').style.display = 'none';
-    } else {
-      document.getElementById('regMsg').innerText = 'गलत OTP ❌';
-    }
-  }
-</script>
-<!-- ===== END MOBILE REGISTER FORM ===== -->
-    <!-- ORDER FORM -->
-    <div style="text-align:center; padding:12px;">
-      <h3 id="orderTitle">अपना ऑर्डर भिजवाएँ</h3>
-      <p id="orderHint">कृपया नीचे अपनी जानकारी भरें</p>
-
-      <div>
-        <input type="text" id="name" placeholder="आपका नाम"><br>
-        <input type="text" id="address" placeholder="पता"><br>
-        <input type="text" id="pincode" placeholder="पिनकोड"><br>
-        <input type="text" id="mobile" placeholder="मोबाइल नंबर"><br>
+        <h3>📱 मोबाइल से रजिस्टर</h3>
+        <label>मोबाइल</label>
+        <input id="regMobile" placeholder="उदा. 6353745646"/>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="sendOtpBtn" class="small">OTP भेजें</button>
+          <button id="clearVerified" class="small btn-ghost">Logout</button>
+        </div>
+        <div id="otpBox" style="display:none;margin-top:8px">
+          <label>OTP दर्ज करें</label>
+          <input id="otpInput" placeholder="6-digit OTP"/>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="verifyBtn" class="small">वेरिफाई करें</button>
+            <button id="resendBtn" class="small btn-ghost">Resend</button>
+          </div>
+          <div class="muted" style="margin-top:6px">Demo OTP: <strong id="demo-otp">482915</strong></div>
+        </div>
+        <p id="regMsg" class="muted" style="margin-top:8px"></p>
       </div>
 
-      <!-- WhatsApp Order Button -->
-      <div style="margin-top:14px;">
-        <a href="#" class="btn" onclick="sendWhatsApp()">WhatsApp पर ऑर्डर करें</a>
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <h3>MLM — Referral</h3>
+        <p class="muted">Add member -> auto-fill or specify parent. Each member gets Wallet.</p>
+        <label>नाम</label>
+        <input id="treeName" placeholder="नाम"/>
+        <label>लिंग</label>
+        <select id="treeGender"><option value="male">Male</option><option value="female">Female</option></select>
+        <label>मोबाइल</label>
+        <input id="treeMobile" placeholder="6353745646"/>
+        <label>Parent ID (optional)</label>
+        <input id="treeParent" placeholder="Parent ID (optional)"/>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+          <select id="treeSide" class="small"><option value="any">Auto</option><option value="left">Left</option><option value="right">Right</option></select>
+          <button id="btnAddNode" class="small">Add Node</button>
+          <button id="btnAutoDemo" class="small btn-ghost">Add sample nodes</button>
+          <button id="btnShowTree" class="small">Open Team Tree</button>
+        </div>
+        <p class="note">When a node completes deeper levels, they get higher commission automatically.</p>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <h3>Admin Controls</h3>
+        <div class="admin-panel">
+          <button id="btnApproveAll" class="small">Approve All Withdrawals</button>
+          <button id="btnProcessDaily" class="small btn-ghost">Run Daily Scheduled (simulate)</button>
+          <button id="btnApplyMonthDues" class="small btn-ghost">Apply Monthly Dues (simulate)</button>
+          <button id="btnClearState" class="small btn-ghost">Reset Demo Data</button>
+        </div>
+        <p class="muted">Admin must approve withdrawal requests for transfer. Scheduled transfers only allowed at 08:00 once/day.</p>
       </div>
     </div>
 
-    <footer id="footer">© 2025 RJ Papad Surat</footer>
-  </div>
+    <div class="right">
+      <div class="card">
+        <h3 id="orderTitle">अपना ऑर्डर भेजिए</h3>
+        <p id="orderHint" class="muted">कृपया नीचे जानकारी भरें</p>
 
-  <!-- ===== WHATSAPP HELPER ===== -->
-  <script>
-    function sendWhatsApp() {
-      var name = document.getElementById('name')?.value || '';
-      var address = document.getElementById('address')?.value || '';
-      var pincode = document.getElementById('pincode')?.value || '';
-      var mobile = document.getElementById('mobile')?.value || '';
+        <label>नाम</label><input id="name" placeholder="नाम"/>
+        <label>पता</label><input id="address" placeholder="Address"/>
+        <label>Pincode</label><input id="pincode" placeholder="Pincode"/>
+        <label>मोबाइल (वेरिफ़ाय्ड)</label><input id="mobile" readonly placeholder="पहले मोबाइल वेरिफ़ाई करें"/>
 
-      var message = `नमस्ते RJ Papad, मेरा ऑर्डर:\n1kg मरी पापड़\nName: ${name}\nAddress: ${address}\nPincode: ${pincode}\nMobile: ${mobile}`;
-      // TODO: अपना फोन नंबर यहाँ डालें (country code के साथ)
-      var phoneNumber = "916353745646";
-      var whatsappURL = `https://wa.me/${phoneNumber.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`;
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button id="sendOrderBtn" class="small">Place Order (simulate)</button>
+          <button id="viewTree" class="small btn-ghost">View Team Tree</button>
+        </div>
+        <p id="orderMsg" class="muted"></p>
+      </div>
 
-      window.open(whatsappURL, "_blank");
-    }
-  </script>
+      <div id="treePanel" class="card tree-panel">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+          <button id="btnZoomIn" class="small btn-ghost">Zoom In</button>
+          <button id="btnZoomOut" class="small btn-ghost">Zoom Out</button>
+          <button id="btnCenter" class="small">Center</button>
+          <div style="flex:1"></div>
+          <button id="btnExport" class="small btn-ghost">Export JSON</button>
+          <button id="btnImport" class="small">Import JSON</button>
+        </div>
 
-  <!-- ===== LANGUAGE TRANSLATIONS & LOGIC (NO auto-hide) ===== -->
-  <script>
+        <svg id="treeSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+
+        <div id="walletPanel" class="wallet-panel" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><strong id="walletOwner">Wallet</strong><br/><span id="walletOwnerId" class="muted"></span></div>
+            <div style="text-align:right"><div style="font-size:18px;font-weight:700">₹ <span id="walletBalance">0</span></div><div class="muted" style="font-size:12px">Balance</div></div>
+          </div>
+
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+            <select id="withdrawMethod" class="small"><option value="bank">Bank</option><option value="upi">UPI</option></select>
+            <input id="withdrawDetails" placeholder="Account or UPI id" style="width:220px"/>
+            <button id="btnRequestWithdraw" class="small">Request Withdraw</button>
+            <button id="btnHideWallet" class="small btn-ghost">Hide</button>
+          </div>
+
+          <div style="margin-top:8px">
+            <button id="btnShowHist" class="small btn-ghost">Show History</button>
+            <button id="btnCreditTest" class="small">Credit ₹50 (test)</button>
+          </div>
+
+          <div id="walletHistory" style="margin-top:8px"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer id="footer">© 2025 RJ Papad Surat</footer>
+
+  <div id="debugConsole" class="debug"></div>
+
+<script>
+/* =========================
+   CONFIG / KEYS
+   ========================= */
+const STORAGE_KEY = 'rjpapad_mlm_wallet_v1';
+const DEMO_OTP = '482915';
+const REFERRAL_BONUS = 10;    // ₹ per direct referral
+const PAIRING_BONUS = 200;    // ₹ when left & right filled
+const LEVEL_FULL_BONUS = 1000; // extra when level (depth 2) full under a node
+const PLATFORM_CUT_PERCENT = 10; // 10% cut on next-order payment
+const MONTHLY_PENALTY_PERCENT = 20; // if customer misses monthly payment, 20% cut from their wallet
+const UPLINE_PENALTY_PERCENT = 1; // each upline loses 1% of their wallet
+const WITHDRAW_ALLOWED_HOUR = 8; // withdrawals processed at 08:00
+
+/* =========================
+   initial state load/save
+   ========================= */
+function defaultState(){ return { nodes:{}, rootId:null, wallets:{}, withdrawals:[], lang:'hi', verified:null, orders:[] }; }
+function loadState(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultState(); }catch(e){ return defaultState(); } }
+function saveState(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+let state = loadState();
+
+/* ensure wallets object */
+if (!state.wallets) state.wallets = {};
+if (!state.withdrawals) state.withdrawals = [];
+
+/* =========================
+   TRANSLATIONS
+   ========================= */
 const translations = {
   hi: {
     header: "स्वाद में खास RJ पापड़",
     description1: "उड़द मरी पापड़ • स्वादिष्ट और कुरकुरे",
     description2: "होममेड टेस्ट • RJ Papad Surat",
     orderTitle: "अपना ऑर्डर भेजिए",
-    orderHint: "कृपया नीचे अपनी जानकारी भरें",
+    orderHint: "कृपया नीचे जानकारी भरें",
     footer: "© 2025 RJ Papad Surat",
-    banner1: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_hi_1.jpg",
-    banner2: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_hi_2.jpg"
+    banner1: "RJ पापड़ — स्वादिष्ट और करारे",
+    banner2: "संपर्क: +91 63537 45646"
   },
   en: {
     header: "RJ Papad Surat",
-    description1: "Udad Mari Papad • Tasty and Crunchy",
+    description1: "Udad Mari Papad • Tasty & Crunchy",
     description2: "Homemade Taste • RJ Papad Surat",
     orderTitle: "Fill Your Order",
-    orderHint: "Please fill below",
+    orderHint: "Please fill details",
     footer: "© 2025 RJ Papad Surat",
-    banner1: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_en_1.jpg",
-    banner2: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_en_2.jpg"
+    banner1: "RJ Papad — Tasty & Crunchy",
+    banner2: "Contact: +91 63537 45646"
   },
   gu: {
     header: "RJ પાપડ સુરત",
-    description1: "ઉદ્દ મરી પાપડ • સ્વાદિષ્ટ અને કરકરા",
+    description1: "ઉદ્દ મરી પાપડ • સ્વાદિષ્ટ અને করકરા",
     description2: "હોમમેડ ટેસ્ટ • RJ Papad Surat",
     orderTitle: "તમારું ઓર્ડર મોકલો",
-    orderHint: "કૃપા કરીને નીચે માહિતી ભરો",
+    orderHint: "કૃપા કરીને વિગત ભરશો",
     footer: "© 2025 RJ Papad Surat",
-    banner1: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_gu_1.jpg",
-    banner2: "https://rjpapad111983-svg.github.io/Rjpapad-/images/banner_gu_2.jpg"
+    banner1: "RJ પાપડ — સ્વાદિષ્ટ અને કડકડા",
+    banner2: "સંપર્ક: +91 63537 45646"
   }
 };
-  </script>
 
-    // Apply chosen language strings to page
-    // ✅ Updated applyLanguage function (banners auto change with language)
-// ------- replace existing applyLanguage(lang) with this block -------
-function applyLanguage(lang) {
-  const t = translations[lang];
-  if (!t) return;
+/* =========================
+   UTIL
+   ========================= */
+function uid(){ return 'n'+Math.random().toString(36).slice(2,9); }
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function persist(){ saveState(state); console.log('State saved'); }
 
-  // Header and description
-  const headerEl = document.getElementById('header-text');
-  if (headerEl && t.header) headerEl.innerText = t.header;
-
-  const d1 = document.getElementById('desc1');
-  const d2 = document.getElementById('desc2');
-  if (d1 && t.description1) d1.innerText = t.description1;
-  if (d2 && t.description2) d2.innerText = t.description2;
-
-  // Order form text
-  const oT = document.getElementById('orderTitle');
-  const oH = document.getElementById('orderHint');
-  if (oT && t.orderTitle) oT.innerText = t.orderTitle;
-  if (oH && t.orderHint) oH.innerText = t.orderHint;
-
-  // Footer
-  const f = document.getElementById('footer');
-  if (f && t.footer) f.innerText = t.footer;
-
-  // ✅ Change banners when language changes (single, correct block)
-  const b1 = document.getElementById('banner-img');   // primary banner <img id="banner-img">
-  const b2 = document.getElementById('banner2-img');  // secondary banner <img id="banner2-img">
-  if (b1 && t.banner1) b1.src = t.banner1;
-  if (b2 && t.banner2) b2.src = t.banner2;
-
-  // Any other per-language UI updates (input placeholders etc.)
-  const regMobile = document.getElementById('regMobile');
-  if (regMobile && t.regMobilePlaceholder) regMobile.placeholder = t.regMobilePlaceholder;
-
-  // Save chosen language attribute on <html> for accessibility/SEO
-  try {
-    document.documentElement.lang = lang;
-  } catch (e) {}
-
-  // Helpful: console log for debug (remove later if not needed)
-  console.log('Language applied:', lang, { header: t.header, banner1: t.banner1 });
+/* =========================
+   Wallet functions
+   ========================= */
+function ensureWallet(id){
+  if (!state.wallets) state.wallets = {};
+  if (!state.wallets[id]) { state.wallets[id] = { balance:0, history:[] }; persist(); }
 }
-  
+function credit(id, amount, reason){
+  if (!id) return;
+  ensureWallet(id);
+  state.wallets[id].balance = (state.wallets[id].balance||0) + Number(amount||0);
+  state.wallets[id].history = state.wallets[id].history || [];
+  state.wallets[id].history.push({ at: Date.now(), amount: Number(amount), reason: reason||'' });
+  persist();
+  console.log('Credited', amount, 'to', id, reason);
 }
-applyLanguage(lang);
+function debit(id, amount, reason){
+  if (!id) return false;
+  ensureWallet(id);
+  const amt = Number(amount||0);
+  state.wallets[id].balance = Math.max(0, (state.wallets[id].balance||0) - amt);
+  state.wallets[id].history = state.wallets[id].history || [];
+  state.wallets[id].history.push({ at: Date.now(), amount: -amt, reason: reason||'' });
+  persist();
+  console.log('Debited', amt, 'from', id, reason);
+  return true;
+}
+function getWallet(id){ ensureWallet(id); return state.wallets[id] || { balance:0, history:[] }; }
 
-// hide language buttons after choose (optional)
-document.querySelectorAll('.lang-btn').forEach(b => b.style.display = 'none');
-    // Called when user clicks language button
-    function setLanguage(lang) {
-      if (!translations[lang]) return;
-      localStorage.setItem('rjpapad_lang', lang);
-      applyLanguage(lang);
-      // logo को hide करने के लिए fadeOutLogo() call करें
-      fadeOutLogo();
-    }
+/* =========================
+   banner svg maker
+   ========================= */
+function makeBannerSVG(a,b,color='#ffd79b'){ return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100"><rect width="100%" height="100%" fill="${color}"/><text x="50%" y="42%" dominant-baseline="middle" text-anchor="middle" font-size="18" font-family="Noto Sans, Arial" fill="#3a2a1b">${escapeHtml(a)}</text><text x="50%" y="72%" dominant-baseline="middle" text-anchor="middle" font-size="13" font-family="Noto Sans, Arial" fill="#333">${escapeHtml(b)}</text></svg>`; }
 
-    // Fade out logo and show main content (this only runs when user clicks button)
-    function fadeOutLogo() {
-      const logo = document.getElementById('logo-screen');
-      if (!logo) return;
-
-      // fade out
-      logo.style.opacity = '0';
-
-      // transition के बाद hide और main दिखाओ
-      setTimeout(() => {
-        logo.style.display = 'none';
-        const main = document.getElementById('main-content');
-        if (main) main.style.display = 'block';
-      }, 900); // 800ms transition के हिसाब से थोड़ा buffer
-    }
-
-    // On load: अगर पहले से language selected है, apply करके main दिखाओ और logo hide करो
-    window.addEventListener('load', () => {
-      const saved = localStorage.getItem('rjpapad_lang');
-      if (saved && translations[saved]) {
-        applyLanguage(saved);
-        // अगर पहले से language saved है तो logo skip करें
-        const logo = document.getElementById('logo-screen');
-        if (logo) {
-          
-        }
-        const main = document.getElementById('main-content');
-        if (main) main.style.display = 'block';
-      } else {
-        // saved language नहीं है → logo दिखेगी (कोई auto-hide नहीं है)
-      }
-    });
-
-    // ===== Attach click handlers to language buttons =====
-    // ✅ Working setLanguage function
-function setLanguage(lang) {
+/* =========================
+   applyLanguage UI
+   ========================= */
+function applyLanguage(lang){
   if (!translations[lang]) return;
-  localStorage.setItem('rjpapad_lang', lang);
-  applyLanguage(lang);
+  state.lang = lang; persist();
+  const t = translations[lang];
+  document.getElementById('header-text').innerText = t.header;
+  document.getElementById('desc1').innerText = t.description1;
+  document.getElementById('desc2').innerText = t.description2;
+  document.getElementById('orderTitle').innerText = t.orderTitle;
+  document.getElementById('orderHint').innerText = t.orderHint;
+  document.getElementById('footer').innerText = t.footer;
+  document.documentElement.lang = lang;
+  const color = (lang==='hi'? '#ffd79b': lang==='gu'? '#d6f5d6': '#d6e8ff');
+  document.getElementById('banner').innerHTML = makeBannerSVG(t.banner1, t.banner2, color);
 }
 
-// ✅ जब पेज खुले तो पिछली भाषा याद रखे
-window.addEventListener('load', () => {
-  const saved = localStorage.getItem('rjpapad_lang');
-  if (saved && translations[saved]) {
-    applyLanguage(saved);
-  } else {
-    applyLanguage('hi'); // default language
-  }
+/* =========================
+   Language buttons attach
+   ========================= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // debug console visible
+  const dbg = document.getElementById('debugConsole'); if (dbg) dbg.style.display='block';
+  const btns = document.querySelectorAll('.lang-btn');
+  btns.forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const lang = b.dataset.lang;
+      applyLanguage(lang);
+    });
+  });
+  applyLanguage(state.lang || 'hi');
+
+  initUI();
 });
 
-    /* NOTE: कोई भी auto-hide setTimeout यहाँ नहीं है — logo तभी hide होगा
-       जब user language button दबायेगा (या saved language मौजूद हो)। */
-
-  </script>
-    <!-- 🧪 Mobile Debug Console (for checking buttons) -->
-<div id="debugConsole" style="
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:black;
-  color:#00ff00;
-  font-size:12px;
-  padding:5px;
-  max-height:120px;
-  overflow:auto;
-  z-index:999999;">
-</div>
-<script>
+/* =========================
+   REGISTER / OTP DEMO
+   ========================= */
 (function(){
-  const oldLog = console.log;
-  console.log = function(...args){
-    oldLog.apply(console, args);
-    const div = document.getElementById('debugConsole');
-    if(div){
-      div.innerHTML += args.join(' ') + '<br>';
-      div.scrollTop = div.scrollHeight;
-    }
-  };
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const send = document.getElementById('sendOtpBtn');
+    const verify = document.getElementById('verifyBtn');
+    const resend = document.getElementById('resendBtn');
+    const clear = document.getElementById('clearVerified');
+
+    if (send) send.addEventListener('click', ()=>{
+      const raw = document.getElementById('regMobile').value.trim();
+      const mobile = raw.replace(/\D/g,'').slice(-10);
+      if (mobile.length !== 10){ document.getElementById('regMsg').innerText='सही मोबाइल डालें'; return; }
+      document.getElementById('otpBox').style.display='block'; document.getElementById('regMsg').innerText='OTP भेजा गया (demo)'; document.getElementById('demo-otp').innerText = DEMO_OTP;
+    });
+    if (resend) resend.addEventListener('click', ()=>{ document.getElementById('regMsg').innerText='OTP resend (demo)'; document.getElementById('demo-otp').innerText = DEMO_OTP; });
+    if (verify) verify.addEventListener('click', ()=>{
+      const otp = document.getElementById('otpInput').value.trim();
+      const raw = document.getElementById('regMobile').value.trim();
+      const mobile = raw.replace(/\D/g,'').slice(-10);
+      if (otp === DEMO_OTP){
+        state.verified = { mobile, at: Date.now() }; persist();
+        document.getElementById('regMsg').innerText='वेरिफ़ाई हो गया ✅'; document.getElementById('otpBox').style.display='none'; updateOrderUI();
+      } else document.getElementById('regMsg').innerText='गलत OTP';
+    });
+    if (clear) clear.addEventListener('click', ()=>{ state.verified=null; persist(); document.getElementById('regMsg').innerText='Logout'; updateOrderUI(); });
+
+  });
 })();
-</script>
-</body>
-</html>
+
+/* =========================
+   ORDER / PAYMENT simulation
+   - placing an order will create an 'order' with amount and due flag
+   - Next-order payment will simulate bank/UPI with 10% platform cut
+   ========================= */
+function updateOrderUI(){
+  const verified = state.verified;
+  const fields = ['name','address','pincode','mobile'];
+  fields.forEach(id=>{ const el=document.getElementById(id); if (el) el.disabled = !verified; });
+  const btn = document.getElementById('sendOrderBtn'); if (btn) { btn.disabled = !verified; btn.style.opacity = verified? '1':'0.6'; }
+  if (verified){ document.getElementById('mobile').value = verified.mobile || ''; } else { document.getElementById('mobile').value = ''; }
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  updateOrderUI();
+  const orderBtn = document.getElementById('sendOrderBtn');
+  if (orderBtn) orderBtn.addEventListener('click', ()=> {
+    if (!state.verified){ alert('पहले रजिस्टर करें'); return; }
+    const amount = 500; // demo order amount
+    const id = uid();
+    const order = { id, userMobile: state.verified.mobile, amount, placedAt: Date.now(), paid:false, dueMonth: (new Date()).toISOString().slice(0,7) };
+    state.orders = state.orders || []; state.orders.push(order); persist();
+    alert('Order placed (demo). Next-order payment available in Wallet or Bank/UPI simulation.');
+    // store due flag; merchant collects later. We'll allow paying using wallet.
+  });
+});
+
+/* =========================
+   Tree state & functions
+   ========================= */
+function ensureRoot(){
+  if (!state.rootId){
+    const r = uid(); state.rootId = r; state.nodes = state.nodes || {}; state.nodes[r] = { id:r, name:'ROOT', gender:'male', mobile:'', left:null, right:null };
+    ensureWallet(r);
+    persist();
+  }
+}
+function ensureWallet(id){ if (!state.wallets) state.wallets = {}; if (!state.wallets[id]) { state.wallets[id] = { balance:0, history:[] }; persist(); } }
+function findParentFor(newId){
+  // breadth-first to find first node with empty slot
+  const q = [state.rootId];
+  while(q.length){
+    const cur = q.shift(); const n = state.nodes[cur];
+    if (!n.left || !n.right) return cur;
+    if (n.left) q.push(n.left); if (n.right) q.push(n.right);
+  }
+  return state.rootId;
+}
+
+function addNode({name, gender='male', mobile=''}, parentId=null, side='any'){
+  ensureRoot();
+  const id = uid();
+  state.nodes[id] = { id, name, gender, mobile, left:null, right:null };
+  ensureWallet(id);
+
+  if (!parentId){
+    // auto place breadth-first
+    const parent = findParentFor(id);
+    const p = state.nodes[parent];
+    if (!p.left) p.left = id; else if (!p.right) p.right = id;
+    // referral bonus to parent
+    credit(parent, REFERRAL_BONUS, `Referral for ${id}`);
+    // if parent now has both children => pairing bonus
+    if (p.left && p.right){
+      // check if already awarded
+      const hist = getWalletHistory(parent);
+      if (!hist.some(h=> (h.reason||'').includes('Pairing bonus'))){
+        credit(parent, PAIRING_BONUS, `Pairing bonus (both children present)`);
+      }
+    }
+    // check level-full (depth 2 under parent)
+    // If all grandchildren (4 nodes) under parent exist => level full bonus
+    const lvl2Full = checkLevelFull(parent,2);
+    if (lvl2Full){
+      // award level full bonus once
+      const hist = getWalletHistory(parent);
+      if (!hist.some(h=> (h.reason||'').includes('Level-2 Full Bonus'))){
+        credit(parent, LEVEL_FULL_BONUS, `Level-2 Full Bonus`);
+      }
+    }
+  } else {
+    const p = state.nodes[parentId];
+    if (!p){ alert('Parent not found'); delete state.nodes[id]; return; }
+    if (side==='left'){ if (p.left){ alert('Left occupied'); delete state.nodes[id]; return; } p.left = id; }
+    else if (side==='right'){ if (p.right){ alert('Right occupied'); delete state.n

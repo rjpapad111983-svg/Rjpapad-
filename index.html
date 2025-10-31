@@ -199,19 +199,6 @@ function updateOrderLockUI() {
 </script>
 <!-- ===== END MOBILE REGISTER + ORDER PROTECTION ===== -->
 <!-- ===== MOBILE REGISTER FORM (Added by ChatGPT) ===== -->
-<div id="mobile-register" style="text-align:center; margin:20px auto; border:1px solid #ddd; padding:15px; max-width:350px; border-radius:8px;">
-  <h3>📱 मोबाइल से रजिस्टर करें</h3>
-  <input id="regMobile" placeholder="मोबाइल नंबर (10 अंकों में)" style="padding:8px; width:90%; margin-top:8px;" />
-  <button onclick="sendOtp()" style="margin-top:8px; padding:8px 12px;">OTP भेजें</button>
-
-  <div id="otpBox" style="display:none; margin-top:12px;">
-    <input id="otpInput" placeholder="OTP दर्ज करें" style="padding:8px; width:90%;" />
-    <button onclick="verifyOtp()" style="margin-top:8px; padding:8px 12px;">OTP वेरिफाई करें</button>
-  </div>
-
-  <p id="regMsg" style="margin-top:10px; color:#333;"></p>
-</div>
-
 <script>
   async function sendOtp() {
     const mobile = document.getElementById('regMobile').value.trim();

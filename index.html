@@ -114,7 +114,7 @@
 
     /* Banner Section */
     .banner {
-      margin: 20px auto;
+      margin: 10px auto;
     }
     .banner img {
       width: 100%;
@@ -127,7 +127,7 @@
 <body>
   <!-- Splash Screen -->
   <div id="splash">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="RJ Papad Logo" class="logo" />
+    <img src="logo.png" alt="RJ Papad Logo" class="logo" />
     <div class="lang-buttons">
       <button class="hindi" onclick="selectLang('hindi')">
         <img src="https://flagcdn.com/w20/in.png" alt="IN"> हिंदी
@@ -143,11 +143,15 @@
 
   <!-- Hidden Content -->
   <div id="content">
-    <!-- ✅ पहला बैनर -->
+    <!-- ✅ ऊपर के दो बैनर -->
     <div class="banner">
-      <img id="bannerTop" src="banner1-hindi.jpg" alt="RJ Papad Banner Top" />
+      <img id="bannerTop" src="banner1-hindi.jpg" alt="Top Banner" />
+    </div>
+    <div class="banner">
+      <img id="bannerBottom" src="banner2-hindi.jpg" alt="Bottom Banner" />
     </div>
 
+    <!-- Registration Form -->
     <h2 id="title">रजिस्टर करें (Mobile Number से)</h2>
 
     <div>
@@ -157,11 +161,6 @@
     </div>
 
     <pre id="result"></pre>
-
-    <!-- ✅ दूसरा बैनर -->
-    <div class="banner">
-      <img id="bannerBottom" src="banner2-hindi.jpg" alt="RJ Papad Banner Bottom" />
-    </div>
   </div>
 
   <script>
@@ -201,7 +200,7 @@
       selectedLang = lang;
       const t = translations[lang];
 
-      // भाषा अनुसार टेक्स्ट और बैनर दोनों बदलें
+      // टेक्स्ट और बैनर बदलो
       document.getElementById("title").textContent = t.title;
       document.getElementById("name").placeholder = t.name;
       document.getElementById("mobile").placeholder = t.mobile;
@@ -209,7 +208,7 @@
       document.getElementById("bannerTop").src = t.bannerTop;
       document.getElementById("bannerBottom").src = t.bannerBottom;
 
-      // Splash छिपाओ और content दिखाओ
+      // Splash छुपाओ और content दिखाओ
       document.getElementById("splash").style.opacity = "0";
       setTimeout(() => {
         document.getElementById("splash").style.display = "none";

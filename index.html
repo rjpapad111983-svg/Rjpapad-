@@ -411,6 +411,34 @@ window.addEventListener('load', () => {
 
     /* NOTE: कोई भी auto-hide setTimeout यहाँ नहीं है — logo तभी hide होगा
        जब user language button दबायेगा (या saved language मौजूद हो)। */
+
   </script>
+    <!-- 🧪 Mobile Debug Console (for checking buttons) -->
+<div id="debugConsole" style="
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:black;
+  color:#00ff00;
+  font-size:12px;
+  padding:5px;
+  max-height:120px;
+  overflow:auto;
+  z-index:999999;">
+</div>
+<script>
+(function(){
+  const oldLog = console.log;
+  console.log = function(...args){
+    oldLog.apply(console, args);
+    const div = document.getElementById('debugConsole');
+    if(div){
+      div.innerHTML += args.join(' ') + '<br>';
+      div.scrollTop = div.scrollHeight;
+    }
+  };
+})();
+</script>
 </body>
 </html>

@@ -300,10 +300,12 @@ const translations = {
   </script>
 
     // Apply chosen language strings to page
-    function applyLanguage(lang) {
+    // ✅ Updated applyLanguage function (banners auto change with language)
+function applyLanguage(lang) {
   const t = translations[lang];
   if (!t) return;
 
+  // Header and description
   const headerEl = document.getElementById('header-text');
   if (headerEl && t.header) headerEl.innerText = t.header;
 
@@ -312,20 +314,22 @@ const translations = {
   if (d1 && t.description1) d1.innerText = t.description1;
   if (d2 && t.description2) d2.innerText = t.description2;
 
+  // Order form text
   const oT = document.getElementById('orderTitle');
   const oH = document.getElementById('orderHint');
   if (oT && t.orderTitle) oT.innerText = t.orderTitle;
   if (oH && t.orderHint) oH.innerText = t.orderHint;
 
+  // Footer
   const f = document.getElementById('footer');
   if (f && t.footer) f.innerText = t.footer;
 
-  // 🟢 अब ये 4 लाइनें जोड़ें (copy–paste below ↓)
-  const b1 = document.getElementById('banner-img');
-  const b2 = document.getElementById('banner2-img');
+  // ✅ Change banners when language changes
+  const b1 = document.getElementById('banner-img');   // पहला बैनर
+  const b2 = document.getElementById('banner2-img');  // दूसरा बैनर
   if (b1 && t.banner1) b1.src = t.banner1;
   if (b2 && t.banner2) b2.src = t.banner2;
-    }
+}
 
     // Called when user clicks language button
     function setLanguage(lang) {

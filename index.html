@@ -301,6 +301,7 @@ const translations = {
 
     // Apply chosen language strings to page
     // ✅ Updated applyLanguage function (banners auto change with language)
+// ------- replace existing applyLanguage(lang) with this block -------
 function applyLanguage(lang) {
   const t = translations[lang];
   if (!t) return;
@@ -324,11 +325,24 @@ function applyLanguage(lang) {
   const f = document.getElementById('footer');
   if (f && t.footer) f.innerText = t.footer;
 
-  // ✅ Change banners when language changes
-const b1 = document.getElementById('banner-img');    // primary banner <img id="banner-img">
-const b2 = document.getElementById('banner2-img');   // secondary banner <img id="banner2-img">
-if (b1 && t.banner1) b1.src = t.banner1;
-if (b2 && t.banner2) b2.src = t.banner2;
+  // ✅ Change banners when language changes (single, correct block)
+  const b1 = document.getElementById('banner-img');   // primary banner <img id="banner-img">
+  const b2 = document.getElementById('banner2-img');  // secondary banner <img id="banner2-img">
+  if (b1 && t.banner1) b1.src = t.banner1;
+  if (b2 && t.banner2) b2.src = t.banner2;
+
+  // Any other per-language UI updates (input placeholders etc.)
+  const regMobile = document.getElementById('regMobile');
+  if (regMobile && t.regMobilePlaceholder) regMobile.placeholder = t.regMobilePlaceholder;
+
+  // Save chosen language attribute on <html> for accessibility/SEO
+  try {
+    document.documentElement.lang = lang;
+  } catch (e) {}
+
+  // Helpful: console log for debug (remove later if not needed)
+  console.log('Language applied:', lang, { header: t.header, banner1: t.banner1 });
+}
   
 }
 applyLanguage(lang);

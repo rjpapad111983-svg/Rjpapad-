@@ -1,263 +1,83 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="hi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RJ Papad - Register</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RJ पापड़ रजिस्ट्रेशन</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #fffbe6;
-      overflow: hidden;
-    }
-
-    /* Splash Screen */
-    #splash {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(circle, #fffbe6 40%, #ffe69a 100%);
-      transition: opacity 0.8s ease;
-      z-index: 10;
-    }
-
-    #splash img.logo {
-      width: 180px;
-      border-radius: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    /* Language Buttons */
-    .lang-buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .lang-buttons button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
-      color: #000;
-    }
-
-    .lang-buttons button img {
-      width: 22px;
-      height: 16px;
-      border-radius: 3px;
-      box-shadow: 0 0 3px rgba(0,0,0,0.3);
-    }
-
-    .lang-buttons button:hover {
-      transform: scale(1.08);
-    }
-
-    .hindi { background: #ffcc33; }
-    .english { background: #33ccff; }
-    .gujarati { background: #cc99ff; }
-
-    /* Hidden Content */
-    #content {
-      display: none;
-      padding: 20px;
+      background-color: #fff8e1;
+      font-family: 'Noto Sans Devanagari', sans-serif;
       text-align: center;
-      animation: fadeInUp 0.8s ease;
+      margin: 0;
+      padding: 0;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    input, button {
-      padding: 10px;
-      margin: 6px 0;
-      width: 100%;
-      max-width: 320px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button#registerBtn {
-      background: #ffcc33;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    button#registerBtn:hover {
-      background: #ffbb00;
-    }
-
-    pre {
-      background: #f4f4f4;
-      padding: 10px;
-      max-width: 600px;
-      margin: 0 auto;
-      border-radius: 6px;
-      text-align: left;
-    }
-
-    /* Banner Section */
-    .banner {
-      margin: 10px auto;
-    }
-    .banner img {
-      width: 100%;
-      max-width: 600px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    /* Welcome Text */
-    .welcome-text {
-      font-size: 20px;
-      font-weight: bold;
+    h1 {
       color: #c47f00;
-      margin: 10px 0 20px 0;
+      margin-top: 10px;
+    }
+
+    form {
+      max-width: 320px;
+      margin: 20px auto;
+      background-color: #fff3cd;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #ffc107;
+      color: black;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #ffb300;
+    }
+
+    img {
+      border-radius: 10px;
+      width: 95%;
+      margin: 10px auto;
+      display: block;
     }
   </style>
 </head>
 <body>
-  <!-- Splash Screen -->
-  <div id="splash">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="RJ Papad Logo" class="logo" />
-    <div class="lang-buttons">
-      <button class="hindi" onclick="selectLang('hindi')">
-        <img src="https://flagcdn.com/w20/in.png" alt="IN"> हिंदी
-      </button>
-      <button class="english" onclick="selectLang('english')">
-        <img src="https://flagcdn.com/w20/gb.png" alt="EN"> English
-      </button>
-      <button class="gujarati" onclick="selectLang('gujarati')">
-        <img src="https://flagcdn.com/w20/in.png" alt="IN"> ગુજરાતી
-      </button>
-    </div>
-  </div>
 
-  <!-- Hidden Content -->
-  <div id="content">
-    <!-- ✅ पहला बैनर -->
-    <div class="banner">
-      <img id="bannerTop" src="banner1-hindi.jpg" alt="Top Banner" />
-    </div>
+  <!-- 🟢 Top Banner -->
+  <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" 
+       alt="Top Banner">
 
-    <!-- 🌟 Welcome Text (भाषा अनुसार बदलेगा) -->
-    <div id="welcomeText" class="welcome-text">
-      RJ पापड़ में आपका स्वागत है!
-    </div>
+  <h1>RJ पापड़ में आपका स्वागत है!</h1>
 
-    <!-- ✅ दूसरा बैनर -->
-    <div class="banner">
-      <img id="bannerBottom" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"alt="Bottom Banner" />
-    </div>
+  <!-- 🟡 Bottom Banner -->
+  <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" 
+       alt="Bottom Banner">
 
-    <!-- Registration Form -->
-    <h2 id="title">रजिस्टर करें (Mobile Number से)</h2>
+  <form>
+    <h2>रजिस्टर करें (Mobile Number से)</h2>
+    <input type="text" placeholder="नाम (वैकल्पिक)">
+    <input type="number" placeholder="मोबाइल नंबर (अनिवार्य)" required>
+    <button type="submit">रजिस्टर करें</button>
+  </form>
 
-    <div>
-      <input id="name" placeholder="नाम (वैकल्पिक)" />
-      <input id="mobile" placeholder="मोबाइल नंबर (अनिवार्य)" />
-      <button id="registerBtn">रजिस्टर करें</button>
-    </div>
-
-    <pre id="result"></pre>
-  </div>
-
-  <script>
-    const translations = {
-      hindi: {
-        title: "रजिस्टर करें (Mobile Number से)",
-        name: "नाम (वैकल्पिक)",
-        mobile: "मोबाइल नंबर (अनिवार्य)",
-        button: "रजिस्टर करें",
-        error: "❌ कृपया मोबाइल नंबर डालें",
-        bannerTop: "banner1-hindi.jpg",
-        bannerBottom: "banner2-hindi.jpg",
-        welcome: "RJ पापड़ में आपका स्वागत है!"
-      },
-      english: {
-        title: "Register (Using Mobile Number)",
-        name: "Name (optional)",
-        mobile: "Mobile number (required)",
-        button: "Register",
-        error: "❌ Please enter your mobile number",
-        bannerTop: "banner1-english.jpg",
-        bannerBottom: "banner2-english.jpg",
-        welcome: "Welcome to RJ Papad!"
-      },
-      gujarati: {
-        title: "નોંધણી કરો (મોબાઇલ નંબરથી)",
-        name: "નામ (વૈકલ્પિક)",
-        mobile: "મોબાઇલ નંબર (જરૂરી)",
-        button: "નોંધણી કરો",
-        error: "❌ કૃપા કરીને મોબાઇલ નંબર દાખલ કરો",
-        bannerTop: "banner1-gujarati.jpg",
-        bannerBottom: "banner2-gujarati.jpg",
-        welcome: "RJ પાપડમાં આપનું સ્વાગત છે!"
-      }
-    };
-
-    let selectedLang = "hindi";
-
-    function selectLang(lang) {
-      selectedLang = lang;
-      const t = translations[lang];
-
-      // भाषा अनुसार content बदलो
-      document.getElementById("title").textContent = t.title;
-      document.getElementById("name").placeholder = t.name;
-      document.getElementById("mobile").placeholder = t.mobile;
-      document.getElementById("registerBtn").textContent = t.button;
-      document.getElementById("bannerTop").src = t.bannerTop;
-      document.getElementById("bannerBottom").src = t.bannerBottom;
-      document.getElementById("welcomeText").textContent = t.welcome;
-
-      // Splash छुपाओ और content दिखाओ
-      document.getElementById("splash").style.opacity = "0";
-      setTimeout(() => {
-        document.getElementById("splash").style.display = "none";
-        document.body.style.overflow = "auto";
-        document.getElementById("content").style.display = "block";
-      }, 800);
-    }
-
-    document.getElementById("registerBtn").addEventListener("click", async () => {
-      const name = document.getElementById("name").value.trim();
-      const mobile = document.getElementById("mobile").value.trim();
-      const t = translations[selectedLang];
-
-      if (!mobile) {
-        document.getElementById("result").innerText = t.error;
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, mobile, lang: selectedLang })
-        });
-        const data = await res.json();
-        document.getElementById("result").innerText = JSON.stringify(data, null, 2);
-      } catch (err) {
-        document.getElementById("result").innerText = "Error: " + err.message;
-      }
-    });
-  </script>
 </body>
 </html>

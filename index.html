@@ -335,7 +335,10 @@ if (b2 && t.banner2) b2.src = t.banner2;
   if (b1 && t.banner1) b1.src = t.banner1;
   if (b2 && t.banner2) b2.src = t.banner2;
 }
+applyLanguage(lang);
 
+// hide language buttons after choose (optional)
+document.querySelectorAll('.lang-btn').forEach(b => b.style.display = 'none');
     // Called when user clicks language button
     function setLanguage(lang) {
       if (!translations[lang]) return;

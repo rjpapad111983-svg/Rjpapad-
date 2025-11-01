@@ -3,123 +3,179 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RJ पापड़ — Register + Login System</title>
+<title>RJ पापड़ — Register / Login / Admin (auto detect)</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;width:100%;font-family:'Noto Sans Devanagari',sans-serif;background:#fff8e1;color:#222;overflow-x:hidden}
-  .center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center}
-  .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);max-width:360px;width:90%;}
-  input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
+  .center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;padding:12px}
+  .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);max-width:420px;width:100%}
+  input, textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
   button{background:#ffc107;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;width:100%}
-  button:hover{background:#ffb300}
+  button.secondary{background:#eee;color:#111;width:auto;padding:8px 12px;margin-top:8px}
+  button:hover{opacity:0.98}
   h1{color:#c47f00;margin-bottom:10px}
-  .banner{width:100%;margin:10px 0;border-radius:0}
-  #notify{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);
-          background:#4CAF50;color:#fff;padding:10px 20px;border-radius:30px;
-          font-weight:600;transition:all 0.5s ease;z-index:9999}
+  .banner{width:100%;margin:10px 0;border-radius:0;display:block}
+  #notify{position:fixed;bottom:-80px;left:50%;transform:translateX(-50%);background:#4CAF50;color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;transition:all 0.45s ease;z-index:9999}
   #notify.show{bottom:20px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:rgba(255,255,255,0.9);position:sticky;top:0;box-shadow:0 1px 6px rgba(0,0,0,0.06);z-index:20}
+  .logout-btn{background:#f44336;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+  .logout-btn:hover{opacity:0.95}
+  footer{text-align:center;color:#666;margin:18px 0;font-size:13px}
+  .admin-panel{max-width:980px;margin:12px auto;padding:12px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+  .admin-row{display:flex;gap:8px;align-items:center}
+  .admin-row input{flex:1}
+  .btn-red{background:#f44336;color:#fff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+  .btn-blue{background:#2196F3;color:#fff;border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+  textarea.small{height:90px}
 </style>
 </head>
 <body>
 
-<!-- ✅ Notification -->
-<div id="notify">✅ डेटा सेव हो गया!</div>
+<div id="notify">✅</div>
 
-<!-- 🟢 REGISTER PAGE -->
-<div id="registerPage" class="center">
+<!-- REGISTER PAGE -->
+<div id="registerPage" class="center" style="display:none;">
   <div class="card">
     <h1>रजिस्टर करें</h1>
-    <input id="regName" type="text" placeholder="नाम / Name" required>
-    <input id="regMobile" type="tel" placeholder="मोबाइल नंबर / Mobile Number" required>
-    <button onclick="registerUser()">💾 सेव करें</button>
+    <input id="regName" type="text" placeholder="नाम / Name">
+    <input id="regMobile" type="tel" placeholder="मोबाइल नंबर / Mobile Number">
+    <button id="regSaveBtn">💾 सेव करें</button>
+    <button class="secondary" id="goToLoginBtn" style="display:none;">मैं पहले से रजिस्टर हूँ (Login)</button>
   </div>
 </div>
 
-<!-- 🔐 LOGIN PAGE -->
+<!-- LOGIN PAGE -->
 <div id="loginPage" class="center" style="display:none;">
   <div class="card">
     <h1>लॉगिन करें</h1>
-    <input id="loginMobile" type="tel" placeholder="अपना मोबाइल नंबर डालें">
-    <button onclick="loginUser()">🔓 लॉगिन</button>
+    <input id="loginMobile" type="tel" placeholder="अपना मोबाइल नंबर डालें या admin लिखें">
+    <button id="loginBtn">🔓 लॉगिन</button>
+    <button class="secondary" id="goToRegisterBtn">नया यूज़र? रजिस्टर करें</button>
   </div>
 </div>
 
-<!-- 🌐 MAIN WEBSITE CONTENT -->
+<!-- MAIN SITE -->
 <div id="mainSite" style="display:none;">
-  <img id="topBanner" class="banner" src="" alt="Top Banner">
-  <h1 id="titleText" style="text-align:center;">RJ पापड़ में आपका स्वागत है!</h1>
-  <img id="bottomBanner" class="banner" src="" alt="Bottom Banner">
+  <div class="topbar">
+    <div id="welcomeText">Welcome</div>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+
+  <div style="max-width:980px;margin:12px auto;padding:12px;">
+    <img id="topBanner" class="banner" alt="Top Banner">
+    <h1 id="titleText" style="text-align:center;color:#c47f00">RJ पापड़ में आपका स्वागत है!</h1>
+
+    <div style="background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04);margin:12px 0;">
+      <p><strong>रजिस्टर नाम:</strong> <span id="showName">—</span></p>
+      <p><strong>रजिस्टर मोबाइल:</strong> <span id="showMobile">—</span></p>
+    </div>
+
+    <img id="bottomBanner" class="banner" alt="Bottom Banner">
+  </div>
 </div>
 
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;">
+  <div class="admin-panel">
+    <h2>Admin Panel (Unlocked)</h2>
+    <div style="margin-bottom:12px;">
+      <strong>Local Registered User:</strong>
+      <div id="adminSaved" style="margin-top:8px;">—</div>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <strong>Change Banners:</strong>
+      <div class="admin-row" style="margin-top:8px">
+        <input id="adminTop" placeholder="Top banner URL">
+        <button class="btn-blue" id="saveBannersBtn">Save</button>
+      </div>
+      <div class="admin-row" style="margin-top:8px">
+        <input id="adminBottom" placeholder="Bottom banner URL">
+        <button class="btn-red" id="resetStorageBtn">Reset Storage</button>
+      </div>
+    </div>
+    <button id="closeAdmin" class="secondary">Close Admin Panel</button>
+  </div>
+</div>
+
+<footer>© 2025 RJ पापड़</footer>
+
 <script>
-const STORAGE_KEY = "rjpapad_user_data_v1";
+const STORAGE_KEY="rjpapad_user_data_v1";
+const BANNER_KEY="rjpapad_banners_v1";
+const SESSION_KEY="rjpapad_session_v1";
+const DEFAULT_TOP="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
+const DEFAULT_BOTTOM="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 
-/* भाषा बैनर */
-const banners = {
-  top: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
-  bottom: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
-};
+/* Utils */
+function showNotify(msg){const n=document.getElementById("notify");n.textContent=msg;n.classList.add("show");setTimeout(()=>n.classList.remove("show"),3000);}
+function loadUser(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):{name:null,mobile:null};}catch{return {name:null,mobile:null};}}
+function saveUser(u){localStorage.setItem(STORAGE_KEY,JSON.stringify(u));}
+function saveSession(m){sessionStorage.setItem(SESSION_KEY,m);}
+function clearSession(){sessionStorage.removeItem(SESSION_KEY);}
+function getSession(){return sessionStorage.getItem(SESSION_KEY);}
+function loadBanners(){try{const r=localStorage.getItem(BANNER_KEY);return r?JSON.parse(r):{top:DEFAULT_TOP,bottom:DEFAULT_BOTTOM,title:"RJ पापड़ में आपका स्वागत है!"};}catch{return {top:DEFAULT_TOP,bottom:DEFAULT_BOTTOM,title:"RJ पापड़ में आपका स्वागत है!"};}}
+function saveBanners(o){localStorage.setItem(BANNER_KEY,JSON.stringify(o));}
+function applyBanners(){const b=loadBanners();document.getElementById("topBanner").src=b.top;document.getElementById("bottomBanner").src=b.bottom;document.getElementById("titleText").textContent=b.title;}
 
-/* डेटा लोड / सेव */
-function loadData(){
-  try{
-    const r = localStorage.getItem(STORAGE_KEY);
-    return r ? JSON.parse(r) : {name:null,mobile:null};
-  }catch{return {name:null,mobile:null};}
-}
-function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}
+/* Pages */
+const registerPage=document.getElementById("registerPage");
+const loginPage=document.getElementById("loginPage");
+const mainSite=document.getElementById("mainSite");
+const adminPanel=document.getElementById("adminPanel");
 
-/* रजिस्टर */
-function registerUser(){
-  const name=document.getElementById("regName").value.trim();
-  const mobile=document.getElementById("regMobile").value.trim();
-  if(name===""||mobile===""){alert("कृपया सभी जानकारी भरें!");return;}
-  saveData({name,mobile});
-  showNotify("✅ रजिस्ट्रेशन सफल!");
-  document.getElementById("registerPage").style.display="none";
-  openMainSite();
-}
+function showRegister(){registerPage.style.display="flex";loginPage.style.display="none";mainSite.style.display="none";adminPanel.style.display="none";}
+function showLogin(){registerPage.style.display="none";loginPage.style.display="flex";mainSite.style.display="none";adminPanel.style.display="none";}
+function openMain(user){registerPage.style.display="none";loginPage.style.display="none";mainSite.style.display="block";adminPanel.style.display="none";applyBanners();document.getElementById("showName").textContent=user.name||"—";document.getElementById("showMobile").textContent=user.mobile||"—";document.getElementById("welcomeText").textContent=`Logged in as ${user.mobile}`;}
+function showAdmin(){registerPage.style.display="none";loginPage.style.display="none";mainSite.style.display="none";adminPanel.style.display="block";const u=loadUser();document.getElementById("adminSaved").textContent=u.mobile?`Name: ${u.name||"—"}, Mobile: ${u.mobile}`:"कोई local user नहीं";const b=loadBanners();document.getElementById("adminTop").value=b.top;document.getElementById("adminBottom").value=b.bottom;}
 
-/* लॉगिन */
-function loginUser(){
-  const user=loadData();
-  const entered=document.getElementById("loginMobile").value.trim();
-  if(entered===""||entered.length<5){alert("मान्य मोबाइल नंबर डालें");return;}
-  if(user.mobile===entered){
-    showNotify("✅ लॉगिन सफल!");
-    document.getElementById("loginPage").style.display="none";
-    openMainSite();
-  }else{
-    alert("❌ गलत मोबाइल नंबर! कृपया सही नंबर डालें।");
-  }
-}
-
-/* मुख्य साइट खोलें */
-function openMainSite(){
-  document.getElementById("mainSite").style.display="block";
-  document.getElementById("topBanner").src=banners.top;
-  document.getElementById("bottomBanner").src=banners.bottom;
-}
-
-/* नोटिफिकेशन */
-function showNotify(msg){
-  const n=document.getElementById("notify");
-  n.textContent=msg;
-  n.classList.add("show");
-  setTimeout(()=>{n.classList.remove("show");},3000);
-}
-
-/* ऑन लोड */
+/* Load logic */
 window.addEventListener("DOMContentLoaded",()=>{
-  const user=loadData();
-  if(user.name && user.mobile){
-    // पहले से रजिस्टर है तो लॉगिन दिखेगा
-    document.getElementById("loginPage").style.display="flex";
-  }else{
-    // नया यूज़र तो रजिस्टर फॉर्म
-    document.getElementById("registerPage").style.display="flex";
-  }
+  const u=loadUser();
+  const sess=getSession();
+  if(sess&&u.mobile&&sess===u.mobile){openMain(u);}
+  else if(u.mobile){showLogin();}
+  else{showRegister();}
+  applyBanners();
 });
+
+/* Register */
+document.getElementById("regSaveBtn").addEventListener("click",()=>{
+  const n=document.getElementById("regName").value.trim();
+  const m=document.getElementById("regMobile").value.trim();
+  if(!m){alert("मोबाइल नंबर डालें");return;}
+  saveUser({name:n,mobile:m});saveSession(m);showNotify("✅ रजिस्ट्रेशन सफल!");openMain({name:n,mobile:m});
+});
+
+/* Login */
+document.getElementById("loginBtn").addEventListener("click",()=>{
+  const entered=document.getElementById("loginMobile").value.trim().toLowerCase();
+  if(!entered){alert("मोबाइल डालें या 'admin' लिखें");return;}
+  if(entered==="admin"){showNotify("👑 Admin Access Granted");showAdmin();return;}
+  const u=loadUser();
+  if(u&&u.mobile===entered){saveSession(entered);showNotify("✅ लॉगिन सफल!");openMain(u);}
+  else{alert("❌ गलत नंबर या रजिस्टर नहीं है।");}
+});
+
+/* Logout */
+document.getElementById("logoutBtn").addEventListener("click",()=>{
+  if(!confirm("क्या आप लॉगआउट करना चाहते हैं?"))return;clearSession();showNotify("🔓 लॉगआउट किया गया");setTimeout(showLogin,600);
+});
+
+/* Admin Actions */
+document.getElementById("saveBannersBtn").addEventListener("click",()=>{
+  const top=document.getElementById("adminTop").value||DEFAULT_TOP;
+  const bottom=document.getElementById("adminBottom").value||DEFAULT_BOTTOM;
+  saveBanners({top,bottom,title:"RJ पापड़ में आपका स्वागत है!"});
+  showNotify("✅ Banners saved!");
+  applyBanners();
+});
+document.getElementById("resetStorageBtn").addEventListener("click",()=>{
+  if(confirm("सारा local डेटा हटाना है?")){localStorage.clear();sessionStorage.clear();showNotify("♻️ Cleared!");setTimeout(showRegister,600);}
+});
+document.getElementById("closeAdmin").addEventListener("click",()=>{showLogin();});
+document.getElementById("goToRegisterBtn").addEventListener("click",showRegister);
+document.getElementById("goToLoginBtn").addEventListener("click",showLogin);
 </script>
 </body>
 </html>

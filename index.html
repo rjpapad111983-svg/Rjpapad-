@@ -3,137 +3,123 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RJ पापड़ — Form First + Auto Save</title>
+<title>RJ पापड़ — Register + Login System</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;width:100%;font-family:'Noto Sans Devanagari',sans-serif;background:#fff8e1;color:#222;overflow-x:hidden}
-  #logoArea{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;transition:opacity .6s ease}
-  #logoArea img{width:70vw;max-width:320px;height:auto;margin-bottom:18px;border-radius:10px}
-  .lang-bar{display:flex;gap:10px}
-  .lang-btn{background:#ffc107;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.15)}
-  .lang-btn:hover{background:#ffb300}
-  .site{max-width:980px;margin:0 auto;padding:12px}
-  .content{display:none}
-  .content.active{display:block;animation:fadeIn .25s}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .banner{width:100%;display:block;border-radius:0;margin:10px 0;object-fit:cover}
-  h1{text-align:center;color:#c47f00;margin:10px 0 15px;font-size:22px}
-  .form-card{background:#fff;padding:16px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.08);max-width:720px;margin:10px auto}
-  input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
-  .save-btn{background:#ffc107;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer}
-  .save-btn:hover{background:#ffb300}
-  footer{text-align:center;color:#666;margin:20px 0;font-size:13px}
-  @media(max-width:520px){#logoArea img{width:80vw}}
+  .center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center}
+  .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);max-width:360px;width:90%;}
+  input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
+  button{background:#ffc107;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;width:100%}
+  button:hover{background:#ffb300}
+  h1{color:#c47f00;margin-bottom:10px}
+  .banner{width:100%;margin:10px 0;border-radius:0}
+  #notify{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);
+          background:#4CAF50;color:#fff;padding:10px 20px;border-radius:30px;
+          font-weight:600;transition:all 0.5s ease;z-index:9999}
+  #notify.show{bottom:20px}
 </style>
 </head>
 <body>
 
-<!-- SPLASH LOGO -->
-<div id="logoArea">
-  <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Logo">
-  <div class="lang-bar">
-    <button class="lang-btn" onclick="chooseLang('hi')">हिंदी</button>
-    <button class="lang-btn" onclick="chooseLang('en')">English</button>
-    <button class="lang-btn" onclick="chooseLang('gu')">ગુજરાતી</button>
+<!-- ✅ Notification -->
+<div id="notify">✅ डेटा सेव हो गया!</div>
+
+<!-- 🟢 REGISTER PAGE -->
+<div id="registerPage" class="center">
+  <div class="card">
+    <h1>रजिस्टर करें</h1>
+    <input id="regName" type="text" placeholder="नाम / Name" required>
+    <input id="regMobile" type="tel" placeholder="मोबाइल नंबर / Mobile Number" required>
+    <button onclick="registerUser()">💾 सेव करें</button>
   </div>
 </div>
 
-<div class="site">
-  <!-- CONTENT AREA -->
-  <section id="langContent" class="content">
-    <!-- 🟢 FORM सबसे ऊपर -->
-    <div class="form-card">
-      <h1 id="titleText">RJ पापड़</h1>
-      <form onsubmit="return false;">
-        <input id="name" type="text" placeholder="नाम / Name">
-        <input id="mobile" type="tel" placeholder="मोबाइल नंबर / Mobile Number">
-        <button class="save-btn" type="button" onclick="saveForm()">💾 सेव करें</button>
-      </form>
-    </div>
-
-    <!-- 🔹 BANNERS नीचे -->
-    <img id="topBanner" class="banner" src="" alt="Top Banner">
-    <img id="bottomBanner" class="banner" src="" alt="Bottom Banner">
-  </section>
+<!-- 🔐 LOGIN PAGE -->
+<div id="loginPage" class="center" style="display:none;">
+  <div class="card">
+    <h1>लॉगिन करें</h1>
+    <input id="loginMobile" type="tel" placeholder="अपना मोबाइल नंबर डालें">
+    <button onclick="loginUser()">🔓 लॉगिन</button>
+  </div>
 </div>
 
-<footer>© 2025 RJ पापड़ | Auto Save Enabled</footer>
+<!-- 🌐 MAIN WEBSITE CONTENT -->
+<div id="mainSite" style="display:none;">
+  <img id="topBanner" class="banner" src="" alt="Top Banner">
+  <h1 id="titleText" style="text-align:center;">RJ पापड़ में आपका स्वागत है!</h1>
+  <img id="bottomBanner" class="banner" src="" alt="Bottom Banner">
+</div>
 
 <script>
-const STORAGE_KEY="rjpapad_form_simple_v1";
+const STORAGE_KEY = "rjpapad_user_data_v1";
 
-/* Language banners and titles */
-const LANG_CONF={
-  hi:{
-    title:"RJ पापड़ में आपका स्वागत है!",
-    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
-    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
-  },
-  en:{
-    title:"Welcome to RJ Papad!",
-    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png",
-    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png"
-  },
-  gu:{
-    title:"RJ પાપડ માં આપનું સ્વાગત છે!",
-    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
-    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
-  }
+/* भाषा बैनर */
+const banners = {
+  top: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
+  bottom: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
 };
 
-/* State handling */
-function loadState(){
+/* डेटा लोड / सेव */
+function loadData(){
   try{
-    const r=localStorage.getItem(STORAGE_KEY);
-    if(!r)return{lang:null,data:{hi:{},en:{},gu:{}}};
-    return JSON.parse(r);
-  }catch{return{lang:null,data:{hi:{},en:{},gu:{}}}}
+    const r = localStorage.getItem(STORAGE_KEY);
+    return r ? JSON.parse(r) : {name:null,mobile:null};
+  }catch{return {name:null,mobile:null};}
 }
-function saveState(s){localStorage.setItem(STORAGE_KEY,JSON.stringify(s));}
+function saveData(d){localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}
 
-/* Save form data */
-function saveForm(){
-  const s=loadState();
-  const lang=s.lang||'hi';
-  const name=document.getElementById("name").value;
-  const mobile=document.getElementById("mobile").value;
-  s.data[lang]={name,mobile};
-  saveState(s);
-  alert("✅ डेटा सेव हो गया!");
-}
-
-/* Choose language and show banners accordingly */
-function chooseLang(lang){
-  // hide splash
-  const logo=document.getElementById("logoArea");
-  logo.style.opacity="0";
-  setTimeout(()=>{logo.style.display="none";},600);
-
-  const s=loadState(); s.lang=lang; saveState(s);
-  const conf=LANG_CONF[lang];
-  document.getElementById("titleText").textContent=conf.title;
-  document.getElementById("topBanner").src=conf.top;
-  document.getElementById("bottomBanner").src=conf.bottom;
-  document.getElementById("langContent").classList.add("active");
-
-  // load saved data for language
-  const vals=s.data[lang]||{};
-  document.getElementById("name").value=vals.name||"";
-  document.getElementById("mobile").value=vals.mobile||"";
+/* रजिस्टर */
+function registerUser(){
+  const name=document.getElementById("regName").value.trim();
+  const mobile=document.getElementById("regMobile").value.trim();
+  if(name===""||mobile===""){alert("कृपया सभी जानकारी भरें!");return;}
+  saveData({name,mobile});
+  showNotify("✅ रजिस्ट्रेशन सफल!");
+  document.getElementById("registerPage").style.display="none";
+  openMainSite();
 }
 
-/* Auto-save every 5 seconds */
-setInterval(()=>{
-  const s=loadState();
-  const lang=s.lang||'hi';
-  const name=document.getElementById("name").value;
-  const mobile=document.getElementById("mobile").value;
-  if(lang)s.data[lang]={name,mobile};
-  saveState(s);
-},5000);
+/* लॉगिन */
+function loginUser(){
+  const user=loadData();
+  const entered=document.getElementById("loginMobile").value.trim();
+  if(entered===""||entered.length<5){alert("मान्य मोबाइल नंबर डालें");return;}
+  if(user.mobile===entered){
+    showNotify("✅ लॉगिन सफल!");
+    document.getElementById("loginPage").style.display="none";
+    openMainSite();
+  }else{
+    alert("❌ गलत मोबाइल नंबर! कृपया सही नंबर डालें।");
+  }
+}
 
-/* Always start with logo visible */
-window.addEventListener("DOMContentLoaded",()=>{document.getElementById("logoArea").style.display="flex";});
+/* मुख्य साइट खोलें */
+function openMainSite(){
+  document.getElementById("mainSite").style.display="block";
+  document.getElementById("topBanner").src=banners.top;
+  document.getElementById("bottomBanner").src=banners.bottom;
+}
+
+/* नोटिफिकेशन */
+function showNotify(msg){
+  const n=document.getElementById("notify");
+  n.textContent=msg;
+  n.classList.add("show");
+  setTimeout(()=>{n.classList.remove("show");},3000);
+}
+
+/* ऑन लोड */
+window.addEventListener("DOMContentLoaded",()=>{
+  const user=loadData();
+  if(user.name && user.mobile){
+    // पहले से रजिस्टर है तो लॉगिन दिखेगा
+    document.getElementById("loginPage").style.display="flex";
+  }else{
+    // नया यूज़र तो रजिस्टर फॉर्म
+    document.getElementById("registerPage").style.display="flex";
+  }
+});
 </script>
 </body>
 </html>

@@ -114,6 +114,7 @@
       color:#333;
       margin-top:8px;
       width:auto;
+      padding:10px 14px;
     }
 
     .banners{
@@ -163,7 +164,7 @@
 </head>
 <body>
   <header class="hero" id="hero">
-    <!-- Replace this <img> src with your real logo file (the PNG you uploaded to GitHub or direct raw URL) -->
+    <!-- Replace src with your actual logo raw URL if different -->
     <img id="mainLogo" class="logo-img" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Papad Logo">
 
     <div class="language-row" id="languageRow">
@@ -174,8 +175,7 @@
   </header>
 
   <main class="container">
-    <!-- Title that changes with language -->
-    <h1 class="title" id="pageTitle">RJ पापड़ में आपका स्वागत है!</h1>
+    <h1 class="title" id="pageTitle">RJ पापड़ में आपका स्वागत है!</h1>
 
     <!-- Register / Login Card -->
     <section id="authSection" class="card">
@@ -183,9 +183,16 @@
 
       <input id="fieldName" type="text" placeholder="नाम (वैकल्पिक)" />
       <input id="fieldMobile" type="tel" placeholder="मोबाइल नंबर (अनिवार्य)" inputmode="numeric" pattern="[0-9]*" />
+
       <button id="btnRegister" class="btn">रजिस्टर करें</button>
 
       <p id="authMessage" class="muted" style="margin-top:10px"></p>
+
+      <!-- small area for device-login option (appears if device already has saved mobile) -->
+      <div id="alreadyLoginWrap" style="margin-top:8px; display:none; text-align:center;">
+        <button id="btnLoginDevice" class="btn secondary">Already registered? Login</button>
+      </div>
+
     </section>
 
     <!-- Wallet / Dashboard shown after login -->
@@ -220,20 +227,15 @@
 
 <script>
 /*
-  Complete single-file solution:
-  - Switch languages (hi/en/gu) and update text + banners
-  - Register form (saves to localStorage and tries to POST to Google Script Web App)
-  - localStorage based loyalty wallet object
-  - Prevent showing register form again once registered on device (until logout)
-  IMPORTANT: Replace SHEET_WEBHOOK_URL with your Apps Script Web App URL and
-  SHEET_SECRET with the same secret token used in your Apps Script.
+  Full updated script — always show register first.
+  Replace SHEET_WEBHOOK_URL and SHEET_SECRET with your deployed Apps Script values.
 */
 
 // ====== CONFIG: put your Apps Script Web App URL + SECRET here ======
-const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx1ZOkkueM5CNONWOiH0n_ryi9aucdbDm64EAl_jyuwBDY7SUMJGkJNeUfKfCDGchgV/exec/exec"; // <-- replace with your real URL
+const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycb...YOUR_ID.../exec"; // <-- replace with your real URL
 const SHEET_SECRET = "rj_secret_2025_xyz"; // <-- must match SECRET_TOKEN in Apps Script
 
-// ====== Application state ======
+// LANG data
 const LANG_DATA = {
   hi: {
     title: "RJ पापड़ में आपका स्वागत है!",
@@ -243,7 +245,8 @@ const LANG_DATA = {
     bannerBottom: "Bottom Banner (हिंदी)",
     registeredMessage: "आप पहले ही रजिस्टर्ड हैं।",
     addPointsLabel: "+ 10 पॉइंट जोड़ें",
-    walletTitle: "लॉयल्टी वॉलेट"
+    walletTitle: "लॉयल्टी वॉलेट",
+    alreadyRegistered: "पहले से रजिस्टर्ड हैं? लॉगिन करें"
   },
   en: {
     title: "Welcome to RJ Papad!",
@@ -253,7 +256,8 @@ const LANG_DATA = {
     bannerBottom: "Bottom Banner (English)",
     registeredMessage: "You are already registered.",
     addPointsLabel: "+ Add 10 Points",
-    walletTitle: "Loyalty Wallet"
+    walletTitle: "Loyalty Wallet",
+    alreadyRegistered: "Already registered? Login"
   },
   gu: {
     title: "RJ પાપડ માં આપનું સ્વાગત છે!",
@@ -263,30 +267,19 @@ const LANG_DATA = {
     bannerBottom: "Bottom Banner (ગુજરાતી)",
     registeredMessage: "તમે પહેલેથી જ રજિસ્ટર્ડ છો.",
     addPointsLabel: "+ 10 પોઈન્ટ ઉમેરો",
-    walletTitle: "લોયલ્ટી વોલેટ"
+    walletTitle: "લોયલ્ટી વોલેટ",
+    alreadyRegistered: "પહેલેથી રજિસ્ટર્ડ છો? લૉગિન કરીને જુઓ"
   }
 };
 
 let currentLang = "hi";
+const LS_KEY_USER = "rjpapad_user_mobile";
+const LS_KEY_USERS = "rjpapad_users_map";
 
-// localStorage keys
-const LS_KEY_USER = "rjpapad_user_mobile";      // single device registered mobile
-const LS_KEY_USERS = "rjpapad_users_map";       // map of mobile -> { name, points, joinedCount }
+// helpers
+function loadUsersMap(){ try{ return JSON.parse(localStorage.getItem(LS_KEY_USERS) || "{}"); }catch(e){ return {}; } }
+function saveUsersMap(m){ localStorage.setItem(LS_KEY_USERS, JSON.stringify(m)); }
 
-// helper to get users map from localStorage
-function loadUsersMap(){
-  try{
-    const raw = localStorage.getItem(LS_KEY_USERS);
-    return raw ? JSON.parse(raw) : {};
-  }catch(e){
-    return {};
-  }
-}
-function saveUsersMap(map){
-  localStorage.setItem(LS_KEY_USERS, JSON.stringify(map));
-}
-
-// set language UI
 function applyLanguage(lang){
   currentLang = lang;
   const d = LANG_DATA[lang];
@@ -296,33 +289,17 @@ function applyLanguage(lang){
   document.getElementById("bannerTop").textContent = d.bannerTop;
   document.getElementById("bannerBottom").textContent = d.bannerBottom;
   document.getElementById("walletTitle").textContent = d.walletTitle;
-  // update active button styles
-  document.querySelectorAll(".lang-btn").forEach(b => {
-    b.classList.toggle("active", b.getAttribute("data-lang") === lang);
-  });
+  document.getElementById("btnLoginDevice").textContent = d.alreadyRegistered;
+  document.querySelectorAll(".lang-btn").forEach(b => { b.classList.toggle("active", b.getAttribute("data-lang") === lang); });
 }
 
-// try to post to Google sheet (Apps Script)
+// send POST to Apps Script
 async function saveToGoogleSheet(action, user_mobile, user_name, joined_mobile="", joined_name="", language=currentLang, points=0, client_id="", note=""){
   if(!SHEET_WEBHOOK_URL || SHEET_WEBHOOK_URL.includes("PUT_YOUR")){
     console.log("No Webhook URL set — skipping remote save.");
-    // still return success for local flow
     return { success:true, skipped:true };
   }
-
-  const payload = {
-    secret: SHEET_SECRET,
-    action,
-    user_mobile,
-    user_name,
-    joined_mobile,
-    joined_name,
-    language,
-    points,
-    client_id,
-    note
-  };
-
+  const payload = { secret:SHEET_SECRET, action, user_mobile, user_name, joined_mobile, joined_name, language, points, client_id, note };
   try{
     const resp = await fetch(SHEET_WEBHOOK_URL, {
       method: "POST",
@@ -333,26 +310,25 @@ async function saveToGoogleSheet(action, user_mobile, user_name, joined_mobile="
     console.log("Sheet response:", json);
     return json;
   }catch(err){
-    console.error("Network/Fetch error:", err);
+    console.error("Fetch error:", err);
     return { success:false, error: err.message || "Network error" };
   }
 }
 
-// UI: show/hide sections based on whether device has registered mobile
-function showAuthOrDashboard(){
+// UI logic: always show register first
+function showRegisterFirst(){
+  document.getElementById("authSection").style.display = "block";
+  document.getElementById("dashboardSection").style.display = "none";
+  // if device already has user, show small login option
   const registeredMobile = localStorage.getItem(LS_KEY_USER);
+  const loginOpt = document.getElementById("alreadyLoginWrap");
   if(registeredMobile){
-    // show dashboard
-    document.getElementById("authSection").style.display = "none";
-    document.getElementById("dashboardSection").style.display = "block";
-    populateWallet(registeredMobile);
+    loginOpt.style.display = "block";
   } else {
-    document.getElementById("authSection").style.display = "block";
-    document.getElementById("dashboardSection").style.display = "none";
+    loginOpt.style.display = "none";
   }
 }
 
-// populate wallet info for mobile
 function populateWallet(mobile){
   const users = loadUsersMap();
   const profile = users[mobile] || { name:"", points:0, joined:0 };
@@ -360,48 +336,52 @@ function populateWallet(mobile){
   document.getElementById("walletPoints").textContent = profile.points || 0;
 }
 
-// register user flow
+// register flow
 async function registerUserFlow(){
   const name = document.getElementById("fieldName").value.trim();
   const mobile = document.getElementById("fieldMobile").value.trim();
   const message = document.getElementById("authMessage");
 
   if(!mobile){
-    alert(currentLang === "hi" ? "कृपया मोबाइल नंबर दर्ज करें!" : (currentLang==="en"? "Please enter mobile number!" : "કૃપયા મોબાઇલ નંબર દાખલ કરો!"));
+    alert(currentLang==="hi" ? "कृपया मोबाइल नंबर दर्ज करें!" : (currentLang==="en" ? "Please enter mobile number!" : "કૃપયા મોબાઇલ નંબર દાખલ કરો!"));
     return;
   }
 
-  // check if already exists in local map
   const users = loadUsersMap();
   if(users[mobile]){
-    // already registered — just set as current
+    // exists on device — set session (but keep register visible)
     localStorage.setItem(LS_KEY_USER, mobile);
     message.textContent = LANG_DATA[currentLang].registeredMessage;
-    showAuthOrDashboard();
-    // also attempt remote save for login
+    // remote login record
     await saveToGoogleSheet("login", mobile, users[mobile].name || name, "", "", currentLang, users[mobile].points || 0, "", "Login");
+    document.getElementById("alreadyLoginWrap").style.display = "block";
     return;
   }
 
-  // create new profile locally
-  users[mobile] = {
-    name: name || "",
-    points: 0,
-    joined: 0,
-    createdAt: new Date().toISOString()
-  };
+  // create new local profile
+  users[mobile] = { name: name||"", points:0, joined:0, createdAt:new Date().toISOString() };
   saveUsersMap(users);
   localStorage.setItem(LS_KEY_USER, mobile);
 
-  // update UI
-  message.textContent = "✅ " + (currentLang === "hi" ? "रजिस्ट्रेशन सफल!" : (currentLang==="en"? "Registration successful!" : "રજીસ્ટ્રેશન સફળ!"));
-  showAuthOrDashboard();
-
-  // remote save to Google Sheet (register action)
+  message.textContent = "✅ " + (currentLang==="hi"?"रजिस्ट्रेशन सफल!":(currentLang==="en"?"Registration successful!":"રજીસ્ટ્રેશન સફળ!"));
+  // remote register
   await saveToGoogleSheet("register", mobile, name, "", "", currentLang, 0, "", "New Registration");
+  document.getElementById("alreadyLoginWrap").style.display = "block";
 }
 
-// add test points (simple local example)
+// login from device to view dashboard
+function doLoginFromDevice(){
+  const mobile = localStorage.getItem(LS_KEY_USER);
+  if(!mobile){
+    alert(currentLang==="hi" ? "पहले रजिस्टर करें!" : (currentLang==="en"?"Please register first!":"સૌ પ્રથમ રજીસ્ટર કરો!"));
+    return;
+  }
+  document.getElementById("authSection").style.display = "none";
+  document.getElementById("dashboardSection").style.display = "block";
+  populateWallet(mobile);
+}
+
+// add points locally and remote
 function addPointsLocal(amount=10){
   const mobile = localStorage.getItem(LS_KEY_USER);
   if(!mobile) return;
@@ -410,19 +390,15 @@ function addPointsLocal(amount=10){
   users[mobile].points = (users[mobile].points || 0) + amount;
   saveUsersMap(users);
   populateWallet(mobile);
-  // remote update
   saveToGoogleSheet("add_points", mobile, users[mobile].name || "", "", "", currentLang, users[mobile].points, "", `Added ${amount} points`);
 }
 
-// logout (clears device session only)
 function doLogout(){
   localStorage.removeItem(LS_KEY_USER);
-  // optionally keep users map, just remove session
-  showAuthOrDashboard();
-  alert(currentLang === "hi" ? "आप लॉगआउट हो गए।" : (currentLang==="en"? "You are logged out." : "તમારે લોગઆઉટ કર્યો."));
+  alert(currentLang==="hi" ? "आप लॉगआउट हो गए।" : (currentLang==="en"?"You are logged out.":"તમારે લોગઆઉટ કર્યો."));
+  showRegisterFirst();
 }
 
-// view joined count (simple local alert)
 function viewJoinedCount(){
   const mobile = localStorage.getItem(LS_KEY_USER);
   if(!mobile) return alert("No user");
@@ -431,44 +407,32 @@ function viewJoinedCount(){
   alert("Joined count: " + (profile.joined || 0));
 }
 
-// wiring up buttons, events
+// DOM wiring
 document.addEventListener("DOMContentLoaded", function(){
-  // language buttons
+  // language
   document.querySelectorAll(".lang-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=> {
-      const lang = btn.getAttribute("data-lang");
-      applyLanguage(lang);
-    });
+    btn.addEventListener("click", ()=> applyLanguage(btn.getAttribute("data-lang")));
   });
-
-  // initial language apply
   applyLanguage(currentLang);
 
-  // register button
-  document.getElementById("btnRegister").addEventListener("click", ()=> {
-    registerUserFlow();
-  });
+  // register
+  document.getElementById("btnRegister").addEventListener("click", registerUserFlow);
 
-  // add points
-  document.getElementById("btnAddPoints").addEventListener("click", ()=>{
-    addPointsLocal(10);
-  });
+  // small login button if device has user
+  const loginWrap = document.getElementById("alreadyLoginWrap");
+  if(loginWrap){
+    loginWrap.style.display = "none";
+    const btnLoginDevice = document.getElementById("btnLoginDevice");
+    if(btnLoginDevice) btnLoginDevice.addEventListener("click", doLoginFromDevice);
+  }
 
-  document.getElementById("btnViewJoins").addEventListener("click", ()=>{
-    viewJoinedCount();
-  });
+  document.getElementById("btnAddPoints").addEventListener("click", ()=> addPointsLocal(10));
+  document.getElementById("btnViewJoins").addEventListener("click", viewJoinedCount);
+  document.getElementById("btnLogout").addEventListener("click", doLogout);
 
-  document.getElementById("btnLogout").addEventListener("click", ()=>{
-    doLogout();
-  });
-
-  // if user already registered (device), show dashboard
-  showAuthOrDashboard();
+  // always show register first
+  showRegisterFirst();
 });
-
-// OPTIONAL: if you want to support "join referral" logic where one user joins using another's mobile,
-// you can implement an input field for joined_mobile, and then when registering, increment joined count for that mobile.
-// This demo keeps the flow simple and local-storage based to avoid server complexity.
 </script>
 </body>
 </html>

@@ -3,85 +3,162 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RJ पापड़ Auto Save</title>
+<title>RJ पापड़ | Auto Save + Fullscreen Banner</title>
+
 <style>
-body {
-  font-family: 'Noto Sans Devanagari', sans-serif;
-  background-color: #fff8e1;
-  text-align: center;
-  margin: 0;
-}
-.banner {
-  width: 100%;
-  border-radius: 10px;
-  margin: 10px 0;
-}
-h1 {
-  color: #c47f00;
-}
-form {
-  background: #fff;
-  max-width: 320px;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-input {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-button {
-  background: #ffc107;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-}
-button:hover {
-  background: #ffb300;
-}
-.note {
-  font-size: 13px;
-  color: #555;
-  margin-top: 10px;
-}
+  /* Reset + Full Width Setup */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    background: #fff8e1;
+    color: #222;
+  }
+
+  /* Banner Fullscreen */
+  .banner {
+    width: 100vw;
+    height: auto;
+    display: block;
+    border-radius: 0;
+  }
+
+  h1 {
+    text-align: center;
+    color: #c47f00;
+    margin: 15px 0;
+    font-size: 24px;
+  }
+
+  form {
+    background: #fff;
+    max-width: 350px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+  }
+
+  button {
+    background: #ffc107;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background: #ffb300;
+  }
+
+  .note {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+    margin: 15px 0;
+  }
+
+  /* Admin Editor */
+  #editorWrap {
+    display: none;
+    max-width: 90%;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+  }
+
+  textarea {
+    width: 100%;
+    height: 250px;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  .control-btns {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .control-btns button {
+    margin: 5px;
+  }
+
 </style>
 </head>
+
 <body>
 
-<img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
+  <!-- 🔶 Top Banner -->
+  <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
 
-<h1>RJ पापड़ में आपका स्वागत है!</h1>
+  <h1>RJ पापड़ में आपका स्वागत है!</h1>
 
-<form id="regForm">
-  <input id="name" type="text" placeholder="नाम (वैकल्पिक)">
-  <input id="mobile" type="number" placeholder="मोबाइल नंबर (अनिवार्य)">
-  <button type="button" onclick="saveData()">💾 सेव करें</button>
-</form>
+  <!-- 🟡 Registration Form -->
+  <form id="regForm">
+    <input id="name" type="text" placeholder="नाम (वैकल्पिक)">
+    <input id="mobile" type="number" placeholder="मोबाइल नंबर (अनिवार्य)">
+    <button type="button" onclick="saveData()">💾 सेव करें</button>
+  </form>
 
-<p class="note">यह पेज अपने आप हर 5 सेकंड में सेव हो जाता है!</p>
+  <p class="note">यह फॉर्म अपने आप हर 5 सेकंड में सेव हो जाता है।</p>
 
-<img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+  <!-- 🧾 Admin Section -->
+  <div style="text-align:center; margin:20px 0;">
+    <button onclick="adminLogin()">🔐 Admin Login</button>
+    <button onclick="applySaved()">🔄 Apply Saved</button>
+    <button onclick="resetData()">♻️ Reset Default</button>
+  </div>
+
+  <!-- ✍️ Hidden Editor Box -->
+  <div id="editorWrap">
+    <h3>Admin Editor (HTML Content)</h3>
+    <textarea id="editor"></textarea>
+    <div class="control-btns">
+      <button onclick="saveEditor()">💾 Save</button>
+      <button onclick="applyEditor()">👁 Apply</button>
+      <button onclick="downloadHTML()">⬇️ Download</button>
+      <button onclick="closeEditor()">🔒 Close</button>
+    </div>
+  </div>
+
+  <!-- 🔶 Bottom Banner -->
+  <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+
+  <footer>© 2025 RJ पापड़ | Auto Save Edition</footer>
 
 <script>
+/* ===================
+   Auto Save System
+   =================== */
+const key = "rjpapad_form_data";
 const nameInput = document.getElementById("name");
 const mobileInput = document.getElementById("mobile");
-const key = "rjpapad_form";
 
-function saveData() {
-  const data = {
-    name: nameInput.value,
-    mobile: mobileInput.value
-  };
-  localStorage.setItem(key, JSON.stringify(data));
-  alert("✅ डेटा सेव हो गया!");
-}
-
+// लोड करें
 function loadData() {
   const saved = localStorage.getItem(key);
   if (saved) {
@@ -91,17 +168,84 @@ function loadData() {
   }
 }
 
-// हर 5 सेकंड में अपने आप सेव
+// सेव करें
+function saveData() {
+  const data = {
+    name: nameInput.value,
+    mobile: mobileInput.value
+  };
+  localStorage.setItem(key, JSON.stringify(data));
+  alert("✅ डेटा सेव हो गया!");
+}
+
+// हर 5 सेकंड में Auto Save
 setInterval(() => {
   const data = {
     name: nameInput.value,
     mobile: mobileInput.value
   };
   localStorage.setItem(key, JSON.stringify(data));
-  console.log("Auto saved at", new Date().toLocaleTimeString());
 }, 5000);
 
 window.onload = loadData;
+
+/* ===================
+   Admin Editor System
+   =================== */
+const editorWrap = document.getElementById("editorWrap");
+const editor = document.getElementById("editor");
+const editorKey = "rjpapad_editor_html";
+const ADMIN_PASS = "rjadmin123"; // 🔐 पासवर्ड बदलना चाहें तो यहीं बदलें
+
+function adminLogin() {
+  const pass = prompt("एडमिन पासवर्ड डालें:");
+  if (pass === ADMIN_PASS) {
+    const saved = localStorage.getItem(editorKey);
+    editor.value = saved || "<p>यहाँ HTML कंटेंट एडिट करें...</p>";
+    editorWrap.style.display = "block";
+  } else {
+    alert("❌ गलत पासवर्ड!");
+  }
+}
+
+function saveEditor() {
+  localStorage.setItem(editorKey, editor.value);
+  alert("💾 कंटेंट सेव हो गया (ब्राउज़र में)!");
+}
+
+function applyEditor() {
+  document.body.insertAdjacentHTML("beforeend", editor.value);
+  alert("👁 कंटेंट लाइव अप्लाई कर दिया गया!");
+}
+
+function closeEditor() {
+  editorWrap.style.display = "none";
+}
+
+function applySaved() {
+  const saved = localStorage.getItem(editorKey);
+  if (saved) document.body.insertAdjacentHTML("beforeend", saved);
+  else alert("कोई सेव किया हुआ कंटेंट नहीं मिला।");
+}
+
+function resetData() {
+  if (confirm("क्या आप सब कुछ डिफॉल्ट पर लाना चाहते हैं?")) {
+    localStorage.clear();
+    alert("♻️ सब कुछ डिफॉल्ट पर रीसेट कर दिया गया।");
+    location.reload();
+  }
+}
+
+function downloadHTML() {
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], {type: "text/html"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "index.html";
+  a.click();
+  URL.revokeObjectURL(url);
+}
 </script>
 
 </body>

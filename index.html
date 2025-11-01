@@ -1,171 +1,155 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RJ Papad — Register & Login</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RJ Papad Register Flow</title>
 <style>
 :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff;--muted:#666}
-html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222}
-.overlay{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;z-index:10}
-.panel{background:var(--card);max-width:520px;width:100%;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.12);padding:22px;box-sizing:border-box}
-h2{margin:0 0 12px;font-size:20px;color:#c47d04}
-input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc;font-size:15px}
-button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:700}
-.btn-primary{background:var(--accent);color:#111;width:100%}
-.btn-secondary{background:#eee;color:#222;padding:10px 14px}
-.muted{color:var(--muted);font-size:13px}
-.logo-full{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;height:100%;background:#fff;padding:18px;box-sizing:border-box}
-.logo-full img{max-width:92%;width:460px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.08)}
-.lang-row{display:flex;gap:8px}
-.lang-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer}
-.lang-btn.active{background:var(--accent);color:#fff}
-#mainPage{display:none;max-width:980px;margin:18px auto;padding:18px}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;background:rgba(255,255,255,0.95);border-bottom:1px solid rgba(0,0,0,0.03)}
-.banner{background:#fff7e6;padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.03);font-weight:700;margin-bottom:12px;text-align:center}
-@media(max-width:520px){ .panel{padding:14px;border-radius:10px} .logo-full img{width:90%} h2{font-size:18px} }
+html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222;text-align:center;}
+.overlay{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+.panel{background:var(--card);max-width:420px;width:100%;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.15);padding:22px;box-sizing:border-box;}
+h2{margin:0 0 12px;color:#c47d04;font-size:20px;}
+input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc;font-size:15px;}
+button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:700;width:100%;}
+.btn-primary{background:var(--accent);color:#111;}
+.btn-secondary{background:#eee;color:#222;}
+.logo-full{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;height:100%;background:#fff;}
+.logo-full img{max-width:90%;width:420px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.08);}
+.banner{background:#fff7e6;padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.05);font-weight:700;margin:12px;text-align:center;}
 </style>
 </head>
 <body>
 
-<!-- REGISTER FULL SCREEN -->
-<div id="registerOverlay" class="overlay" style="background:var(--bg);">
+<!-- Step 1: Register -->
+<div id="registerPage" class="overlay">
   <div class="panel">
     <h2>रजिस्टर करें</h2>
-    <p class="muted">नाम और मोबाइल डालें — डेटा अपने-आप सेव रहेगा।</p>
+    <p style="font-size:13px;color:#555;">पहली बार रजिस्टर करने के लिए नाम और मोबाइल डालें।</p>
     <input id="regName" type="text" placeholder="नाम (वैकल्पिक)">
-    <input id="regMobile" type="tel" inputmode="numeric" placeholder="मोबाइल नंबर (10 अंक)" maxlength="10">
-    <button id="doRegister" class="btn-primary">रजिस्टर करें</button>
+    <input id="regMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="मोबाइल नंबर (10 अंक)">
+    <button id="btnRegister" class="btn-primary">रजिस्टर करें</button>
     <div style="height:8px"></div>
-    <button id="toLogin" class="btn-secondary" style="width:100%">पहले से अकाउंट है? लॉगिन करें</button>
-    <p id="regError" class="muted" style="color:red"></p>
+    <p id="regError" style="color:red;font-size:13px;"></p>
   </div>
 </div>
 
-<!-- LOGIN FULL SCREEN -->
-<div id="loginOverlay" class="overlay" style="background:var(--bg);display:none;">
+<!-- Step 2: Login -->
+<div id="loginPage" class="overlay" style="display:none;">
   <div class="panel">
     <h2>लॉगिन करें</h2>
-    <p class="muted">रजिस्टर मोबाइल नंबर डालें।</p>
-    <input id="loginMobile" type="tel" inputmode="numeric" placeholder="मोबाइल नंबर (10 अंक)" maxlength="10">
-    <button id="doLogin" class="btn-primary">लॉगिन</button>
+    <p style="font-size:13px;color:#555;">रजिस्टर किया हुआ मोबाइल नंबर डालें।</p>
+    <input id="loginMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="मोबाइल नंबर (10 अंक)">
+    <button id="btnLogin" class="btn-primary">लॉगिन</button>
     <div style="height:8px"></div>
-    <button id="backToRegister" class="btn-secondary" style="width:100%">नया अकाउंट रजिस्टर करें</button>
-    <p id="loginError" class="muted" style="color:red"></p>
+    <p id="loginError" style="color:red;font-size:13px;"></p>
   </div>
 </div>
 
-<!-- LOGO PAGE -->
-<div id="logoOverlay" class="overlay" style="display:none;background:white;">
+<!-- Step 3: Logo Page -->
+<div id="logoPage" class="overlay" style="display:none;">
   <div class="logo-full">
     <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Papad Logo">
-    <div class="lang-row">
-      <button class="lang-btn active" data-lang="hi">हिंदी</button>
-      <button class="lang-btn" data-lang="en">English</button>
-      <button class="lang-btn" data-lang="gu">ગુજરાતી</button>
-    </div>
-    <button id="proceedBtn" class="btn-primary">अगला पेज ➜</button>
+    <button id="btnNext" class="btn-primary" style="width:auto;padding:10px 30px;">अगला पेज ➜</button>
   </div>
 </div>
 
-<!-- MAIN PAGE -->
-<div id="mainPage">
-  <div class="topbar">
-    <div style="font-weight:700">RJ पापड़</div>
-    <button id="logoutBtn" class="btn-secondary">Logout</button>
-  </div>
-
-  <main>
-    <div class="banner" id="banner1">Top Banner (हिंदी)</div>
-    <div class="banner" id="banner2">Bottom Banner (हिंदी)</div>
-    <p style="text-align:center;margin-top:20px;">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
-  </main>
+<!-- Step 4: Main Page -->
+<div id="mainPage" style="display:none;">
+  <div class="banner" id="bannerTop">🟡 Top Banner (हिंदी)</div>
+  <div class="banner" id="bannerBottom">🟡 Bottom Banner (हिंदी)</div>
+  <p style="font-weight:600;margin-top:20px;">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
+  <button id="btnLogout" class="btn-secondary" style="max-width:200px;margin-top:15px;">Logout</button>
 </div>
 
 <script>
-/* CONFIG */
-const SHEET_WEBHOOK_URL = "PUT_YOUR_SCRIPT_URL_HERE"; // replace
-const SHEET_SECRET = "rj_secret_2025_xyz"; // replace
+/* CONFIGURATION */
+const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE"; // your Google Script Web App URL
+const SHEET_SECRET = "rj_secret_2025_xyz"; // same as in Apps Script
 
-/* KEYS */
-const KEY_REG_MOBILE="rj_registered_mobile", KEY_REG_NAME="rj_registered_name", KEY_SESSION="rj_session_loggedin";
-const el=id=>document.getElementById(id);
+/* ELEMENT SHORTCUTS */
+const regP = document.getElementById("registerPage");
+const logP = document.getElementById("loginPage");
+const logoP = document.getElementById("logoPage");
+const mainP = document.getElementById("mainPage");
 
-/* ELEMENTS */
-const regO=el('registerOverlay'), logO=el('loginOverlay'), logoO=el('logoOverlay'), mainP=el('mainPage');
-const doReg=el('doRegister'), doLogin=el('doLogin'), toLogin=el('toLogin'), backToReg=el('backToRegister');
-const logoutBtn=el('logoutBtn'), proceedBtn=el('proceedBtn');
-const regErr=el('regError'), loginErr=el('loginError');
+const btnRegister = document.getElementById("btnRegister");
+const btnLogin = document.getElementById("btnLogin");
+const btnNext = document.getElementById("btnNext");
+const btnLogout = document.getElementById("btnLogout");
+const regError = document.getElementById("regError");
+const loginError = document.getElementById("loginError");
 
-/* INITIAL LOAD */
-window.onload=function(){
-  const reg=localStorage.getItem(KEY_REG_MOBILE);
-  const session=localStorage.getItem(KEY_SESSION)==="true";
-  if(!reg){showReg();return;}
-  if(session){showLogo();return;}
-  showLogin();
-};
+/* LOCAL STORAGE KEYS */
+const KEY_REG_MOB = "rj_mobile";
+const KEY_REG_NAME = "rj_name";
+const KEY_SESSION = "rj_session";
 
-/* SHOW FUNCTIONS */
-function showReg(){regO.style.display="flex";logO.style.display="none";logoO.style.display="none";mainP.style.display="none";}
-function showLogin(){logO.style.display="flex";regO.style.display="none";logoO.style.display="none";mainP.style.display="none";}
-function showLogo(){logoO.style.display="flex";regO.style.display="none";logO.style.display="none";mainP.style.display="none";}
-function showMain(){mainP.style.display="block";logoO.style.display="none";}
-
-/* REGISTER */
-doReg.onclick=()=>{
-  const name=el('regName').value.trim();
-  const mob=el('regMobile').value.trim();
-  if(!/^[0-9]{10}$/.test(mob)){regErr.textContent="कृपया 10 अंकों का मोबाइल नंबर डालें";return;}
-  localStorage.setItem(KEY_REG_MOBILE,mob);
-  localStorage.setItem(KEY_REG_NAME,name);
-  localStorage.setItem(KEY_SESSION,"true");
-  regErr.textContent="";
-  saveToSheet("register",mob,name);
-  showLogo();
-};
-
-/* LOGIN */
-doLogin.onclick=()=>{
-  const mob=el('loginMobile').value.trim();
-  const reg=localStorage.getItem(KEY_REG_MOBILE);
-  if(!/^[0-9]{10}$/.test(mob)){loginErr.textContent="सही मोबाइल नंबर डालें";return;}
-  if(mob!==reg){loginErr.textContent="यह मोबाइल रजिस्टर नहीं है";return;}
-  localStorage.setItem(KEY_SESSION,"true");
-  loginErr.textContent="";
-  showLogo();
-};
-
-/* BUTTON SWITCHES */
-toLogin.onclick=()=>showLogin();
-backToReg.onclick=()=>showReg();
-
-/* PROCEED */
-proceedBtn.onclick=()=>{showMain();};
-
-/* LOGOUT */
-logoutBtn.onclick=()=>{
-  localStorage.setItem(KEY_SESSION,"false");
-  showLogin();
-};
-
-/* LANGUAGE */
-document.querySelectorAll('.lang-btn').forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const l=btn.dataset.lang;
-    if(l==="en"){el('banner1').textContent="Top Banner (English)";el('banner2').textContent="Bottom Banner (English)";}
-    else if(l==="gu"){el('banner1').textContent="Top Banner (ગુજરાતી)";el('banner2').textContent="Bottom Banner (ગુજરાતી)";}
-    else {el('banner1').textContent="Top Banner (हिंदी)";el('banner2').textContent="Bottom Banner (हिंदी)";}
-  };
+/* STEP 1 → REGISTER */
+btnRegister.addEventListener("click", async ()=>{
+  const name = document.getElementById("regName").value.trim();
+  const mobile = document.getElementById("regMobile").value.trim();
+  if(!/^[0-9]{10}$/.test(mobile)){
+    regError.textContent = "कृपया 10 अंकों का सही मोबाइल नंबर डालें";
+    return;
+  }
+  localStorage.setItem(KEY_REG_NAME, name);
+  localStorage.setItem(KEY_REG_MOB, mobile);
+  localStorage.setItem(KEY_SESSION, "false");
+  regError.textContent = "";
+  await saveToSheet("register", mobile, name);
+  regP.style.display="none";
+  logP.style.display="flex";
 });
+
+/* STEP 2 → LOGIN */
+btnLogin.addEventListener("click", ()=>{
+  const entered = document.getElementById("loginMobile").value.trim();
+  const saved = localStorage.getItem(KEY_REG_MOB);
+  if(!/^[0-9]{10}$/.test(entered)){
+    loginError.textContent = "कृपया 10 अंकों का मोबाइल नंबर डालें";
+    return;
+  }
+  if(entered !== saved){
+    loginError.textContent = "यह मोबाइल रजिस्टर नहीं है";
+    return;
+  }
+  localStorage.setItem(KEY_SESSION, "true");
+  loginError.textContent = "";
+  logP.style.display="none";
+  logoP.style.display="flex";
+});
+
+/* STEP 3 → LOGO BUTTON */
+btnNext.addEventListener("click", ()=>{
+  logoP.style.display="none";
+  mainP.style.display="block";
+});
+
+/* STEP 4 → LOGOUT */
+btnLogout.addEventListener("click", ()=>{
+  localStorage.setItem(KEY_SESSION,"false");
+  mainP.style.display="none";
+  logP.style.display="flex";
+});
+
+/* ALWAYS SHOW REGISTER FIRST ON LOAD */
+window.onload = function(){
+  regP.style.display="flex";
+  logP.style.display="none";
+  logoP.style.display="none";
+  mainP.style.display="none";
+};
 
 /* SAVE TO GOOGLE SHEET */
 async function saveToSheet(action,mobile,name){
-  if(!SHEET_WEBHOOK_URL.startsWith("http"))return;
+  if(!SHEET_WEBHOOK_URL.startsWith("http")) return;
   try{
-    await fetch(SHEET_WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({secret:SHEET_SECRET,action,user_mobile:mobile,user_name:name,language:"hi"})});
+    await fetch(SHEET_WEBHOOK_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({secret:SHEET_SECRET,action,user_mobile:mobile,user_name:name,language:"hi"})
+    });
   }catch(e){console.log(e);}
 }
 </script>

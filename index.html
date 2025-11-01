@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RJ पापड़ — Multilingual + Banner by Language</title>
+<title>RJ पापड़ — Language-specific Banners + AutoSave</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;width:100%;font-family:'Noto Sans Devanagari',sans-serif;background:#fff8e1;color:#222;overflow-x:hidden}
+  /* Splash */
   #logoArea{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;transition:opacity .6s ease}
   #logoArea img{width:70vw;max-width:320px;height:auto;margin-bottom:18px;border-radius:10px}
   .lang-bar{display:flex;gap:10px}
@@ -32,7 +33,7 @@
 </head>
 <body>
 
-<!-- 🟡 Splash Logo Page -->
+<!-- SPLASH LOGO -->
 <div id="logoArea">
   <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Logo">
   <div class="lang-bar">
@@ -43,11 +44,10 @@
 </div>
 
 <div class="site">
-
-  <!-- Common Structure, Banners change dynamically -->
+  <!-- SINGLE CONTENT AREA: banners and registrations update per-language -->
   <section id="langContent" class="content">
     <img id="topBanner" class="banner" src="" alt="Top Banner">
-    <h1 id="titleText">RJ Papad</h1>
+    <h1 id="titleText">RJ पापड़</h1>
 
     <div class="form-card">
       <div class="controls">
@@ -61,94 +61,161 @@
   </section>
 </div>
 
-<footer>© 2025 RJ Papad | Auto Save + Language Banners</footer>
+<footer>© 2025 RJ पापड़</footer>
 
 <script>
-const STORAGE_KEY="rjpapad_lang_banner";
+/*
+ Storage structure:
+ {
+   lang: null|'hi'|'en'|'gu',
+   data: {
+     hi: { list: [ {name,mobile}, ... ] },
+     en: { list: [...] },
+     gu: { list: [...] }
+   }
+ }
+*/
+const STORAGE_KEY = "rjpapad_lang_banners_v1";
 
-/* 🖼️ Language-specific banners + headings */
-const bannerData={
-  hi:{
-    title:"RJ पापड़ में आपका स्वागत है!",
-    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
-    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
+/* Language-specific banners and titles (change URLs if you have other images) */
+const LANG_CONF = {
+  hi: {
+    title: "RJ पापड़ में आपका स्वागत है!",
+    top: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
+    bottom: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
   },
-  en:{
-    title:"Welcome to RJ Papad!",
-    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png",
-    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png"
+  en: {
+    title: "Welcome to RJ Papad!",
+    top: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png",
+    bottom: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png"
   },
-  gu:{
-    title:"RJ પાપડ માં આપનું સ્વાગત છે!",
-    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
-    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
+  gu: {
+    title: "RJ પાપડ માં આપનું સ્વાગત છે!",
+    top: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
+    bottom: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
   }
 };
 
-/* Load state */
+/* Helpers: load/save state */
 function loadState(){
   try{
-    const r=localStorage.getItem(STORAGE_KEY);
-    if(!r) return {lang:null,list:[]};
-    return JSON.parse(r);
-  }catch{return {lang:null,list:[]}}
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw){
+      return { lang:null, data:{ hi:{list:[]}, en:{list:[]}, gu:{list:[]} } };
+    }
+    const parsed = JSON.parse(raw);
+    parsed.data = parsed.data || { hi:{list:[]}, en:{list:[]}, gu:{list:[]} };
+    parsed.data.hi = parsed.data.hi || {list:[]};
+    parsed.data.en = parsed.data.en || {list:[]};
+    parsed.data.gu = parsed.data.gu || {list:[]};
+    return parsed;
+  }catch(e){
+    console.error(e);
+    return { lang:null, data:{ hi:{list:[]}, en:{list:[]}, gu:{list:[]} } };
+  }
 }
-function saveState(s){ localStorage.setItem(STORAGE_KEY,JSON.stringify(s)); }
+function saveState(state){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-/* Render list */
-function renderList(){
-  const c=document.getElementById("regs");
-  const s=loadState();
-  c.innerHTML="";
-  if(!s.list.length){ addRegistrant(); return; }
-  s.list.forEach((r,i)=>{
-    const div=document.createElement("div");div.className="reg-item";
-    const name=document.createElement("input");name.placeholder="नाम / Name";name.value=r.name||"";
-    const mobile=document.createElement("input");mobile.placeholder="मोबाइल नंबर / Mobile";mobile.value=r.mobile||"";
-    name.oninput=()=>update(i,name.value,mobile.value);
-    mobile.oninput=()=>update(i,name.value,mobile.value);
-    const del=document.createElement("button");del.className="icon-btn";del.textContent="🗑️";del.onclick=()=>delItem(i);
-    div.append(name,mobile,del);
-    c.append(div);
+/* Render registrations for currently selected language */
+function renderRegistrationsFor(lang){
+  const container = document.getElementById("regs");
+  container.innerHTML = "";
+  const state = loadState();
+  const list = state.data[lang].list || [];
+  if(list.length === 0){
+    // show one empty row by default
+    addRegistrant(lang);
+    return;
+  }
+  list.forEach((r, idx) => {
+    const row = document.createElement("div");
+    row.className = "reg-item";
+
+    const name = document.createElement("input");
+    name.type = "text";
+    name.placeholder = (lang==='hi'?'नाम (वैकल्पिक)': (lang==='en'?'Name (Optional)':'નામ (વૈકલ્પિક)'));
+    name.value = r.name || "";
+    name.oninput = ()=> updateRegistrant(lang, idx, name.value, mobile.value);
+
+    const mobile = document.createElement("input");
+    mobile.type = "tel";
+    mobile.placeholder = (lang==='hi'?'मोबाइल नंबर (अनिवार्य)': (lang==='en'?'Mobile Number (Required)':'મોબાઇલ નંબર (આવશ્યક)'));
+    mobile.value = r.mobile || "";
+    mobile.oninput = ()=> updateRegistrant(lang, idx, name.value, mobile.value);
+
+    const del = document.createElement("button");
+    del.className = "icon-btn";
+    del.textContent = "🗑️";
+    del.onclick = ()=> deleteRegistrant(lang, idx);
+
+    row.appendChild(name);
+    row.appendChild(mobile);
+    row.appendChild(del);
+    container.appendChild(row);
   });
 }
-function addRegistrant(){
-  const s=loadState();
-  s.list.push({name:"",mobile:""});
-  saveState(s); renderList();
-}
-function update(i,name,mobile){
-  const s=loadState();
-  s.list[i]={name,mobile};
-  saveState(s);
-}
-function delItem(i){
-  if(!confirm("Delete this entry?"))return;
-  const s=loadState();s.list.splice(i,1);saveState(s);renderList();
-}
-function saveAll(){ alert("✅ Data saved successfully! / डेटा सेव हो गया"); }
 
-/* Language switching */
+/* Add / update / delete functions (per language) */
+function addRegistrant(lang){
+  const state = loadState();
+  state.data[lang].list.push({ name:"", mobile:"" });
+  saveState(state);
+  renderRegistrationsFor(lang);
+}
+
+function updateRegistrant(lang, idx, name, mobile){
+  const state = loadState();
+  state.data[lang].list[idx] = { name, mobile };
+  saveState(state);
+}
+
+function deleteRegistrant(lang, idx){
+  if(!confirm("क्या आप इस एंट्री को हटाना चाहते हैं? / Delete this entry?")) return;
+  const state = loadState();
+  state.data[lang].list.splice(idx, 1);
+  saveState(state);
+  renderRegistrationsFor(lang);
+}
+
+function saveAll(){
+  alert("✅ डेटा सेव हो गया (saved).");
+}
+
+/* Choose language — triggered only by user click on splash */
 function chooseLang(lang){
-  const logo=document.getElementById("logoArea");
-  logo.style.opacity="0";
-  setTimeout(()=>{logo.style.display="none";},600);
+  // hide splash
+  const logo = document.getElementById("logoArea");
+  logo.style.opacity = "0";
+  setTimeout(()=>{ logo.style.display = "none"; }, 650);
 
-  const s=loadState();
-  s.lang=lang; saveState(s);
+  // set state
+  const state = loadState();
+  state.lang = lang;
+  saveState(state);
 
-  // Load banners and title for selected language
-  const data=bannerData[lang];
-  document.getElementById("topBanner").src=data.top;
-  document.getElementById("bottomBanner").src=data.bottom;
-  document.getElementById("titleText").textContent=data.title;
+  // set banners/titles for this language
+  const conf = LANG_CONF[lang] || LANG_CONF.hi;
+  document.getElementById("topBanner").src = conf.top;
+  document.getElementById("bottomBanner").src = conf.bottom;
+  document.getElementById("titleText").textContent = conf.title;
+
+  // show content section
   document.getElementById("langContent").classList.add("active");
 
-  renderList();
+  // render registrations for this language
+  renderRegistrationsFor(lang);
+
+  // scroll to top
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* Always start with logo visible */
-window.addEventListener("DOMContentLoaded",()=>{document.getElementById("logoArea").style.display="flex";});
+/* Auto-save entire state every 5s (redundant because updateRegistrant saves on typing) */
+setInterval(()=>{ const s = loadState(); saveState(s); }, 5000);
+
+/* On load: always show splash (logo). Do NOT auto-open last language. */
+window.addEventListener("DOMContentLoaded", ()=>{
+  document.getElementById("logoArea").style.display = "flex";
+});
 </script>
 </body>
 </html>

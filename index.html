@@ -3,17 +3,15 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RJ पापड़ — Multilingual + Splash Logo (Fixed)</title>
+<title>RJ पापड़ — Multilingual + Banner by Language</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;width:100%;font-family:'Noto Sans Devanagari',sans-serif;background:#fff8e1;color:#222;overflow-x:hidden}
-  /* Splash */
   #logoArea{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1000;transition:opacity .6s ease}
   #logoArea img{width:70vw;max-width:320px;height:auto;margin-bottom:18px;border-radius:10px}
   .lang-bar{display:flex;gap:10px}
   .lang-btn{background:#ffc107;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.15)}
   .lang-btn:hover{background:#ffb300}
-  /* Site */
   .site{max-width:980px;margin:0 auto;padding:12px}
   .content{display:none}
   .content.active{display:block;animation:fadeIn .25s}
@@ -34,7 +32,7 @@
 </head>
 <body>
 
-<!-- SPLASH LOGO (now fixed: will stay until user clicks a language) -->
+<!-- 🟡 Splash Logo Page -->
 <div id="logoArea">
   <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Logo">
   <div class="lang-bar">
@@ -45,105 +43,112 @@
 </div>
 
 <div class="site">
-  <!-- HINDI -->
-  <section id="hi" class="content">
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
-    <h1>RJ पापड़ में आपका स्वागत है!</h1>
-    <div class="form-card">
-      <div class="controls">
-        <button class="save-btn" onclick="saveAll('hi')">💾 सेव करें</button>
-        <button class="small-btn" onclick="addRegistrant('hi')">➕ ज्वाइंट जोड़ें</button>
-      </div>
-      <div id="regs-hi"></div>
-    </div>
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
-  </section>
 
-  <!-- ENGLISH -->
-  <section id="en" class="content">
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
-    <h1>Welcome to RJ Papad!</h1>
-    <div class="form-card">
-      <div class="controls">
-        <button class="save-btn" onclick="saveAll('en')">💾 Save</button>
-        <button class="small-btn" onclick="addRegistrant('en')">➕ Add Joint</button>
-      </div>
-      <div id="regs-en"></div>
-    </div>
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
-  </section>
+  <!-- Common Structure, Banners change dynamically -->
+  <section id="langContent" class="content">
+    <img id="topBanner" class="banner" src="" alt="Top Banner">
+    <h1 id="titleText">RJ Papad</h1>
 
-  <!-- GUJARATI -->
-  <section id="gu" class="content">
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
-    <h1>RJ પાપડ માં આપનું સ્વાગત છે!</h1>
     <div class="form-card">
       <div class="controls">
-        <button class="save-btn" onclick="saveAll('gu')">💾 સેવ કરો</button>
-        <button class="small-btn" onclick="addRegistrant('gu')">➕ જોડણી ઉમેરો</button>
+        <button class="save-btn" onclick="saveAll()">💾 Save</button>
+        <button class="small-btn" onclick="addRegistrant()">➕ Add / ज्वाइंट जोड़ें</button>
       </div>
-      <div id="regs-gu"></div>
+      <div id="regs"></div>
     </div>
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+
+    <img id="bottomBanner" class="banner" src="" alt="Bottom Banner">
   </section>
 </div>
 
-<footer>© 2025 RJ Papad | Auto Save Enabled</footer>
+<footer>© 2025 RJ Papad | Auto Save + Language Banners</footer>
 
 <script>
-const STORAGE_KEY="rjpapad_multi_v3";
+const STORAGE_KEY="rjpapad_lang_banner";
 
-/* State helpers */
-function loadState(){ try{ const r=localStorage.getItem(STORAGE_KEY); if(!r) return {lang:null,data:{hi:{list:[]},en:{list:[]},gu:{list:[]}}}; const o=JSON.parse(r); o.data=o.data||{hi:{list:[]},en:{list:[]},gu:{list:[]}}; return o;}catch{return {lang:null,data:{hi:{list:[]},en:{list:[]},gu:{list:[]}}}}}
+/* 🖼️ Language-specific banners + headings */
+const bannerData={
+  hi:{
+    title:"RJ पापड़ में आपका स्वागत है!",
+    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
+    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
+  },
+  en:{
+    title:"Welcome to RJ Papad!",
+    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png",
+    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png"
+  },
+  gu:{
+    title:"RJ પાપડ માં આપનું સ્વાગત છે!",
+    top:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
+    bottom:"https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
+  }
+};
+
+/* Load state */
+function loadState(){
+  try{
+    const r=localStorage.getItem(STORAGE_KEY);
+    if(!r) return {lang:null,list:[]};
+    return JSON.parse(r);
+  }catch{return {lang:null,list:[]}}
+}
 function saveState(s){ localStorage.setItem(STORAGE_KEY,JSON.stringify(s)); }
 
-/* Render registration list */
-function renderList(lang){
-  const c=document.getElementById(`regs-${lang}`);
-  c.innerHTML="";
+/* Render list */
+function renderList(){
+  const c=document.getElementById("regs");
   const s=loadState();
-  const list=s.data[lang].list||[];
-  if(list.length===0){ addRegistrant(lang); return; }
-  list.forEach((r,i)=>{
-    const div=document.createElement("div"); div.className="reg-item";
-    const name=document.createElement("input"); name.placeholder = lang==="hi"?"नाम (वैकल्पिक)":lang==="en"?"Name (Optional)":"નામ (વૈકલ્પિક)"; name.value=r.name||"";
-    const mobile=document.createElement("input"); mobile.placeholder = lang==="hi"?"मोबाइल नंबर (अनिवार्य)":lang==="en"?"Mobile Number (Required)":"મોબાઇલ નંબર (આવશ્યક)"; mobile.value=r.mobile||"";
-    name.oninput=()=>update(lang,i,name.value,mobile.value); mobile.oninput=()=>update(lang,i,name.value,mobile.value);
-    const del=document.createElement("button"); del.className="icon-btn"; del.textContent="🗑️"; del.onclick=()=>delItem(lang,i);
-    div.append(name,mobile,del); c.append(div);
+  c.innerHTML="";
+  if(!s.list.length){ addRegistrant(); return; }
+  s.list.forEach((r,i)=>{
+    const div=document.createElement("div");div.className="reg-item";
+    const name=document.createElement("input");name.placeholder="नाम / Name";name.value=r.name||"";
+    const mobile=document.createElement("input");mobile.placeholder="मोबाइल नंबर / Mobile";mobile.value=r.mobile||"";
+    name.oninput=()=>update(i,name.value,mobile.value);
+    mobile.oninput=()=>update(i,name.value,mobile.value);
+    const del=document.createElement("button");del.className="icon-btn";del.textContent="🗑️";del.onclick=()=>delItem(i);
+    div.append(name,mobile,del);
+    c.append(div);
   });
 }
+function addRegistrant(){
+  const s=loadState();
+  s.list.push({name:"",mobile:""});
+  saveState(s); renderList();
+}
+function update(i,name,mobile){
+  const s=loadState();
+  s.list[i]={name,mobile};
+  saveState(s);
+}
+function delItem(i){
+  if(!confirm("Delete this entry?"))return;
+  const s=loadState();s.list.splice(i,1);saveState(s);renderList();
+}
+function saveAll(){ alert("✅ Data saved successfully! / डेटा सेव हो गया"); }
 
-/* Add / update / delete */
-function addRegistrant(lang){ const s=loadState(); s.data[lang].list.push({name:"",mobile:""}); saveState(s); renderList(lang); }
-function update(lang,i,name,mobile){ const s=loadState(); s.data[lang].list[i]={name,mobile}; saveState(s); }
-function delItem(lang,i){ if(!confirm("क्या हटाना है? / Delete?")) return; const s=loadState(); s.data[lang].list.splice(i,1); saveState(s); renderList(lang); }
-function saveAll(lang){ alert("✅ "+(lang==="hi"?"डेटा सेव हो गया":"en"===lang?"Data Saved":"ડેટા સેવ થઈ ગયો")); }
-
-/* Choose language (triggered only by user click) */
+/* Language switching */
 function chooseLang(lang){
-  // hide logo smoothly
-  const logo = document.getElementById("logoArea");
+  const logo=document.getElementById("logoArea");
   logo.style.opacity="0";
-  setTimeout(()=>{ logo.style.display="none"; }, 650);
+  setTimeout(()=>{logo.style.display="none";},600);
 
-  // set state and show content
-  const st = loadState(); st.lang = lang; saveState(st);
-  document.querySelectorAll(".content").forEach(c=>c.classList.remove("active"));
-  document.getElementById(lang).classList.add("active");
-  renderList(lang);
-  window.scrollTo({top:0,behavior:"smooth"});
+  const s=loadState();
+  s.lang=lang; saveState(s);
+
+  // Load banners and title for selected language
+  const data=bannerData[lang];
+  document.getElementById("topBanner").src=data.top;
+  document.getElementById("bottomBanner").src=data.bottom;
+  document.getElementById("titleText").textContent=data.title;
+  document.getElementById("langContent").classList.add("active");
+
+  renderList();
 }
 
-/* Periodic auto-save backup (redundant because update() saves on input) */
-setInterval(()=>{ const s=loadState(); saveState(s); },5000);
-
-/* On load: show logo always (do NOT auto-open last language) */
-window.addEventListener("DOMContentLoaded", ()=>{
-  document.getElementById("logoArea").style.display = "flex";
-  // If you want to auto-open last language instead, comment out above line and uncomment these:
-  // const s = loadState(); if(s.lang){ chooseLang(s.lang); }
-});
+/* Always start with logo visible */
+window.addEventListener("DOMContentLoaded",()=>{document.getElementById("logoArea").style.display="flex";});
 </script>
 </body>
 </html>

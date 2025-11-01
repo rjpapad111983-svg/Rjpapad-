@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RJ पापड़ — Register → Logo → Language → Inner</title>
+<title>RJ पापड़ — Register → Logo → Language → Inner (Auto Logout)</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;width:100%;font-family:'Noto Sans Devanagari',sans-serif;background:#fff8e1;color:#222;overflow-x:hidden}
   .center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;padding:12px}
   .card{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);max-width:420px;width:100%}
-  input, textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
+  input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
   button{background:#ffc107;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;width:100%}
   button.secondary{background:#eee;color:#111;width:auto;padding:8px 12px;margin-top:8px}
   button:hover{opacity:0.98}
@@ -21,11 +21,11 @@
   .logout-btn{background:#f44336;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
   .logout-btn:hover{opacity:0.95}
   footer{text-align:center;color:#666;margin:18px 0;font-size:13px}
-  .langBar { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; justify-content:center; }
-  .langBtn { background:#ffc107; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:700; }
-  .logoBox { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; height:60vh; }
-  .logoBox img { width:65vw; max-width:260px; height:auto; border-radius:10px; }
-  @media(max-width:520px){ .logoBox img { width:80vw; } }
+  .langBar{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center}
+  .langBtn{background:#ffc107;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
+  .logoBox{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:60vh}
+  .logoBox img{width:65vw;max-width:260px;height:auto;border-radius:10px}
+  @media(max-width:520px){.logoBox img{width:80vw}}
 </style>
 </head>
 <body>
@@ -39,21 +39,10 @@
     <input id="regName" type="text" placeholder="नाम / Name">
     <input id="regMobile" type="tel" placeholder="मोबाइल नंबर / Mobile Number">
     <button id="regSaveBtn">💾 सेव करें</button>
-    <button class="secondary" id="goToLoginBtn" style="display:none;">मैं पहले से रजिस्टर हूँ (Login)</button>
   </div>
 </div>
 
-<!-- LOGIN PAGE (also accepts 'admin') -->
-<div id="loginPage" class="center" style="display:none;">
-  <div class="card">
-    <h1>लॉगिन करें</h1>
-    <input id="loginMobile" type="text" placeholder="अपना मोबाइल नंबर डालें या 'admin' लिखें">
-    <button id="loginBtn">🔓 लॉगिन</button>
-    <button class="secondary" id="goToRegisterBtn">नया यूज़र? रजिस्टर करें</button>
-  </div>
-</div>
-
-<!-- SPLASH LOGO (shows after register OR when returning user opens site) -->
+<!-- SPLASH LOGO PAGE -->
 <div id="logoArea" class="center" style="display:none; height:75vh; padding:20px;">
   <div class="logoBox">
     <img id="splashLogo" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Logo">
@@ -80,227 +69,97 @@
     <h1 id="titleText" style="text-align:center;color:#c47f00">RJ पापड़ में आपका स्वागत है!</h1>
 
     <div style="background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04);margin:12px 0;">
-      <p><strong>रजिस्टर नाम:</strong> <span id="showName">—</span></p>
-      <p><strong>रजिस्टर मोबाइल:</strong> <span id="showMobile">—</span></p>
+      <p><strong>नाम:</strong> <span id="showName">—</span></p>
+      <p><strong>मोबाइल:</strong> <span id="showMobile">—</span></p>
     </div>
 
     <img id="bottomBanner" class="banner" src="" alt="Bottom Banner">
   </div>
 </div>
 
-<!-- ADMIN PANEL (opened when user types 'admin' on login) -->
-<div id="adminPanel" style="display:none;">
-  <div style="max-width:980px;margin:20px auto;padding:12px;background:#fff;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04)">
-    <h2>Admin Panel (Unlocked)</h2>
-    <div style="margin-bottom:12px;"><strong>Local Registered User:</strong><div id="adminSaved" style="margin-top:6px">—</div></div>
-
-    <div style="margin-bottom:12px;">
-      <strong>Change Banners (local)</strong>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <input id="adminTop" placeholder="Top banner URL">
-        <input id="adminBottom" placeholder="Bottom banner URL">
-        <button id="saveBannersBtn" style="background:#2196F3;color:#fff;border:none;padding:8px 10px;border-radius:8px">Save</button>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:8px;">
-      <button id="resetStorageBtn" style="background:#f44336;color:#fff;border:none;padding:8px 10px;border-radius:8px">Reset Local Storage</button>
-      <button id="closeAdmin" class="secondary">Close Admin</button>
-    </div>
-  </div>
-</div>
-
 <footer>© 2025 RJ पापड़</footer>
 
 <script>
-/* Keys and defaults */
-const STORAGE_KEY = "rjpapad_user_data_v1";
-const BANNER_KEY = "rjpapad_banners_v1";
-const SESSION_KEY = "rjpapad_session_v1";
-const DEFAULT_TOP = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
-const DEFAULT_BOTTOM = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
+/* Local storage keys */
+const STORAGE_KEY="rjpapad_user_data_v1";
+const DEFAULT_TOP="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
+const DEFAULT_BOTTOM="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 
-/* UI refs */
-const registerPage = document.getElementById("registerPage");
-const loginPage = document.getElementById("loginPage");
-const logoArea = document.getElementById("logoArea");
-const mainSite = document.getElementById("mainSite");
-const adminPanel = document.getElementById("adminPanel");
-const notify = document.getElementById("notify");
+/* Short helpers */
+const regPage=document.getElementById("registerPage");
+const logoPage=document.getElementById("logoArea");
+const mainPage=document.getElementById("mainSite");
+const notify=document.getElementById("notify");
 
-/* Helpers */
-function showNotify(msg){ notify.textContent = msg; notify.classList.add("show"); setTimeout(()=>notify.classList.remove("show"),3000); }
-function loadUser(){ try{ const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : { name:null, mobile:null }; }catch{return {name:null,mobile:null}} }
-function saveUser(u){ localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
-function loadBanners(){ try{ const r = localStorage.getItem(BANNER_KEY); return r ? JSON.parse(r) : { top: DEFAULT_TOP, bottom: DEFAULT_BOTTOM, title: "RJ पापड़ में आपका स्वागत है!" }; }catch{return { top: DEFAULT_TOP, bottom: DEFAULT_BOTTOM, title: "RJ पापड़ में आपका स्वागत है!" } } }
-function saveBanners(b){ localStorage.setItem(BANNER_KEY, JSON.stringify(b)); }
-function saveSession(m){ sessionStorage.setItem(SESSION_KEY, m); }
-function clearSession(){ sessionStorage.removeItem(SESSION_KEY); }
-function getSession(){ return sessionStorage.getItem(SESSION_KEY); }
-function applyBanners(){ const b = loadBanners(); document.getElementById("topBanner").src = b.top; document.getElementById("bottomBanner").src = b.bottom; document.getElementById("titleText").textContent = b.title; }
+/* Notification */
+function showNotify(msg){notify.textContent=msg;notify.classList.add("show");setTimeout(()=>notify.classList.remove("show"),3000);}
 
-/* Page flows:
-   - New user (no saved) -> show registerPage
-   - Registered user (saved) and no session -> show logoArea (so they choose language)
-   - Session active -> openMain
-*/
-window.addEventListener("DOMContentLoaded", ()=>{
-  const user = loadUser();
-  const sess = getSession();
+/* Save / Load user */
+function loadUser(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):{name:null,mobile:null};}catch{return {name:null,mobile:null};}}
+function saveUser(u){localStorage.setItem(STORAGE_KEY,JSON.stringify(u));}
+function clearUser(){localStorage.removeItem(STORAGE_KEY);}
 
-  if(sess && user && sess === user.mobile){
-    openMain(user);
-    return;
-  }
+/* Apply banners */
+function applyBanners(top,bottom,title){
+  document.getElementById("topBanner").src=top||DEFAULT_TOP;
+  document.getElementById("bottomBanner").src=bottom||DEFAULT_BOTTOM;
+  document.getElementById("titleText").textContent=title||"RJ पापड़ में आपका स्वागत है!";
+}
 
-  if(user && user.mobile){
-    // registered but not logged in — show splash logo first (user must pick language)
-    showLogo();
-    return;
-  }
+/* Page display */
+function showRegister(){regPage.style.display="flex";logoPage.style.display="none";mainPage.style.display="none";}
+function showLogo(){regPage.style.display="none";logoPage.style.display="flex";mainPage.style.display="none";}
+function showMain(u){regPage.style.display="none";logoPage.style.display="none";mainPage.style.display="block";
+  document.getElementById("showName").textContent=u.name||"—";
+  document.getElementById("showMobile").textContent=u.mobile||"—";
+  document.getElementById("welcomeText").textContent=`Logged in as ${u.mobile}`;}
 
-  // new user
-  showRegister();
+/* On load logic */
+window.addEventListener("DOMContentLoaded",()=>{
+  const u=loadUser();
+  if(u&&u.mobile){showLogo();}
+  else{showRegister();}
   applyBanners();
 });
 
-/* Show functions */
-function showRegister(){
-  registerPage.style.display = "flex";
-  loginPage.style.display = "none";
-  logoArea.style.display = "none";
-  mainSite.style.display = "none";
-  adminPanel.style.display = "none";
-}
-function showLogin(){
-  registerPage.style.display = "none";
-  loginPage.style.display = "flex";
-  logoArea.style.display = "none";
-  mainSite.style.display = "none";
-  adminPanel.style.display = "none";
-}
-function showLogo(){
-  registerPage.style.display = "none";
-  loginPage.style.display = "none";
-  logoArea.style.display = "flex";
-  mainSite.style.display = "none";
-  adminPanel.style.display = "none";
-}
-function openMain(user){
-  registerPage.style.display = "none";
-  loginPage.style.display = "none";
-  logoArea.style.display = "none";
-  mainSite.style.display = "block";
-  adminPanel.style.display = "none";
-  applyBanners();
-  document.getElementById("showName").textContent = user.name || "—";
-  document.getElementById("showMobile").textContent = user.mobile || "—";
-  document.getElementById("welcomeText").textContent = `Logged in as ${user.mobile}`;
-}
-function showAdminPanel(){
-  registerPage.style.display = "none";
-  loginPage.style.display = "none";
-  logoArea.style.display = "none";
-  mainSite.style.display = "none";
-  adminPanel.style.display = "block";
-  const u = loadUser();
-  document.getElementById("adminSaved").textContent = u && u.mobile ? `Name: ${u.name||"—"}, Mobile: ${u.mobile}` : "कोई स्थानीय रजिस्ट्रेशन नहीं";
-  const b = loadBanners();
-  document.getElementById("adminTop").value = b.top || DEFAULT_TOP;
-  document.getElementById("adminBottom").value = b.bottom || DEFAULT_BOTTOM;
-}
-
-/* Register action */
-document.getElementById("regSaveBtn").addEventListener("click", ()=>{
-  const name = document.getElementById("regName").value.trim();
-  const mobile = document.getElementById("regMobile").value.trim();
-  if(!mobile){ alert("कृपया मोबाइल नंबर डालें"); return; }
-  saveUser({ name, mobile });
-  // after register, show splash logo (so language selection next)
-  showNotify("✅ रजिस्ट्रेशन सफल! कृपया भाषा चुनें।");
+/* Register Save */
+document.getElementById("regSaveBtn").addEventListener("click",()=>{
+  const n=document.getElementById("regName").value.trim();
+  const m=document.getElementById("regMobile").value.trim();
+  if(!m){alert("कृपया मोबाइल नंबर डालें");return;}
+  saveUser({name:n,mobile:m});
+  showNotify("✅ रजिस्ट्रेशन सफल!");
   showLogo();
 });
 
-/* Login button (has admin special case) */
-document.getElementById("loginBtn").addEventListener("click", ()=>{
-  const input = document.getElementById("loginMobile").value.trim();
-  if(!input){ alert("कृपया मोबाइल डालें या 'admin' लिखें"); return; }
-  if(input.toLowerCase() === "admin"){
-    // open admin panel directly
-    showNotify("👑 Admin access");
-    showAdminPanel();
-    return;
-  }
-  const user = loadUser();
-  if(user && user.mobile === input){
-    // set session and show splash (so user can choose language)
-    saveSession(input);
-    showNotify("✅ लॉगिन सफल! कृपया भाषा चुनें।");
-    showLogo();
-    return;
-  }
-  alert("❌ यह नंबर रजिस्टर नहीं है या गलत है।");
-});
-
-/* Language choose from splash */
+/* Language selection */
 function chooseLang(lang){
-  // get user (must be registered); if not registered, go to register
-  const user = loadUser();
-  if(!user || !user.mobile){
-    showNotify("पहले रजिस्टर करें");
-    showRegister();
-    return;
-  }
-
-  // ensure session exists (set if not)
-  if(!getSession()){
-    saveSession(user.mobile);
-  }
-
-  // set banners/titles per language
-  const conf = {
-    hi:{ title:"RJ पापड़ में आपका स्वागत है!", top: DEFAULT_TOP, bottom: DEFAULT_BOTTOM },
-    en:{ title:"Welcome to RJ Papad!", top: DEFAULT_BOTTOM, bottom: DEFAULT_TOP },
-    gu:{ title:"RJ પાપડ માં આપનું સ્વાગત છે!", top: DEFAULT_TOP, bottom: DEFAULT_BOTTOM }
-  }[lang] || { title:"RJ पापड़", top: DEFAULT_TOP, bottom: DEFAULT_BOTTOM };
-
-  // save language-specific banners to local banner store (so admin can change later)
-  saveBanners({ top: conf.top, bottom: conf.bottom, title: conf.title });
-
-  // hide splash and open main
-  logoArea.style.opacity = "0";
-  setTimeout(()=>{ logoArea.style.display = "none"; }, 400);
-
-  openMain(user);
+  const u=loadUser();
+  if(!u||!u.mobile){showRegister();return;}
+  const langs={
+    hi:{title:"RJ पापड़ में आपका स्वागत है!",top:DEFAULT_TOP,bottom:DEFAULT_BOTTOM},
+    en:{title:"Welcome to RJ Papad!",top:DEFAULT_BOTTOM,bottom:DEFAULT_TOP},
+    gu:{title:"RJ પાપડ માં આપનું સ્વાગત છે!",top:DEFAULT_TOP,bottom:DEFAULT_BOTTOM}
+  };
+  const b=langs[lang]||langs.hi;
+  applyBanners(b.top,b.bottom,b.title);
+  logoPage.style.opacity="0";
+  setTimeout(()=>{logoPage.style.display="none";showMain(u);},400);
 }
 
-/* Logout */
-document.getElementById("logoutBtn").addEventListener("click", ()=>{
-  if(!confirm("क्या आप लॉगआउट करना चाहते हैं?")) return;
-  clearSession();
+/* Logout manually */
+document.getElementById("logoutBtn").addEventListener("click",()=>{
+  if(!confirm("क्या आप लॉगआउट करना चाहते हैं?"))return;
+  clearUser();
   showNotify("🔓 लॉगआउट कर दिया गया");
-  setTimeout(()=>{ showLogin(); }, 600);
+  setTimeout(showRegister,600);
 });
 
-/* Admin actions from adminPanel */
-document.getElementById("saveBannersBtn").addEventListener("click", ()=>{
-  const top = document.getElementById("adminTop").value.trim() || DEFAULT_TOP;
-  const bottom = document.getElementById("adminBottom").value.trim() || DEFAULT_BOTTOM;
-  saveBanners({ top, bottom, title: document.getElementById("titleText").textContent || "RJ पापड़" });
-  applyBanners();
-  showNotify("✅ Banners saved (local).");
+/* Auto Logout when tab/browser closed */
+window.addEventListener("beforeunload",()=>{
+  // Clear registration on close to force re-login next time
+  clearUser();
 });
-document.getElementById("resetStorageBtn").addEventListener("click", ()=>{
-  if(!confirm("सारी local storage हटानी है?")) return;
-  localStorage.clear();
-  sessionStorage.clear();
-  showNotify("♻️ Local data cleared.");
-  setTimeout(()=>{ showRegister(); }, 600);
-});
-document.getElementById("closeAdmin").addEventListener("click", ()=>{ showLogin(); });
-
-/* On load ensure banners applied */
-window.addEventListener("load", applyBanners);
 </script>
 </body>
 </html>

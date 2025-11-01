@@ -3,436 +3,201 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>RJ Papad - Loyalty</title>
+  <title>RJ Papad Loyalty Register</title>
   <style>
-    :root{
-      --bg: #fff8dc;
-      --card: #fff;
-      --accent: #f7b500;
-      --dark: #222;
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #fff8dc;
+      color: #333;
+      text-align: center;
     }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Poppins", sans-serif;
-      background: var(--bg);
-      color: var(--dark);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      min-height:100vh;
+    header {
+      padding: 20px;
     }
-
-    header.hero{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      background: linear-gradient(180deg, #fffaf0 0%, #fff5e0 100%);
-      padding:18px 12px;
-      position:relative;
+    .logo {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
     }
-
-    .logo-img{
-      width:100%;
-      max-width:520px;
-      height:auto;
-      object-fit:contain;
-      border-radius:10px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      background: #fff;
-      padding:12px;
+    .lang-btns {
+      margin-top: 10px;
     }
-
-    .language-row{
-      margin-top:12px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:center;
-      flex-wrap:wrap;
+    .lang-btns button {
+      margin: 5px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #ffb300;
+      color: white;
+      font-weight: bold;
     }
-    .lang-btn{
-      background:transparent;
-      border:1px solid rgba(0,0,0,0.08);
-      padding:8px 12px;
-      border-radius:8px;
-      font-weight:600;
-      cursor:pointer;
-      min-width:88px;
+    .card {
+      background: white;
+      margin: 20px auto;
+      max-width: 400px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .lang-btn.active{
-      background:var(--accent);
-      color:#fff;
-      border-color:rgba(0,0,0,0.06);
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
-
-    main.container{
-      max-width:700px;
-      margin:18px auto;
-      padding:18px;
-      border-radius:12px;
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #ffb300;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
     }
-
-    .card{
-      background:var(--card);
-      border-radius:12px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.06);
-      padding:16px;
-      margin-bottom:14px;
+    #dashboard {
+      display: none;
     }
-
-    h1.title{
-      text-align:center;
-      color:#c47d04;
-      font-size:20px;
-      margin:6px 0 12px;
-    }
-
-    input[type="text"], input[type="tel"]{
-      width:100%;
-      padding:12px 10px;
-      margin:10px 0;
-      border-radius:8px;
-      border:1px solid #ddd;
-      box-sizing:border-box;
-      font-size:15px;
-    }
-
-    .btn{
-      display:inline-block;
-      background:var(--accent);
-      color:#111;
-      padding:12px 20px;
-      border-radius:10px;
-      font-weight:700;
-      border:none;
-      cursor:pointer;
-      width:100%;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-    }
-    .btn.secondary{
-      background:#eee;
-      color:#333;
-      margin-top:8px;
-      width:auto;
-      padding:10px 14px;
-    }
-
-    .banners{
-      display:flex;
-      gap:12px;
-      flex-direction:column;
-      margin-top:10px;
-    }
-    .banner{
-      background:#fff7e6;
-      border:1px solid rgba(0,0,0,0.03);
-      padding:12px;
-      border-radius:10px;
-      font-weight:700;
-      text-align:center;
-    }
-
-    .wallet{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      padding:12px;
-      border-radius:10px;
-      background:#fff;
-      border:1px solid rgba(0,0,0,0.03);
-    }
-
-    .muted{
-      color:#666;
-      font-size:13px;
-    }
-
-    .footer-logout{
-      display:flex;
-      justify-content:center;
-      margin-top:12px;
-      gap:10px;
-    }
-
-    @media (max-width:520px){
-      .logo-img{ padding:8px; }
-      .lang-btn{ min-width:75px; padding:8px 10px; font-size:14px; }
-      .card{ padding:12px; }
+    .banner {
+      margin: 10px auto;
+      padding: 10px;
+      background: #fff3cd;
+      border-radius: 10px;
+      max-width: 420px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <header class="hero" id="hero">
-    <!-- Replace src with your actual logo raw URL if different -->
-    <img id="mainLogo" class="logo-img" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Papad Logo">
 
-    <div class="language-row" id="languageRow">
-      <button class="lang-btn active" data-lang="hi">हिंदी</button>
-      <button class="lang-btn" data-lang="en">English</button>
-      <button class="lang-btn" data-lang="gu">ગુજરાતી</button>
+  <header>
+    <img class="logo" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Papad Logo">
+    <div class="lang-btns">
+      <button onclick="setLang('hi')">हिंदी</button>
+      <button onclick="setLang('en')">English</button>
+      <button onclick="setLang('gu')">ગુજરાતી</button>
     </div>
   </header>
 
-  <main class="container">
-    <h1 class="title" id="pageTitle">RJ पापड़ में आपका स्वागत है!</h1>
-
-    <!-- Register / Login Card -->
-    <section id="authSection" class="card">
-      <h3 id="formTitle">रजिस्टर करें (Mobile Number से)</h3>
-
-      <input id="fieldName" type="text" placeholder="नाम (वैकल्पिक)" />
-      <input id="fieldMobile" type="tel" placeholder="मोबाइल नंबर (अनिवार्य)" inputmode="numeric" pattern="[0-9]*" />
-
-      <button id="btnRegister" class="btn">रजिस्टर करें</button>
-
-      <p id="authMessage" class="muted" style="margin-top:10px"></p>
-
-      <!-- small area for device-login option (appears if device already has saved mobile) -->
-      <div id="alreadyLoginWrap" style="margin-top:8px; display:none; text-align:center;">
-        <button id="btnLoginDevice" class="btn secondary">Already registered? Login</button>
-      </div>
-
-    </section>
-
-    <!-- Wallet / Dashboard shown after login -->
-    <section id="dashboardSection" class="card" style="display:none;">
-      <div class="wallet">
-        <div>
-          <div id="walletTitle" style="font-weight:800;">लॉयल्टी वॉलेट</div>
-          <div class="muted" id="walletMobile">Mobile: -</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:20px;font-weight:800;" id="walletPoints">0</div>
-          <div class="muted" style="font-size:13px">Points</div>
-        </div>
-      </div>
-
-      <div style="margin-top:10px;">
-        <button id="btnAddPoints" class="btn secondary">+ Add 10 Points (Test)</button>
-        <button id="btnViewJoins" class="btn secondary" style="margin-left:6px;">View Joined Count</button>
-      </div>
-
-      <div class="footer-logout">
-        <button id="btnLogout" class="btn secondary">Logout</button>
-      </div>
-    </section>
-
-    <!-- Two banners that change with language -->
-    <div class="banners">
-      <div id="bannerTop" class="banner">Top Banner</div>
-      <div id="bannerBottom" class="banner">Bottom Banner</div>
+  <main>
+    <div id="register" class="card">
+      <h2 id="formTitle">रजिस्टर करें (Mobile Number से)</h2>
+      <input type="text" id="name" placeholder="नाम (वैकल्पिक)">
+      <input type="text" id="mobile" placeholder="मोबाइल नंबर (अनिवार्य)">
+      <button onclick="registerUser()" id="regBtn">रजिस्टर करें</button>
+      <p id="msg"></p>
+      <button id="loginBtn" style="display:none;background:#888;" onclick="loginUser()">Already registered? Login</button>
     </div>
+
+    <div id="dashboard" class="card">
+      <h2 id="walletTitle">लॉयल्टी वॉलेट</h2>
+      <p id="userMobile"></p>
+      <p>Points: <span id="points">0</span></p>
+      <button onclick="addPoints()">+ Add 10 Points</button>
+      <button style="background:#999;" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="banner" id="banner1">Top Banner</div>
+    <div class="banner" id="banner2">Bottom Banner</div>
   </main>
 
 <script>
-/*
-  Full updated script — always show register first.
-  Replace SHEET_WEBHOOK_URL and SHEET_SECRET with your deployed Apps Script values.
-*/
+const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE"; // <-- अपना Google Script URL यहाँ डालें
+const SHEET_SECRET = "rj_secret_2025_xyz"; // <-- वही secret जो Apps Script में रखा है
 
-// ====== CONFIG: put your Apps Script Web App URL + SECRET here ======
-const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycb...YOUR_ID.../exec"; // <-- replace with your real URL
-const SHEET_SECRET = "rj_secret_2025_xyz"; // <-- must match SECRET_TOKEN in Apps Script
-
-// LANG data
-const LANG_DATA = {
+const texts = {
   hi: {
-    title: "RJ पापड़ में आपका स्वागत है!",
-    formTitle: "रजिस्टर करें (Mobile Number से)",
-    registerBtn: "रजिस्टर करें",
-    bannerTop: "Top Banner (हिंदी)",
-    bannerBottom: "Bottom Banner (हिंदी)",
-    registeredMessage: "आप पहले ही रजिस्टर्ड हैं।",
-    addPointsLabel: "+ 10 पॉइंट जोड़ें",
-    walletTitle: "लॉयल्टी वॉलेट",
-    alreadyRegistered: "पहले से रजिस्टर्ड हैं? लॉगिन करें"
+    formTitle:"रजिस्टर करें (Mobile Number से)",
+    regBtn:"रजिस्टर करें",
+    walletTitle:"लॉयल्टी वॉलेट",
+    top:"ऊपरी बैनर (हिंदी)",
+    bottom:"निचला बैनर (हिंदी)"
   },
-  en: {
-    title: "Welcome to RJ Papad!",
-    formTitle: "Register (with Mobile Number)",
-    registerBtn: "Register",
-    bannerTop: "Top Banner (English)",
-    bannerBottom: "Bottom Banner (English)",
-    registeredMessage: "You are already registered.",
-    addPointsLabel: "+ Add 10 Points",
-    walletTitle: "Loyalty Wallet",
-    alreadyRegistered: "Already registered? Login"
+  en:{
+    formTitle:"Register (with Mobile)",
+    regBtn:"Register",
+    walletTitle:"Loyalty Wallet",
+    top:"Top Banner (English)",
+    bottom:"Bottom Banner (English)"
   },
-  gu: {
-    title: "RJ પાપડ માં આપનું સ્વાગત છે!",
-    formTitle: "રજીસ્ટર કરો (Mobile Number થી)",
-    registerBtn: "રજીસ્ટર કરો",
-    bannerTop: "Top Banner (ગુજરાતી)",
-    bannerBottom: "Bottom Banner (ગુજરાતી)",
-    registeredMessage: "તમે પહેલેથી જ રજિસ્ટર્ડ છો.",
-    addPointsLabel: "+ 10 પોઈન્ટ ઉમેરો",
-    walletTitle: "લોયલ્ટી વોલેટ",
-    alreadyRegistered: "પહેલેથી રજિસ્ટર્ડ છો? લૉગિન કરીને જુઓ"
+  gu:{
+    formTitle:"રજીસ્ટર કરો (Mobile Number થી)",
+    regBtn:"રજીસ્ટર કરો",
+    walletTitle:"લોયલ્ટી વોલેટ",
+    top:"ઉપરનો બેનર (ગુજરાતી)",
+    bottom:"નીચલો બેનર (ગુજરાતી)"
   }
 };
+let lang="hi";
 
-let currentLang = "hi";
-const LS_KEY_USER = "rjpapad_user_mobile";
-const LS_KEY_USERS = "rjpapad_users_map";
-
-// helpers
-function loadUsersMap(){ try{ return JSON.parse(localStorage.getItem(LS_KEY_USERS) || "{}"); }catch(e){ return {}; } }
-function saveUsersMap(m){ localStorage.setItem(LS_KEY_USERS, JSON.stringify(m)); }
-
-function applyLanguage(lang){
-  currentLang = lang;
-  const d = LANG_DATA[lang];
-  document.getElementById("pageTitle").textContent = d.title;
-  document.getElementById("formTitle").textContent = d.formTitle;
-  document.getElementById("btnRegister").textContent = d.registerBtn;
-  document.getElementById("bannerTop").textContent = d.bannerTop;
-  document.getElementById("bannerBottom").textContent = d.bannerBottom;
-  document.getElementById("walletTitle").textContent = d.walletTitle;
-  document.getElementById("btnLoginDevice").textContent = d.alreadyRegistered;
-  document.querySelectorAll(".lang-btn").forEach(b => { b.classList.toggle("active", b.getAttribute("data-lang") === lang); });
+function setLang(l){
+  lang=l;
+  const t=texts[l];
+  document.getElementById("formTitle").textContent=t.formTitle;
+  document.getElementById("regBtn").textContent=t.regBtn;
+  document.getElementById("walletTitle").textContent=t.walletTitle;
+  document.getElementById("banner1").textContent=t.top;
+  document.getElementById("banner2").textContent=t.bottom;
 }
 
-// send POST to Apps Script
-async function saveToGoogleSheet(action, user_mobile, user_name, joined_mobile="", joined_name="", language=currentLang, points=0, client_id="", note=""){
-  if(!SHEET_WEBHOOK_URL || SHEET_WEBHOOK_URL.includes("PUT_YOUR")){
-    console.log("No Webhook URL set — skipping remote save.");
-    return { success:true, skipped:true };
+function saveToSheet(action,mobile,name,points){
+  fetch(SHEET_WEBHOOK_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      secret:SHEET_SECRET,
+      action, user_mobile:mobile, user_name:name, language:lang, points
+    })
+  }).catch(e=>console.log(e));
+}
+
+function registerUser(){
+  const n=document.getElementById("name").value.trim();
+  const m=document.getElementById("mobile").value.trim();
+  if(!m){alert("मोबाइल नंबर दर्ज करें");return;}
+  localStorage.setItem("rj_user",m);
+  localStorage.setItem("rj_name",n);
+  localStorage.setItem("rj_points","0");
+  saveToSheet("register",m,n,0);
+  document.getElementById("msg").textContent="✅ रजिस्ट्रेशन सफल!";
+  document.getElementById("loginBtn").style.display="block";
+}
+
+function loginUser(){
+  const m=localStorage.getItem("rj_user");
+  if(!m){alert("पहले रजिस्टर करें");return;}
+  document.getElementById("register").style.display="none";
+  document.getElementById("dashboard").style.display="block";
+  document.getElementById("userMobile").textContent="Mobile: "+m;
+  document.getElementById("points").textContent=localStorage.getItem("rj_points")||0;
+}
+
+function addPoints(){
+  let p=parseInt(localStorage.getItem("rj_points")||"0")+10;
+  localStorage.setItem("rj_points",p);
+  document.getElementById("points").textContent=p;
+  saveToSheet("add_points",localStorage.getItem("rj_user"),localStorage.getItem("rj_name"),p);
+}
+
+function logout(){
+  localStorage.removeItem("rj_user");
+  localStorage.removeItem("rj_name");
+  localStorage.removeItem("rj_points");
+  document.getElementById("dashboard").style.display="none";
+  document.getElementById("register").style.display="block";
+  document.getElementById("msg").textContent="";
+  document.getElementById("loginBtn").style.display="none";
+}
+
+window.onload=function(){
+  const regd=localStorage.getItem("rj_user");
+  if(regd){
+    document.getElementById("loginBtn").style.display="block";
   }
-  const payload = { secret:SHEET_SECRET, action, user_mobile, user_name, joined_mobile, joined_name, language, points, client_id, note };
-  try{
-    const resp = await fetch(SHEET_WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    const json = await resp.json();
-    console.log("Sheet response:", json);
-    return json;
-  }catch(err){
-    console.error("Fetch error:", err);
-    return { success:false, error: err.message || "Network error" };
-  }
+  setLang("hi");
 }
-
-// UI logic: always show register first
-function showRegisterFirst(){
-  document.getElementById("authSection").style.display = "block";
-  document.getElementById("dashboardSection").style.display = "none";
-  // if device already has user, show small login option
-  const registeredMobile = localStorage.getItem(LS_KEY_USER);
-  const loginOpt = document.getElementById("alreadyLoginWrap");
-  if(registeredMobile){
-    loginOpt.style.display = "block";
-  } else {
-    loginOpt.style.display = "none";
-  }
-}
-
-function populateWallet(mobile){
-  const users = loadUsersMap();
-  const profile = users[mobile] || { name:"", points:0, joined:0 };
-  document.getElementById("walletMobile").textContent = "Mobile: " + mobile + (profile.name ? " ("+profile.name+")" : "");
-  document.getElementById("walletPoints").textContent = profile.points || 0;
-}
-
-// register flow
-async function registerUserFlow(){
-  const name = document.getElementById("fieldName").value.trim();
-  const mobile = document.getElementById("fieldMobile").value.trim();
-  const message = document.getElementById("authMessage");
-
-  if(!mobile){
-    alert(currentLang==="hi" ? "कृपया मोबाइल नंबर दर्ज करें!" : (currentLang==="en" ? "Please enter mobile number!" : "કૃપયા મોબાઇલ નંબર દાખલ કરો!"));
-    return;
-  }
-
-  const users = loadUsersMap();
-  if(users[mobile]){
-    // exists on device — set session (but keep register visible)
-    localStorage.setItem(LS_KEY_USER, mobile);
-    message.textContent = LANG_DATA[currentLang].registeredMessage;
-    // remote login record
-    await saveToGoogleSheet("login", mobile, users[mobile].name || name, "", "", currentLang, users[mobile].points || 0, "", "Login");
-    document.getElementById("alreadyLoginWrap").style.display = "block";
-    return;
-  }
-
-  // create new local profile
-  users[mobile] = { name: name||"", points:0, joined:0, createdAt:new Date().toISOString() };
-  saveUsersMap(users);
-  localStorage.setItem(LS_KEY_USER, mobile);
-
-  message.textContent = "✅ " + (currentLang==="hi"?"रजिस्ट्रेशन सफल!":(currentLang==="en"?"Registration successful!":"રજીસ્ટ્રેશન સફળ!"));
-  // remote register
-  await saveToGoogleSheet("register", mobile, name, "", "", currentLang, 0, "", "New Registration");
-  document.getElementById("alreadyLoginWrap").style.display = "block";
-}
-
-// login from device to view dashboard
-function doLoginFromDevice(){
-  const mobile = localStorage.getItem(LS_KEY_USER);
-  if(!mobile){
-    alert(currentLang==="hi" ? "पहले रजिस्टर करें!" : (currentLang==="en"?"Please register first!":"સૌ પ્રથમ રજીસ્ટર કરો!"));
-    return;
-  }
-  document.getElementById("authSection").style.display = "none";
-  document.getElementById("dashboardSection").style.display = "block";
-  populateWallet(mobile);
-}
-
-// add points locally and remote
-function addPointsLocal(amount=10){
-  const mobile = localStorage.getItem(LS_KEY_USER);
-  if(!mobile) return;
-  const users = loadUsersMap();
-  users[mobile] = users[mobile] || { name:"", points:0, joined:0 };
-  users[mobile].points = (users[mobile].points || 0) + amount;
-  saveUsersMap(users);
-  populateWallet(mobile);
-  saveToGoogleSheet("add_points", mobile, users[mobile].name || "", "", "", currentLang, users[mobile].points, "", `Added ${amount} points`);
-}
-
-function doLogout(){
-  localStorage.removeItem(LS_KEY_USER);
-  alert(currentLang==="hi" ? "आप लॉगआउट हो गए।" : (currentLang==="en"?"You are logged out.":"તમારે લોગઆઉટ કર્યો."));
-  showRegisterFirst();
-}
-
-function viewJoinedCount(){
-  const mobile = localStorage.getItem(LS_KEY_USER);
-  if(!mobile) return alert("No user");
-  const users = loadUsersMap();
-  const profile = users[mobile] || { joined:0 };
-  alert("Joined count: " + (profile.joined || 0));
-}
-
-// DOM wiring
-document.addEventListener("DOMContentLoaded", function(){
-  // language
-  document.querySelectorAll(".lang-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=> applyLanguage(btn.getAttribute("data-lang")));
-  });
-  applyLanguage(currentLang);
-
-  // register
-  document.getElementById("btnRegister").addEventListener("click", registerUserFlow);
-
-  // small login button if device has user
-  const loginWrap = document.getElementById("alreadyLoginWrap");
-  if(loginWrap){
-    loginWrap.style.display = "none";
-    const btnLoginDevice = document.getElementById("btnLoginDevice");
-    if(btnLoginDevice) btnLoginDevice.addEventListener("click", doLoginFromDevice);
-  }
-
-  document.getElementById("btnAddPoints").addEventListener("click", ()=> addPointsLocal(10));
-  document.getElementById("btnViewJoins").addEventListener("click", viewJoinedCount);
-  document.getElementById("btnLogout").addEventListener("click", doLogout);
-
-  // always show register first
-  showRegisterFirst();
-});
 </script>
 </body>
 </html>

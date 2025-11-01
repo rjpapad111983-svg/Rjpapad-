@@ -1,207 +1,293 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RJ पापड़ | Multilingual + Auto Save</title>
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RJ पापड़ — Multilingual AutoSave</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    width: 100%;
-    height: 100%;
-    font-family: 'Noto Sans Devanagari', sans-serif;
-    background: #fff8e1;
-    color: #222;
-    overflow-x: hidden;
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;width:100%;font-family:'Noto Sans Devanagari',sans-serif;background:#fff8e1;color:#222;overflow-x:hidden}
+  /* Fullscreen logo area */
+  .logo-full {
+    position:relative;
+    width:100vw;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
   }
-
-  /* 🔶 Fullscreen Logo Section */
-  .logo-section {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #fff;
-    flex-direction: column;
+  .logo-full img{
+    width:100vw;
+    height:100vh;
+    object-fit:cover;
+    display:block;
   }
-  .logo-section img {
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
+  /* language buttons overlay */
+  .lang-bar{
+    position:absolute;
+    bottom:22px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:10px;
+    z-index:10;
   }
-  .lang-buttons {
-    position: absolute;
-    bottom: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    width: 100%;
+  .lang-btn{
+    background:#ffc107;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 3px 6px rgba(0,0,0,0.12);
   }
-  .lang-buttons button {
-    background: #ffc107;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
+  .lang-btn:hover{background:#ffb300}
+  /* content area */
+  .site {
+    padding:16px;
+    max-width:980px;
+    margin:0 auto 40px;
   }
-  .lang-buttons button:hover {
-    background: #ffb300;
-  }
-
-  /* Content Section */
   .content {
-    display: none;
-    text-align: center;
+    display:none;
   }
-  .active {
-    display: block;
+  .content.active { display:block; animation:fadeIn .25s ease-in; }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none}}
+  .banner { width:100%; display:block; border-radius:0; margin:10px 0; object-fit:cover; }
+  h1 { color:#c47f00; text-align:center; margin:8px 0 12px; font-size:22px; }
+  .form-card{
+    background:#fff;
+    max-width:420px;
+    margin:12px auto;
+    padding:16px;
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
   }
-  h1 {
-    color: #c47f00;
-    margin-top: 15px;
-  }
-
-  .banner {
-    width: 100vw;
-    height: auto;
-    display: block;
-    border-radius: 0;
-  }
-
-  form {
-    background: #fff;
-    max-width: 350px;
-    margin: 20px auto;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
-  button.save-btn {
-    background: #ffc107;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  button.save-btn:hover {
-    background: #ffb300;
-  }
-  footer {
-    text-align: center;
-    font-size: 13px;
-    color: #777;
-    margin: 20px 0;
+  input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
+  .row{display:flex;gap:8px}
+  .save-btn{background:#ffc107;border:none;padding:10px 14px;border-radius:8px;font-weight:700;cursor:pointer}
+  .save-btn:hover{background:#ffb300}
+  .controls{display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+  .note{font-size:13px;color:#555;text-align:center;margin-top:10px}
+  footer{ text-align:center;color:#666;margin:20px 0;font-size:13px }
+  /* small responsive tweaks */
+  @media(max-width:520px){
+    h1{font-size:20px}
+    .lang-btn{padding:10px 12px;font-size:14px}
   }
 </style>
 </head>
-
 <body>
 
-  <!-- 🟢 Fullscreen Logo + Language Buttons -->
-  <div class="logo-section">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="RJ Logo">
-    <div class="lang-buttons">
-      <button onclick="setLanguage('hi')">हिंदी</button>
-      <button onclick="setLanguage('en')">English</button>
-      <button onclick="setLanguage('gu')">ગુજરાતી</button>
+  <!-- FULLSCREEN LOGO -->
+  <div id="logoArea" class="logo-full" aria-hidden="false">
+    <!-- Use your provided logo here -->
+    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Logo">
+    <div class="lang-bar" role="navigation" aria-label="Languages">
+      <button class="lang-btn" onclick="chooseLang('hi')">हिंदी</button>
+      <button class="lang-btn" onclick="chooseLang('en')">English</button>
+      <button class="lang-btn" onclick="chooseLang('gu')">ગુજરાતી</button>
     </div>
   </div>
 
-  <!-- 🔸 Content for Hindi -->
-  <div id="hi" class="content">
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
-    <h1>RJ पापड़ में आपका स्वागत है!</h1>
-    <form id="form-hi">
-      <input id="name-hi" type="text" placeholder="नाम (वैकल्पिक)">
-      <input id="mobile-hi" type="number" placeholder="मोबाइल नंबर (अनिवार्य)">
-      <button type="button" class="save-btn" onclick="saveForm('hi')">💾 सेव करें</button>
-    </form>
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
-  </div>
+  <!-- MAIN SITE CONTENT (for each language) -->
+  <div class="site">
 
-  <!-- 🔸 Content for English -->
-  <div id="en" class="content">
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
-    <h1>Welcome to RJ Papad!</h1>
-    <form id="form-en">
-      <input id="name-en" type="text" placeholder="Name (Optional)">
-      <input id="mobile-en" type="number" placeholder="Mobile Number (Required)">
-      <button type="button" class="save-btn" onclick="saveForm('en')">💾 Save</button>
-    </form>
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
-  </div>
+    <!-- HINDI -->
+    <section id="hi" class="content" aria-hidden="true">
+      <img id="hi-top" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
+      <h1>RJ पापड़ में आपका स्वागत है!</h1>
 
-  <!-- 🔸 Content for Gujarati -->
-  <div id="gu" class="content">
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
-    <h1>RJ પાપડ માં આપનું સ્વાગત છે!</h1>
-    <form id="form-gu">
-      <input id="name-gu" type="text" placeholder="નામ (વૈકલ્પિક)">
-      <input id="mobile-gu" type="number" placeholder="મોબાઇલ નંબર (આવશ્યક)">
-      <button type="button" class="save-btn" onclick="saveForm('gu')">💾 સેવ કરો</button>
-    </form>
-    <img class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
-  </div>
+      <div class="form-card">
+        <form onsubmit="return false;">
+          <input id="name-hi" type="text" placeholder="नाम (वैकल्पिक)">
+          <input id="mobile-hi" type="tel" placeholder="मोबाइल नंबर (अनिवार्य)">
+          <div class="controls">
+            <button class="save-btn" onclick="saveForm('hi')">💾 सेव करें</button>
+            <button class="save-btn" onclick="clearForm('hi')">🗑️ क्लियर</button>
+          </div>
+          <p class="note">डेटा ब्राउज़र में Auto-save होता है — बार-बार edit करने से कुछ नहीं निकलेगा।</p>
+        </form>
+      </div>
 
-  <footer>© 2025 RJ Papad | Multilingual Auto Save Website</footer>
+      <img id="hi-bottom" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+    </section>
+
+    <!-- ENGLISH -->
+    <section id="en" class="content" aria-hidden="true">
+      <img id="en-top" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
+      <h1>Welcome to RJ Papad!</h1>
+
+      <div class="form-card">
+        <form onsubmit="return false;">
+          <input id="name-en" type="text" placeholder="Name (Optional)">
+          <input id="mobile-en" type="tel" placeholder="Mobile Number (Required)">
+          <div class="controls">
+            <button class="save-btn" onclick="saveForm('en')">💾 Save</button>
+            <button class="save-btn" onclick="clearForm('en')">🗑️ Clear</button>
+          </div>
+          <p class="note">Data is auto-saved in your browser — nothing will be lost by editing repeatedly.</p>
+        </form>
+      </div>
+
+      <img id="en-bottom" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+    </section>
+
+    <!-- GUJARATI -->
+    <section id="gu" class="content" aria-hidden="true">
+      <img id="gu-top" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
+      <h1>RJ પાપડ માં આપનું સ્વાગત છે!</h1>
+
+      <div class="form-card">
+        <form onsubmit="return false;">
+          <input id="name-gu" type="text" placeholder="નામ (વૈકલ્પિક)">
+          <input id="mobile-gu" type="tel" placeholder="મોબાઇલ નંબર (આવશ્યક)">
+          <div class="controls">
+            <button class="save-btn" onclick="saveForm('gu')">💾 સેવ કરો</button>
+            <button class="save-btn" onclick="clearForm('gu')">🗑️ ક્લિયર</button>
+          </div>
+          <p class="note">ડેટા બ્રાઉઝર માં auto-save થાય છે — વારંવાર એડિટ કરતાં કશુંક નાલૂ ગયુ નથી.</p>
+        </form>
+      </div>
+
+      <img id="gu-bottom" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+    </section>
+
+  </div> <!-- /site -->
+
+  <footer>© 2025 RJ पापड़</footer>
 
 <script>
-const STORAGE_KEY = "rjpapad_form_data";
+/*
+  Multilingual auto-save system
+  - Uses localStorage key: "rjpapad_multi_v1"
+  - Structure saved: { lang: 'hi'|'en'|'gu', data: { hi:{name,mobile}, en:{...}, gu:{...} } }
+*/
 
-/* ✅ Auto Save + Language Switcher */
-function setLanguage(lang) {
-  localStorage.setItem("rjpapad_lang", lang);
-  document.querySelectorAll(".content").forEach(div => div.classList.remove("active"));
-  document.getElementById(lang).classList.add("active");
-  window.scrollTo({top: 0, behavior: "smooth"});
-}
-
-/* 🔁 Load Last Selected Language */
-window.onload = () => {
-  const savedLang = localStorage.getItem("rjpapad_lang") || "hi";
-  setLanguage(savedLang);
-  loadForm(savedLang);
+/* DEFAULT banner URLs (you can change these if you have language-specific images) */
+const DEFAULT_TOP = {
+  hi: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
+  en: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png",
+  gu: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png"
+};
+const DEFAULT_BOTTOM = {
+  hi: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png",
+  en: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png",
+  gu: "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png"
 };
 
-/* 💾 Save Form Data per Language */
-function saveForm(lang) {
-  const name = document.getElementById(`name-${lang}`).value;
-  const mobile = document.getElementById(`mobile-${lang}`).value;
-  let allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-  allData[lang] = { name, mobile };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
-  alert("✅ डेटा सेव हो गया!");
-}
+const STORAGE_KEY = "rjpapad_multi_v1";
 
-/* ♻️ Load Saved Data Automatically */
-function loadForm(lang) {
-  const allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-  if (allData[lang]) {
-    document.getElementById(`name-${lang}`).value = allData[lang].name || "";
-    document.getElementById(`mobile-${lang}`).value = allData[lang].mobile || "";
+/* load saved state or default */
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return { lang: null, data: { hi:{},en:{},gu:{} } };
+    return JSON.parse(raw);
+  }catch(e){
+    console.error("parse error", e);
+    return { lang: null, data: { hi:{},en:{},gu:{} } };
   }
 }
+function saveState(state){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
 
-/* 🔄 Auto Save Every 5 Seconds */
-setInterval(() => {
-  const currentLang = localStorage.getItem("rjpapad_lang") || "hi";
-  const name = document.getElementById(`name-${currentLang}`)?.value || "";
-  const mobile = document.getElementById(`mobile-${currentLang}`)?.value || "";
-  let allData = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-  allData[currentLang] = { name, mobile };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(allData));
+/* show/hide logo and show selected language content */
+function chooseLang(lang){
+  // hide logo area
+  const logoArea = document.getElementById("logoArea");
+  if(logoArea) logoArea.style.display = "none";
+
+  // mark language in storage
+  let state = loadState();
+  state.lang = lang;
+  saveState(state);
+
+  // show correct content
+  document.querySelectorAll(".content").forEach(c=>{ c.classList.remove("active"); c.setAttribute("aria-hidden","true"); });
+  const sel = document.getElementById(lang);
+  if(sel){
+    sel.classList.add("active");
+    sel.setAttribute("aria-hidden","false");
+  }
+
+  // set banners for language (if custom)
+  const topImg = document.getElementById(`${lang}-top`);
+  const botImg = document.getElementById(`${lang}-bottom`);
+  if(topImg) topImg.src = DEFAULT_TOP[lang] || DEFAULT_TOP.hi;
+  if(botImg) botImg.src = DEFAULT_BOTTOM[lang] || DEFAULT_BOTTOM.hi;
+
+  // load saved form data
+  loadForm(lang);
+  // scroll to content
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* load form values for language */
+function loadForm(lang){
+  const state = loadState();
+  const vals = (state.data && state.data[lang]) ? state.data[lang] : {};
+  const nameEl = document.getElementById(`name-${lang}`);
+  const mobileEl = document.getElementById(`mobile-${lang}`);
+  if(nameEl) nameEl.value = vals.name || "";
+  if(mobileEl) mobileEl.value = vals.mobile || "";
+}
+
+/* save form values for language (manual save) */
+function saveForm(lang){
+  const name = (document.getElementById(`name-${lang}`)?.value || "").trim();
+  const mobile = (document.getElementById(`mobile-${lang}`)?.value || "").trim();
+  const state = loadState();
+  state.data = state.data || { hi:{},en:{},gu:{} };
+  state.data[lang] = { name, mobile };
+  saveState(state);
+  alert("✅ डेटा सेव हो गया (" + (lang==='hi'?'हिंदी':(lang==='en'?'English':'ગુજરાતી')) + ")");
+}
+
+/* clear form for language */
+function clearForm(lang){
+  if(!confirm("क्या आप फॉर्म क्लियर करना चाहते हैं? / Clear form?")) return;
+  const nameEl = document.getElementById(`name-${lang}`);
+  const mobileEl = document.getElementById(`mobile-${lang}`);
+  if(nameEl) nameEl.value = "";
+  if(mobileEl) mobileEl.value = "";
+  const state = loadState();
+  state.data = state.data || { hi:{},en:{},gu:{} };
+  state.data[lang] = {};
+  saveState(state);
+  alert("🗑️ चालू भाषा का डेटा क्लियर कर दिया गया।");
+}
+
+/* Auto-save currently visible language every 5 seconds */
+setInterval(()=>{
+  const state = loadState();
+  const lang = state.lang;
+  if(!lang) return; // if logo still showing, nothing
+  const nameEl = document.getElementById(`name-${lang}`);
+  const mobileEl = document.getElementById(`mobile-${lang}`);
+  const name = nameEl ? (nameEl.value||"") : "";
+  const mobile = mobileEl ? (mobileEl.value||"") : "";
+  state.data = state.data || { hi:{},en:{},gu:{} };
+  state.data[lang] = { name, mobile };
+  saveState(state);
+  // console.log("Autosaved", lang, new Date().toLocaleTimeString());
 }, 5000);
+
+/* On page load: if user had selected a language before, open that language directly (logo hidden) */
+window.addEventListener('DOMContentLoaded', ()=>{
+  const state = loadState();
+  const last = state.lang;
+  if(last && (last==='hi' || last==='en' || last==='gu')){
+    // hide logo and show last language
+    document.getElementById("logoArea").style.display = "none";
+    chooseLang(last);
+  } else {
+    // show logo (user must pick a language)
+    document.getElementById("logoArea").style.display = "flex";
+  }
+});
 </script>
 
 </body>

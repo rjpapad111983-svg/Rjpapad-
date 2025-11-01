@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RJ Papad Register Flow</title>
+<title>RJ Papad Wallet Transfer</title>
 <style>
 :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff;--muted:#666}
 html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222;text-align:center;}
@@ -16,139 +16,197 @@ button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:
 .btn-secondary{background:#eee;color:#222;}
 .logo-full{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;height:100%;background:#fff;}
 .logo-full img{max-width:90%;width:420px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.08);}
+.lang-row{display:flex;gap:8px;justify-content:center;}
+.lang-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer;}
+.lang-btn.active{background:var(--accent);color:#fff;}
 .banner{background:#fff7e6;padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.05);font-weight:700;margin:12px;text-align:center;}
+.wallet{background:#fff3cd;border-radius:10px;padding:15px;margin:14px;box-shadow:0 2px 6px rgba(0,0,0,0.05);}
+.amount{font-size:28px;font-weight:700;color:#008000;}
+#transferBox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;}
+#transferPanel{background:#fff;padding:20px;border-radius:12px;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
 </style>
 </head>
 <body>
 
-<!-- Step 1: Register -->
+<!-- REGISTER -->
 <div id="registerPage" class="overlay">
   <div class="panel">
     <h2>रजिस्टर करें</h2>
-    <p style="font-size:13px;color:#555;">पहली बार रजिस्टर करने के लिए नाम और मोबाइल डालें।</p>
     <input id="regName" type="text" placeholder="नाम (वैकल्पिक)">
     <input id="regMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="मोबाइल नंबर (10 अंक)">
     <button id="btnRegister" class="btn-primary">रजिस्टर करें</button>
-    <div style="height:8px"></div>
     <p id="regError" style="color:red;font-size:13px;"></p>
   </div>
 </div>
 
-<!-- Step 2: Login -->
+<!-- LOGIN -->
 <div id="loginPage" class="overlay" style="display:none;">
   <div class="panel">
     <h2>लॉगिन करें</h2>
-    <p style="font-size:13px;color:#555;">रजिस्टर किया हुआ मोबाइल नंबर डालें।</p>
     <input id="loginMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="मोबाइल नंबर (10 अंक)">
     <button id="btnLogin" class="btn-primary">लॉगिन</button>
-    <div style="height:8px"></div>
     <p id="loginError" style="color:red;font-size:13px;"></p>
   </div>
 </div>
 
-<!-- Step 3: Logo Page -->
+<!-- LOGO -->
 <div id="logoPage" class="overlay" style="display:none;">
   <div class="logo-full">
     <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Papad Logo">
+    <div class="lang-row">
+      <button class="lang-btn active" data-lang="hi">हिंदी</button>
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="gu">ગુજરાતી</button>
+    </div>
     <button id="btnNext" class="btn-primary" style="width:auto;padding:10px 30px;">अगला पेज ➜</button>
   </div>
 </div>
 
-<!-- Step 4: Main Page -->
+<!-- MAIN -->
 <div id="mainPage" style="display:none;">
   <div class="banner" id="bannerTop">🟡 Top Banner (हिंदी)</div>
+
+  <div class="wallet">
+    <h2 id="walletTitle">💰 वॉलेट बैलेंस</h2>
+    <p id="walletMobile">मोबाइल: —</p>
+    <p>कुल राशि:</p>
+    <div id="walletAmount" class="amount">₹0</div>
+    <button id="addMoney" class="btn-primary">+ ₹10 जोड़ें</button>
+    <button id="transferMoney" class="btn-secondary" style="margin-top:8px;">रकम ट्रांसफर करें ➜</button>
+  </div>
+
   <div class="banner" id="bannerBottom">🟡 Bottom Banner (हिंदी)</div>
-  <p style="font-weight:600;margin-top:20px;">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
+  <p id="welcomeText" style="font-weight:600;margin-top:20px;">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
   <button id="btnLogout" class="btn-secondary" style="max-width:200px;margin-top:15px;">Logout</button>
 </div>
 
+<!-- TRANSFER POPUP -->
+<div id="transferBox">
+  <div id="transferPanel">
+    <h3>💸 रकम ट्रांसफर करें</h3>
+    <input id="transferMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="रिसीवर मोबाइल नंबर">
+    <input id="transferAmount" type="number" placeholder="रकम (₹)">
+    <button id="sendMoney" class="btn-primary">भेजें</button>
+    <button id="closeTransfer" class="btn-secondary" style="margin-top:8px;">रद्द करें</button>
+    <p id="transferMsg" style="font-size:13px;color:green;"></p>
+  </div>
+</div>
+
 <script>
-/* CONFIGURATION */
-const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE"; // your Google Script Web App URL
-const SHEET_SECRET = "rj_secret_2025_xyz"; // same as in Apps Script
+const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE";
+const SHEET_SECRET = "rj_secret_2025_xyz";
+const KEY_MOBILE="rj_mobile", KEY_NAME="rj_name", KEY_AMOUNT="rj_amount";
+const el=id=>document.getElementById(id);
+const regP=el('registerPage'), logP=el('loginPage'), logoP=el('logoPage'), mainP=el('mainPage');
+const regErr=el('regError'), loginErr=el('loginError');
+let currentLang="hi";
 
-/* ELEMENT SHORTCUTS */
-const regP = document.getElementById("registerPage");
-const logP = document.getElementById("loginPage");
-const logoP = document.getElementById("logoPage");
-const mainP = document.getElementById("mainPage");
+/* LANG PACK */
+const LANG={
+  hi:{top:"🟡 टॉप बैनर (हिंदी)",bottom:"🟡 बॉटम बैनर (हिंदी)",welcome:"RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!",wallet:"💰 वॉलेट बैलेंस"},
+  en:{top:"🟡 Top Banner (English)",bottom:"🟡 Bottom Banner (English)",welcome:"Welcome to RJ Papad Loyalty Program!",wallet:"💰 Wallet Balance"},
+  gu:{top:"🟡 ઉપરનો બેનર (ગુજરાતી)",bottom:"🟡 નીચેનો બેનર (ગુજરાતી)",welcome:"RJ પાપડ લોયલ્ટી પ્રોગ્રામમાં આપનું સ્વાગત છે!",wallet:"💰 વોલેટ બેલેન્સ"}
+};
+function setLang(l){
+  currentLang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.lang-btn[data-lang="${l}"]`).classList.add('active');
+  el('bannerTop').textContent=LANG[l].top;
+  el('bannerBottom').textContent=LANG[l].bottom;
+  el('welcomeText').textContent=LANG[l].welcome;
+  el('walletTitle').textContent=LANG[l].wallet;
+}
 
-const btnRegister = document.getElementById("btnRegister");
-const btnLogin = document.getElementById("btnLogin");
-const btnNext = document.getElementById("btnNext");
-const btnLogout = document.getElementById("btnLogout");
-const regError = document.getElementById("regError");
-const loginError = document.getElementById("loginError");
-
-/* LOCAL STORAGE KEYS */
-const KEY_REG_MOB = "rj_mobile";
-const KEY_REG_NAME = "rj_name";
-const KEY_SESSION = "rj_session";
-
-/* STEP 1 → REGISTER */
-btnRegister.addEventListener("click", async ()=>{
-  const name = document.getElementById("regName").value.trim();
-  const mobile = document.getElementById("regMobile").value.trim();
-  if(!/^[0-9]{10}$/.test(mobile)){
-    regError.textContent = "कृपया 10 अंकों का सही मोबाइल नंबर डालें";
-    return;
-  }
-  localStorage.setItem(KEY_REG_NAME, name);
-  localStorage.setItem(KEY_REG_MOB, mobile);
-  localStorage.setItem(KEY_SESSION, "false");
-  regError.textContent = "";
-  await saveToSheet("register", mobile, name);
+/* REGISTER */
+el('btnRegister').onclick=async()=>{
+  const name=el('regName').value.trim(), mob=el('regMobile').value.trim();
+  if(!/^[0-9]{10}$/.test(mob)){regErr.textContent="कृपया सही मोबाइल नंबर डालें";return;}
+  localStorage.setItem(KEY_MOBILE,mob);
+  localStorage.setItem(KEY_NAME,name);
+  localStorage.setItem(KEY_AMOUNT,"0");
+  regErr.textContent="";
   regP.style.display="none";
   logP.style.display="flex";
-});
-
-/* STEP 2 → LOGIN */
-btnLogin.addEventListener("click", ()=>{
-  const entered = document.getElementById("loginMobile").value.trim();
-  const saved = localStorage.getItem(KEY_REG_MOB);
-  if(!/^[0-9]{10}$/.test(entered)){
-    loginError.textContent = "कृपया 10 अंकों का मोबाइल नंबर डालें";
-    return;
-  }
-  if(entered !== saved){
-    loginError.textContent = "यह मोबाइल रजिस्टर नहीं है";
-    return;
-  }
-  localStorage.setItem(KEY_SESSION, "true");
-  loginError.textContent = "";
-  logP.style.display="none";
-  logoP.style.display="flex";
-});
-
-/* STEP 3 → LOGO BUTTON */
-btnNext.addEventListener("click", ()=>{
-  logoP.style.display="none";
-  mainP.style.display="block";
-});
-
-/* STEP 4 → LOGOUT */
-btnLogout.addEventListener("click", ()=>{
-  localStorage.setItem(KEY_SESSION,"false");
-  mainP.style.display="none";
-  logP.style.display="flex";
-});
-
-/* ALWAYS SHOW REGISTER FIRST ON LOAD */
-window.onload = function(){
-  regP.style.display="flex";
-  logP.style.display="none";
-  logoP.style.display="none";
-  mainP.style.display="none";
+  await saveToSheet("register",mob,name,0);
 };
 
-/* SAVE TO GOOGLE SHEET */
-async function saveToSheet(action,mobile,name){
-  if(!SHEET_WEBHOOK_URL.startsWith("http")) return;
+/* LOGIN */
+el('btnLogin').onclick=()=>{
+  const mob=el('loginMobile').value.trim(), saved=localStorage.getItem(KEY_MOBILE);
+  if(!/^[0-9]{10}$/.test(mob)){loginErr.textContent="कृपया सही मोबाइल नंबर डालें";return;}
+  if(mob!==saved){loginErr.textContent="यह मोबाइल रजिस्टर नहीं है";return;}
+  loginErr.textContent="";
+  logP.style.display="none";
+  logoP.style.display="flex";
+};
+
+/* LOGO → MAIN */
+el('btnNext').onclick=()=>{
+  logoP.style.display="none";
+  mainP.style.display="block";
+  updateWallet();
+};
+
+/* LOGOUT */
+el('btnLogout').onclick=()=>{
+  mainP.style.display="none";
+  logP.style.display="flex";
+};
+
+/* ADD MONEY */
+el('addMoney').onclick=()=>{
+  let amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
+  amt+=10;
+  localStorage.setItem(KEY_AMOUNT,amt);
+  el('walletAmount').textContent="₹"+amt;
+  const mob=localStorage.getItem(KEY_MOBILE)||"", name=localStorage.getItem(KEY_NAME)||"";
+  saveToSheet("add_money",mob,name,amt);
+};
+
+/* TRANSFER MONEY */
+const tBox=el('transferBox'), sendBtn=el('sendMoney'), closeBtn=el('closeTransfer');
+el('transferMoney').onclick=()=>{tBox.style.display="flex";}
+closeBtn.onclick=()=>{tBox.style.display="none";el('transferMsg').textContent="";}
+
+sendBtn.onclick=()=>{
+  const senderMob=localStorage.getItem(KEY_MOBILE);
+  const amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
+  const recv=el('transferMobile').value.trim();
+  const val=parseInt(el('transferAmount').value.trim()||"0");
+  if(!/^[0-9]{10}$/.test(recv)){el('transferMsg').textContent="⚠️ सही रिसीवर मोबाइल डालें";el('transferMsg').style.color="red";return;}
+  if(val<=0){el('transferMsg').textContent="⚠️ राशि दर्ज करें";el('transferMsg').style.color="red";return;}
+  if(val>amt){el('transferMsg').textContent="❌ बैलेंस पर्याप्त नहीं";el('transferMsg').style.color="red";return;}
+
+  const newAmt=amt-val;
+  localStorage.setItem(KEY_AMOUNT,newAmt);
+  el('walletAmount').textContent="₹"+newAmt;
+  el('transferMsg').style.color="green";
+  el('transferMsg').textContent="✅ ₹"+val+" भेजी गई "+recv+" को";
+  saveToSheet("transfer",senderMob,localStorage.getItem(KEY_NAME)||"",newAmt,recv,val);
+  setTimeout(()=>{tBox.style.display="none";el('transferMsg').textContent="";},1500);
+};
+
+/* UPDATE WALLET */
+function updateWallet(){
+  const mob=localStorage.getItem(KEY_MOBILE)||"—";
+  const amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
+  el('walletMobile').textContent="मोबाइल: "+mob;
+  el('walletAmount').textContent="₹"+amt;
+}
+
+/* LANG BUTTONS */
+document.querySelectorAll('.lang-btn').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+
+/* DEFAULT LOAD */
+window.onload=()=>{setLang("hi");regP.style.display="flex";logP.style.display="none";logoP.style.display="none";mainP.style.display="none";};
+
+/* GOOGLE SHEET */
+async function saveToSheet(action,mobile,name,amount,toMobile,toAmount){
+  if(!SHEET_WEBHOOK_URL.startsWith("http"))return;
   try{
     await fetch(SHEET_WEBHOOK_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({secret:SHEET_SECRET,action,user_mobile:mobile,user_name:name,language:"hi"})
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({secret:SHEET_SECRET,action,user_mobile:mobile,user_name:name,language:currentLang,amount,toMobile,toAmount})
     });
   }catch(e){console.log(e);}
 }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RJ पापड़ — Register → Logo → Language → Inner (Auto Logout)</title>
+<title>RJ पापड़ — Login first → Register if needed</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;width:100%;font-family:'Noto Sans Devanagari',sans-serif;background:#fff8e1;color:#222;overflow-x:hidden}
@@ -21,41 +21,33 @@
   .logout-btn{background:#f44336;color:white;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
   .logout-btn:hover{opacity:0.95}
   footer{text-align:center;color:#666;margin:18px 0;font-size:13px}
-  .langBar{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center}
-  .langBtn{background:#ffc107;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
-  .logoBox{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:60vh}
-  .logoBox img{width:65vw;max-width:260px;height:auto;border-radius:10px}
-  @media(max-width:520px){.logoBox img{width:80vw}}
 </style>
 </head>
 <body>
 
 <div id="notify">✅</div>
 
-<!-- REGISTER PAGE -->
+<!-- LOGIN PAGE (shown first) -->
+<div id="loginPage" class="center">
+  <div class="card">
+    <h1>लॉगिन करें</h1>
+    <input id="loginMobile" type="tel" placeholder="मोबाइल नंबर डालें">
+    <button id="loginBtn">🔓 लॉगिन</button>
+  </div>
+</div>
+
+<!-- REGISTER PAGE (shown when number not found) -->
 <div id="registerPage" class="center" style="display:none;">
   <div class="card">
     <h1>रजिस्टर करें</h1>
     <input id="regName" type="text" placeholder="नाम / Name">
-    <input id="regMobile" type="tel" placeholder="मोबाइल नंबर / Mobile Number">
+    <input id="regMobile" type="tel" placeholder="मोबाइल नंबर (पहले से भरा होगा)">
     <button id="regSaveBtn">💾 सेव करें</button>
+    <button class="secondary" id="backToLoginBtn">← वापस लॉगिन पेज</button>
   </div>
 </div>
 
-<!-- SPLASH LOGO PAGE -->
-<div id="logoArea" class="center" style="display:none; height:75vh; padding:20px;">
-  <div class="logoBox">
-    <img id="splashLogo" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Logo">
-    <div style="text-align:center; font-weight:600; color:#333">भाषा चुनें / Choose Language</div>
-    <div class="langBar">
-      <button class="langBtn" onclick="chooseLang('hi')">हिंदी</button>
-      <button class="langBtn" onclick="chooseLang('en')">English</button>
-      <button class="langBtn" onclick="chooseLang('gu')">ગુજરાતી</button>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN SITE -->
+<!-- MAIN SITE (opens when login success) -->
 <div id="mainSite" style="display:none;">
   <div class="topbar">
     <div id="welcomeText">Welcome</div>
@@ -65,7 +57,8 @@
   </div>
 
   <div style="max-width:980px;margin:12px auto;padding:12px;">
-    <img id="topBanner" class="banner" src="" alt="Top Banner">
+    <!-- optional banners (static defaults) -->
+    <img id="topBanner" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
     <h1 id="titleText" style="text-align:center;color:#c47f00">RJ पापड़ में आपका स्वागत है!</h1>
 
     <div style="background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04);margin:12px 0;">
@@ -73,92 +66,115 @@
       <p><strong>मोबाइल:</strong> <span id="showMobile">—</span></p>
     </div>
 
-    <img id="bottomBanner" class="banner" src="" alt="Bottom Banner">
+    <img id="bottomBanner" class="banner" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
   </div>
 </div>
 
 <footer>© 2025 RJ पापड़</footer>
 
 <script>
-/* Local storage keys */
-const STORAGE_KEY="rjpapad_user_data_v1";
-const DEFAULT_TOP="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
-const DEFAULT_BOTTOM="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
+/* storage key for registered user (local) */
+const STORAGE_KEY = "rjpapad_user_data_v1";
 
-/* Short helpers */
-const regPage=document.getElementById("registerPage");
-const logoPage=document.getElementById("logoArea");
-const mainPage=document.getElementById("mainSite");
-const notify=document.getElementById("notify");
-
-/* Notification */
-function showNotify(msg){notify.textContent=msg;notify.classList.add("show");setTimeout(()=>notify.classList.remove("show"),3000);}
-
-/* Save / Load user */
-function loadUser(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):{name:null,mobile:null};}catch{return {name:null,mobile:null};}}
-function saveUser(u){localStorage.setItem(STORAGE_KEY,JSON.stringify(u));}
-function clearUser(){localStorage.removeItem(STORAGE_KEY);}
-
-/* Apply banners */
-function applyBanners(top,bottom,title){
-  document.getElementById("topBanner").src=top||DEFAULT_TOP;
-  document.getElementById("bottomBanner").src=bottom||DEFAULT_BOTTOM;
-  document.getElementById("titleText").textContent=title||"RJ पापड़ में आपका स्वागत है!";
+/* helpers */
+function showNotify(msg){
+  const n = document.getElementById("notify");
+  n.textContent = msg;
+  n.classList.add("show");
+  setTimeout(()=> n.classList.remove("show"), 3000);
+}
+function loadUser(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : { name:null, mobile:null };
+  }catch{return {name:null,mobile:null}}
+}
+function saveUser(user){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+}
+function clearSession(){
+  // we will not remove saved registration, only session (no persistent session used)
+  // but to ensure "next time login required", we do nothing because we always start with login page
 }
 
-/* Page display */
-function showRegister(){regPage.style.display="flex";logoPage.style.display="none";mainPage.style.display="none";}
-function showLogo(){regPage.style.display="none";logoPage.style.display="flex";mainPage.style.display="none";}
-function showMain(u){regPage.style.display="none";logoPage.style.display="none";mainPage.style.display="block";
-  document.getElementById("showName").textContent=u.name||"—";
-  document.getElementById("showMobile").textContent=u.mobile||"—";
-  document.getElementById("welcomeText").textContent=`Logged in as ${u.mobile}`;}
+/* UI refs */
+const loginPage = document.getElementById("loginPage");
+const registerPage = document.getElementById("registerPage");
+const mainSite = document.getElementById("mainSite");
 
-/* On load logic */
-window.addEventListener("DOMContentLoaded",()=>{
-  const u=loadUser();
-  if(u&&u.mobile){showLogo();}
-  else{showRegister();}
-  applyBanners();
+/* On load: always show login first */
+window.addEventListener("DOMContentLoaded", ()=>{
+  showLogin();
 });
 
-/* Register Save */
-document.getElementById("regSaveBtn").addEventListener("click",()=>{
-  const n=document.getElementById("regName").value.trim();
-  const m=document.getElementById("regMobile").value.trim();
-  if(!m){alert("कृपया मोबाइल नंबर डालें");return;}
-  saveUser({name:n,mobile:m});
+/* Show screens */
+function showLogin(){
+  loginPage.style.display = "flex";
+  registerPage.style.display = "none";
+  mainSite.style.display = "none";
+}
+function showRegister(prefillMobile){
+  loginPage.style.display = "none";
+  registerPage.style.display = "flex";
+  mainSite.style.display = "none";
+  if(prefillMobile){
+    document.getElementById("regMobile").value = prefillMobile;
+  }
+}
+function openMain(user){
+  loginPage.style.display = "none";
+  registerPage.style.display = "none";
+  mainSite.style.display = "block";
+  document.getElementById("showName").textContent = user.name || "—";
+  document.getElementById("showMobile").textContent = user.mobile || "—";
+  document.getElementById("welcomeText").textContent = `Logged in as ${user.mobile}`;
+}
+
+/* Login button action */
+document.getElementById("loginBtn").addEventListener("click", ()=>{
+  const entered = document.getElementById("loginMobile").value.trim();
+  if(!entered){ alert("कृपया मोबाइल नंबर डालें"); return; }
+
+  const user = loadUser();
+  if(user && user.mobile === entered){
+    // registered -> open main
+    showNotify("✅ लॉगिन सफल!");
+    openMain(user);
+  } else {
+    // not registered -> open register form with mobile prefilled
+    showNotify("यह नंबर रजिस्टर नहीं है — कृपया पहले रजिस्टर करें");
+    showRegister(entered);
+  }
+});
+
+/* Register save action */
+document.getElementById("regSaveBtn").addEventListener("click", ()=>{
+  const name = document.getElementById("regName").value.trim();
+  const mobile = document.getElementById("regMobile").value.trim();
+  if(!mobile){ alert("कृपया मोबाइल नंबर डालें"); return; }
+  saveUser({ name, mobile });
   showNotify("✅ रजिस्ट्रेशन सफल!");
-  showLogo();
+  const saved = loadUser();
+  openMain(saved);
 });
 
-/* Language selection */
-function chooseLang(lang){
-  const u=loadUser();
-  if(!u||!u.mobile){showRegister();return;}
-  const langs={
-    hi:{title:"RJ पापड़ में आपका स्वागत है!",top:DEFAULT_TOP,bottom:DEFAULT_BOTTOM},
-    en:{title:"Welcome to RJ Papad!",top:DEFAULT_BOTTOM,bottom:DEFAULT_TOP},
-    gu:{title:"RJ પાપડ માં આપનું સ્વાગત છે!",top:DEFAULT_TOP,bottom:DEFAULT_BOTTOM}
-  };
-  const b=langs[lang]||langs.hi;
-  applyBanners(b.top,b.bottom,b.title);
-  logoPage.style.opacity="0";
-  setTimeout(()=>{logoPage.style.display="none";showMain(u);},400);
-}
+/* back to login from register */
+document.getElementById("backToLoginBtn").addEventListener("click", ()=>{
+  showLogin();
+});
 
-/* Logout manually */
-document.getElementById("logoutBtn").addEventListener("click",()=>{
-  if(!confirm("क्या आप लॉगआउट करना चाहते हैं?"))return;
-  clearUser();
+/* logout button */
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
+  if(!confirm("क्या आप लॉगआउट करना चाहते हैं?")) return;
+  // do not delete stored registration, only return to login
   showNotify("🔓 लॉगआउट कर दिया गया");
-  setTimeout(showRegister,600);
+  showLogin();
 });
 
-/* Auto Logout when tab/browser closed */
-window.addEventListener("beforeunload",()=>{
-  // Clear registration on close to force re-login next time
-  clearUser();
+/* auto-logout on tab close: keep registration saved, but force login next time by showing login on load */
+window.addEventListener("beforeunload", ()=>{
+  // nothing to clear from localStorage (we retain registration)
+  // by design next load shows login page
 });
 </script>
 </body>

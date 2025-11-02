@@ -3,28 +3,24 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RJ Papad — Loyalty Wallet + My Team</title>
+<title>RJ Papad — Loyalty Wallet & Withdraw</title>
 <style>
 :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff}
-html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222;height:100%}
-button{cursor:pointer}
-
-/* LOCKED layout */
+html,body{margin:0;font-family:system-ui,Roboto,Segoe UI,"Noto Sans",sans-serif;background:var(--bg);color:#222;height:100%}
 .container{max-width:1024px;margin:0 auto;padding:18px}
 .banner{margin:12px auto;max-width:980px}
 .banner img{width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
-
-/* LOGIN overlay with logo (now primary) */
 .overlay{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:transparent;z-index:60}
 .panel{background:var(--card);max-width:520px;width:100%;border-radius:12px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.12)}
 h2{margin:0 0 12px;color:#c47d04}
 input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}
+button{cursor:pointer}
 .btn-primary{background:var(--accent);border:0;padding:10px;border-radius:8px;font-weight:700;color:#111}
 .btn-secondary{background:#eee;border:0;padding:10px;border-radius:8px;color:#111}
 
 /* menu icon left */
 #walletMenuBtn{display:none;position:fixed;top:12px;left:12px;z-index:999;background:var(--accent);border:none;color:#111;font-size:22px;padding:8px 10px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
-#menuPanel{position:fixed;top:54px;left:12px;z-index:1000;background:#fff;border-radius:8px;padding:8px;box-shadow:0 8px 28px rgba(0,0,0,.16);display:none;min-width:160px}
+#menuPanel{position:fixed;top:54px;left:12px;z-index:1000;background:#fff;border-radius:8px;padding:8px;box-shadow:0 8px 28px rgba(0,0,0,.16);display:none;min-width:180px}
 .menu-item{display:block;padding:10px;border-radius:8px;margin:6px 0;background:#f6f6f6;border:1px solid #eee;text-align:left}
 .menu-item.primary{background:var(--accent);color:#111;font-weight:700}
 
@@ -36,13 +32,19 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 #teamSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#f0f7ff;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.12);transition:right .36s ease;z-index:997;overflow:auto}
 #teamSidebar.open{right:0}
 
+/* ADMIN sidebar */
+#adminSidebar{position:fixed;top:0;left:-520px;width:520px;height:100%;background:#fff;padding:16px;box-shadow:8px 0 28px rgba(0,0,0,.12);transition:left .36s ease;z-index:999;overflow:auto}
+#adminSidebar.open{left:0}
+
 /* tree-list styling */
 .tree-list{font-size:14px;text-align:left;padding-left:6px}
 .node{padding:8px;border-radius:6px;margin:8px 0;background:#fff}
 
 /* misc */
 .lock-badge{position:fixed;left:12px;top:60px;background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.08);font-size:13px;z-index:120}
-@media(max-width:640px){ #walletSidebar,#teamSidebar{width:92%} }
+@media(max-width:640px){ #walletSidebar,#teamSidebar{width:92%} #adminSidebar{width:92%} }
+.small{font-size:13px;color:#555}
+.txn-item{padding:8px;border-radius:8px;background:#fff;margin:6px 0;border-left:4px solid #ddd}
 </style>
 </head>
 <body>
@@ -82,11 +84,9 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
   <div class="container">
     <div class="banner"><img id="topBannerImg" src="" alt="top banner" /></div>
 
-    <!-- NOTE: The large graphic tree you circled has been removed from the main canvas
-         The team is accessible from menu -> My Team (sidebar). -->
     <div id="removedTreeNotice" style="background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06);margin:12px 0">
-      <strong>आपका My Team यहाँ नहीं दिखेगा — मेनू → My Team दबाकर देखिए।</strong>
-      <p style="margin:8px 0 0">(Large tree area removed from main page as requested.)</p>
+      <strong>My Team — मेनू (☰) → My Team से खोलें।</strong>
+      <p class="small" style="margin:8px 0 0">(Large graphic removed as requested.)</p>
     </div>
 
     <div class="banner"><img id="bottomBannerImg" src="" alt="bottom banner" /></div>
@@ -100,6 +100,7 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 <div id="menuPanel" role="menu" aria-hidden="true" style="display:none">
   <div id="menuWallet" class="menu-item menu-wallet">Wallet</div>
   <div id="menuMyTeam" class="menu-item">My Team</div>
+  <div id="menuAdmin" class="menu-item">Admin (approve)</div>
   <div id="menuClose" class="menu-item" style="text-align:center">Close</div>
 </div>
 
@@ -116,6 +117,8 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
     <button id="addMoney" class="btn-primary" style="flex:1">+ ₹10</button>
     <button id="openTransfer" class="btn-secondary" style="flex:1">Transfer</button>
   </div>
+
+  <!-- transfer -->
   <div id="transferBox" style="display:none;margin-top:12px">
     <h4 style="margin:6px 0">Transfer Money</h4>
     <input id="transferTo" placeholder="To Mobile (10 digits)" inputmode="numeric" maxlength="10" />
@@ -123,13 +126,31 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
     <button id="btnTransfer" class="btn-primary">Send</button>
     <p id="transferMsg" style="color:#b00"></p>
   </div>
-  <div style="margin-top:12px">
-    <h4 style="margin:8px 0 6px">Transactions</h4>
+
+  <!-- bank details -->
+  <div id="bankSection" style="margin-top:14px;background:#fff;padding:10px;border-radius:8px;">
+    <h4 style="margin:6px 0;">🏦 Bank / UPI Details</h4>
+    <input id="bankName" placeholder="Bank Name (optional if UPI used)" />
+    <input id="accountNumber" placeholder="Account Number" inputmode="numeric" />
+    <input id="ifscCode" placeholder="IFSC Code" />
+    <input id="upiId" placeholder="UPI ID (optional)" />
+    <button id="saveBank" class="btn-primary" style="width:100%;margin-top:6px;">Save Details</button>
+    <p id="bankMsg" style="color:green;font-size:13px;"></p>
+  </div>
+
+  <!-- withdraw -->
+  <div id="withdrawSection" style="margin-top:14px;background:#fff;padding:10px;border-radius:8px;">
+    <h4 style="margin:6px 0;">💸 Withdraw Request</h4>
+    <input id="withdrawAmount" placeholder="Amount (₹)" inputmode="numeric" />
+    <button id="withdrawBtn" class="btn-primary" style="width:100%;margin-top:6px;">Request Withdraw</button>
+    <p id="withdrawMsg" style="font-size:13px;"></p>
+    <div style="height:8px"></div>
+    <h4 style="margin:6px 0;">Transactions</h4>
     <div style="display:flex;gap:8px;margin-bottom:8px">
       <button id="filterAll" class="btn-secondary" style="flex:1">All</button>
       <button id="filterMy" class="btn-secondary" style="flex:1">My</button>
     </div>
-    <div id="txnList" style="max-height:360px;overflow:auto"></div>
+    <div id="txnList" style="max-height:240px;overflow:auto"></div>
   </div>
 </div>
 
@@ -145,37 +166,64 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
   </div>
 </div>
 
+<!-- ADMIN SIDEBAR -->
+<div id="adminSidebar" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div><strong>🔧 Admin — Withdraw Requests</strong></div>
+    <div><button id="closeAdmin" class="btn-secondary" style="padding:6px 10px">Close</button></div>
+  </div>
+  <div style="margin-top:12px">
+    <p class="small">यह Admin UI लोकल ब्राउज़र में है — आप इसे किसी trusted machine पर use करें।</p>
+    <div style="margin-top:8px">
+      <h4>Pending Requests</h4>
+      <div id="adminReqList" style="max-height:720px;overflow:auto"></div>
+    </div>
+  </div>
+</div>
+
 <div class="lock-badge">🔒 Fixed — only config fields editable</div>
 
 <script>
-/* =========== CONFIG: only change these URLs if needed ============ */
+/* ================== CONFIG: change only these if needed ================== */
+const SHEET_WEBHOOK_URL = ""; // optional webhook to log events to your Apps Script
+const SHEET_SECRET = "rj_secret_2025_xyz";
+const ADMIN_PASSWORD = "admin123"; // change this to secure admin
 const LOGO_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png";
 const TOP_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
 const BOTTOM_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
-/* ================================================================= */
+/* ======================================================================= */
 
 const KEY_MOBILE = "rj_mobile", KEY_NAME = "rj_name", KEY_BALANCES = "rj_balances", KEY_TREE = "rj_tree_nodes", KEY_TXN = "rj_txns";
+const KEY_BANK = "rj_bank_details", KEY_WITHDRAW = "rj_withdraw_requests", KEY_EXPANDED = "rj_expanded";
 const el = id => document.getElementById(id);
 
-/* set images */
+/* images */
 try{ el('loginLogo').src = LOGO_URL; el('topBannerImg').src = TOP_BANNER_URL; el('bottomBannerImg').src = BOTTOM_BANNER_URL; }catch(e){}
 
-/* refs */
+/* UI refs */
 const loginP = el('loginPage'), mainP = el('mainPage');
 const inlineReg = el('inlineRegister'), btnShowRegister = el('btnShowRegister'), btnCancelReg = el('btnCancelReg');
 const btnLogin = el('btnLogin'), btnRegister = el('btnRegister'), loginError = el('loginError'), regError = el('regError');
-const walletBtn = el('walletMenuBtn'), menuPanel = el('menuPanel'), menuWallet = el('menuWallet'), menuMyTeam = el('menuMyTeam'), menuClose = el('menuClose');
+const walletBtn = el('walletMenuBtn'), menuPanel = el('menuPanel'), menuWallet = el('menuWallet'), menuMyTeam = el('menuMyTeam'), menuAdmin = el('menuAdmin'), menuClose = el('menuClose');
 const walletSidebar = el('walletSidebar'), closeWallet = el('closeWallet'), txnList = el('txnList');
 const teamSidebar = el('teamSidebar'), closeTeam = el('closeTeam'), myTeamList = el('myTeamList');
+const adminSidebar = el('adminSidebar'), closeAdmin = el('closeAdmin'), adminReqList = el('adminReqList');
 const addMoneyBtn = el('addMoney'), openTransfer = el('openTransfer'), transferBox = el('transferBox');
 const transferTo = el('transferTo'), transferAmount = el('transferAmount'), btnTransfer = el('btnTransfer'), transferMsg = el('transferMsg');
 const walletAmountEl = el('walletAmount'), walletMobileEl = el('walletMobile');
 const filterAll = el('filterAll'), filterMy = el('filterMy');
 const btnLogout = el('btnLogout');
+const saveBankBtn = el('saveBank'), bankMsg = el('bankMsg');
+const withdrawBtn = el('withdrawBtn'), withdrawMsg = el('withdrawMsg');
+const adminReqRefreshInterval = 15000; // 15s polling in admin UI
 
-/* tree store helpers */
-function loadTree(){ try{ const raw = localStorage.getItem(KEY_TREE); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
-function saveTree(nodes){ localStorage.setItem(KEY_TREE, JSON.stringify(nodes)); }
+/* storage helpers */
+function loadJSON(key, fallback){ try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }catch(e){ return fallback; } }
+function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+/* tree helpers (same as before) */
+function loadTree(){ return loadJSON(KEY_TREE, []); }
+function saveTree(nodes){ saveJSON(KEY_TREE, nodes); }
 function findAvailableParent(nodes){ if(nodes.length===0) return null; for(let i=0;i<nodes.length;i++){ if(nodes[i].left===null || nodes[i].right===null) return nodes[i]; } return null; }
 function addNodeToTree(name, mobile, gender){
   const nodes = loadTree(); const newIndex = nodes.length; const newNode = { index:newIndex, mobile, name, gender: gender||'unknown', parent:null, left:null, right:null };
@@ -188,14 +236,14 @@ function addNodeToTree(name, mobile, gender){
 }
 
 /* balances & txns */
-function loadBalances(){ try{ const raw = localStorage.getItem(KEY_BALANCES); return raw ? JSON.parse(raw) : {}; } catch(e){ return {}; } }
-function saveBalances(bals){ localStorage.setItem(KEY_BALANCES, JSON.stringify(bals)); }
+function loadBalances(){ return loadJSON(KEY_BALANCES, {}); }
+function saveBalances(b){ saveJSON(KEY_BALANCES, b); }
 function ensureBalance(m){ const b = loadBalances(); if(!(m in b)){ b[m]=0; saveBalances(b);} return b; }
 function getBalance(m){ const b = loadBalances(); return Number(b[m]||0); }
 function setBalance(m,a){ const b = loadBalances(); b[m]=Number(a); saveBalances(b); }
 
-function loadTxns(){ try{ const raw = localStorage.getItem(KEY_TXN); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
-function saveTxns(t){ localStorage.setItem(KEY_TXN, JSON.stringify(t)); }
+function loadTxns(){ return loadJSON(KEY_TXN, []); }
+function saveTxns(t){ saveJSON(KEY_TXN, t); }
 function addTxn(type, from, to, amount, note){ const txns = loadTxns(); const t = { id: Date.now(), type, from: from||null, to: to||null, amount: Number(amount), note: note||'', time: (new Date()).toISOString() }; txns.unshift(t); saveTxns(txns); renderTxns(currentFilter); }
 
 /* render transactions */
@@ -204,7 +252,7 @@ function renderTxns(filter){
   currentFilter = filter || currentFilter; txnList.innerHTML = ''; const txns = loadTxns(); const my = localStorage.getItem(KEY_MOBILE);
   const list = txns.filter(t => currentFilter==='all' ? true : (t.from===my || t.to===my));
   if(list.length===0){ txnList.innerHTML = '<div style="color:#666">No transactions</div>'; return; }
-  list.forEach(t=>{ const d = document.createElement('div'); d.className = 'txn-item'; d.style.borderLeft='4px solid #ddd'; d.style.padding='8px'; d.style.margin='6px 0'; if(t.type==='add' || t.type==='register'){ d.innerHTML = `<div><strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong></div><div style="font-size:12px;color:#444">to: ${t.to||'—'} • ${new Date(t.time).toLocaleString()}</div><div style="font-size:13px;color:#444">${t.note||''}</div>`; } else { d.innerHTML = `<div><strong>Transfer ₹${t.amount}</strong></div><div style="font-size:12px;color:#444">from: ${t.from} → to: ${t.to} • ${new Date(t.time).toLocaleString()}</div><div style="font-size:13px;color:#444">${t.note||''}</div>`; } txnList.appendChild(d); });
+  list.forEach(t=>{ const d = document.createElement('div'); d.className = 'txn-item'; if(t.type==='add' || t.type==='register'){ d.innerHTML = `<div><strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong></div><div class="small">to: ${t.to||'—'} • ${new Date(t.time).toLocaleString()}</div><div class="small">${t.note||''}</div>`; } else if(t.type==='withdraw'){ d.innerHTML = `<div><strong>Withdraw Request ₹${t.amount}</strong></div><div class="small">Status: ${t.status||'Pending'} • ${new Date(t.time).toLocaleString()}</div><div class="small">${t.note||''}</div>`; } else { d.innerHTML = `<div><strong>Transfer ₹${t.amount}</strong></div><div class="small">from: ${t.from} → to: ${t.to} • ${new Date(t.time).toLocaleString()}</div><div class="small">${t.note||''}</div>`; } txnList.appendChild(d); });
 }
 
 /* menu behaviour */
@@ -212,12 +260,15 @@ walletBtn.addEventListener('click', ()=>{ menuPanel.style.display = (menuPanel.s
 menuClose.addEventListener('click', ()=>{ menuPanel.style.display='none'; });
 menuWallet.addEventListener('click', ()=>{ menuPanel.style.display='none'; openWalletSidebar(); });
 menuMyTeam.addEventListener('click', ()=>{ menuPanel.style.display='none'; openTeamSidebar(); });
+menuAdmin.addEventListener('click', ()=>{ menuPanel.style.display='none'; openAdminPrompt(); });
 
-function openWalletSidebar(){ teamSidebar.classList.remove('open'); teamSidebar.setAttribute('aria-hidden','true'); walletSidebar.classList.add('open'); walletSidebar.setAttribute('aria-hidden','false'); updateWalletUI(); renderTxns('my'); }
-function openTeamSidebar(){ walletSidebar.classList.remove('open'); walletSidebar.setAttribute('aria-hidden','true'); renderMyTeamList(); teamSidebar.classList.add('open'); teamSidebar.setAttribute('aria-hidden','false'); }
+function openWalletSidebar(){ teamSidebar.classList.remove('open'); teamSidebar.setAttribute('aria-hidden','true'); adminSidebar.classList.remove('open'); adminSidebar.setAttribute('aria-hidden','true'); walletSidebar.classList.add('open'); walletSidebar.setAttribute('aria-hidden','false'); updateWalletUI(); renderTxns('my'); }
+function openTeamSidebar(){ walletSidebar.classList.remove('open'); walletSidebar.setAttribute('aria-hidden','true'); adminSidebar.classList.remove('open'); adminSidebar.setAttribute('aria-hidden','true'); renderMyTeamList(); teamSidebar.classList.add('open'); teamSidebar.setAttribute('aria-hidden','false'); }
+function openAdminSidebar(){ walletSidebar.classList.remove('open'); teamSidebar.classList.remove('open'); adminSidebar.classList.add('open'); adminSidebar.setAttribute('aria-hidden','false'); renderAdminRequests(); }
 
 closeWallet.addEventListener('click', ()=>{ walletSidebar.classList.remove('open'); walletSidebar.setAttribute('aria-hidden','true'); });
 closeTeam.addEventListener('click', ()=>{ teamSidebar.classList.remove('open'); teamSidebar.setAttribute('aria-hidden','true'); });
+closeAdmin.addEventListener('click', ()=>{ adminSidebar.classList.remove('open'); adminSidebar.setAttribute('aria-hidden','true'); });
 
 /* wallet actions */
 addMoneyBtn.addEventListener('click', ()=>{ const m = localStorage.getItem(KEY_MOBILE); if(!m){ alert('Login required'); return; } ensureBalance(m); setBalance(m, getBalance(m)+10); updateWalletUI(); addTxn('add', null, m, 10, 'Manual +10'); alert('₹10 added'); });
@@ -227,51 +278,178 @@ btnTransfer.addEventListener('click', ()=>{ transferMsg.textContent=''; const fr
 filterAll.addEventListener('click', ()=>{ renderTxns('all'); });
 filterMy.addEventListener('click', ()=>{ renderTxns('my'); });
 
-/* Collapsible My Team sidebar (same as previous) */
-function loadExpandedSet(){ try{ const raw = localStorage.getItem('rj_expanded'); return raw ? JSON.parse(raw) : {}; } catch(e){ return {}; } }
-function saveExpandedSet(obj){ try{ localStorage.setItem('rj_expanded', JSON.stringify(obj)); } catch(e){} }
-function toggleNodeExpand(idx){ const set = loadExpandedSet(); if(set[idx]) delete set[idx]; else set[idx] = true; saveExpandedSet(set); renderMyTeamList(); }
+/* bank details storage */
+function loadBankDetails(){ return loadJSON(KEY_BANK, {}); }
+function saveBankDetails(obj){ saveJSON(KEY_BANK, obj); }
+saveBankBtn.addEventListener('click', ()=>{
+  const bank = el('bankName').value.trim(), acc = el('accountNumber').value.trim(), ifsc = el('ifscCode').value.trim(), upi = el('upiId').value.trim(), mob = localStorage.getItem(KEY_MOBILE);
+  if(!mob){ alert('Login required'); return; }
+  if(!bank && !upi){ alert('कृपया बैंक या UPI डालें'); return; }
+  const all = loadBankDetails(); all[mob] = { bank, acc, ifsc, upi }; saveBankDetails(all);
+  bankMsg.textContent = '✅ Saved'; setTimeout(()=>{ bankMsg.textContent=''; },2000);
+});
+
+/* withdraw system (1st date only after 8pm) */
+function loadWithdrawals(){ return loadJSON(KEY_WITHDRAW, []); }
+function saveWithdrawals(list){ saveJSON(KEY_WITHDRAW, list); }
+withdrawBtn.addEventListener('click', ()=>{
+  withdrawMsg.style.color='red'; withdrawMsg.textContent='';
+  const mob = localStorage.getItem(KEY_MOBILE); if(!mob){ withdrawMsg.textContent='Login required'; return; }
+  // time rule
+  const now = new Date();
+  if(!(now.getDate()===1 && now.getHours()>=20)){
+    withdrawMsg.textContent = '❌ Withdraw allowed only on 1st date after 8PM.';
+    return;
+  }
+  const amtRaw = el('withdrawAmount').value.trim(); if(!amtRaw || isNaN(amtRaw) || Number(amtRaw)<=0){ withdrawMsg.textContent='Enter valid amount'; return; }
+  const amt = Math.floor(Number(amtRaw)); const bal = getBalance(mob);
+  if(amt>bal){ withdrawMsg.textContent='Insufficient balance'; return; }
+  // 10% deduction
+  const after = Math.floor(amt * 0.9);
+  // reduce balance by full amt now
+  setBalance(mob, bal - amt); updateWalletUI();
+  // create request
+  const req = { id: Date.now(), mobile: mob, amount: amt, afterDeduction: after, status: 'Pending', time: now.toISOString() };
+  const list = loadWithdrawals(); list.unshift(req); saveWithdrawals(list);
+  addTxn('withdraw', mob, null, amt, 'Withdraw Request (10% cut)');
+  withdrawMsg.style.color='green'; withdrawMsg.textContent = `Request sent: ₹${after} after 10% cut. Waiting admin approval.`;
+  el('withdrawAmount').value='';
+  // send to sheet if configured
+  saveToSheet('withdraw_request', mob, '', amt, '', after);
+});
+
+/* admin: render pending requests */
+function renderAdminRequests(){
+  adminReqList.innerHTML = '';
+  const list = loadWithdrawals();
+  if(!list.length){ adminReqList.innerHTML = '<div class="small">No withdraw requests</div>'; return; }
+  list.forEach(r=>{
+    const box = document.createElement('div'); box.style.background='#fff'; box.style.padding='10px'; box.style.margin='8px 0'; box.style.borderRadius='8px'; box.style.boxShadow='0 8px 18px rgba(0,0,0,.06)';
+    box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${r.mobile}</strong> • Requested ₹${r.amount}</div><div>${r.status}</div></div><div class="small" style="margin-top:6px">After cut: ₹${r.afterDeduction} • ${new Date(r.time).toLocaleString()}</div>`;
+    const row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.marginTop='8px';
+    const approve = document.createElement('button'); approve.className='btn-primary'; approve.textContent='Approve'; approve.onclick = ()=>{ updateRequestStatus(r.id,'Approved'); renderAdminRequests(); };
+    const reject = document.createElement('button'); reject.className='btn-secondary'; reject.textContent='Reject'; reject.onclick = ()=>{ updateRequestStatus(r.id,'Rejected'); renderAdminRequests(); };
+    row.appendChild(approve); row.appendChild(reject);
+    box.appendChild(row);
+    adminReqList.appendChild(box);
+  });
+}
+
+/* update request status (approve/reject) */
+function updateRequestStatus(id, newStatus){
+  const list = loadWithdrawals();
+  const idx = list.findIndex(x=>x.id===id);
+  if(idx===-1) return;
+  list[idx].status = newStatus;
+  if(newStatus==='Approved'){
+    // mark txn record status too
+    const txns = loadTxns();
+    const tx = txns.find(t=>t.type==='withdraw' && t.from===list[idx].mobile && t.amount===list[idx].amount);
+    if(tx) tx.status = 'Approved';
+    saveTxns(txns);
+    // (real payment must be done manually by admin through bank/UPI)
+  } else if(newStatus==='Rejected'){
+    // refund money to user (full amount refunded)
+    const m = list[idx].mobile;
+    const bal = getBalance(m); setBalance(m, bal + list[idx].amount);
+    // update txn status
+    const txns = loadTxns();
+    const tx = txns.find(t=>t.type==='withdraw' && t.from===m && t.amount===list[idx].amount);
+    if(tx) tx.status = 'Rejected';
+    saveTxns(txns);
+  }
+  saveWithdrawals(list);
+  // notify sheet if configured
+  saveToSheet('withdraw_status', list[idx].mobile, '', list[idx].amount, '', newStatus);
+}
+
+/* check user's latest withdraw status to show under wallet */
+function checkWithdrawStatusForUser(){
+  const mob = localStorage.getItem(KEY_MOBILE); if(!mob) return;
+  const list = loadWithdrawals(); const my = list.find(r=>r.mobile===mob);
+  if(my){
+    withdrawMsg.style.color = (my.status==='Approved') ? 'green' : (my.status==='Rejected' ? 'red' : 'orange');
+    withdrawMsg.textContent = `Status: ${my.status} | After cut: ₹${my.afterDeduction}`;
+  } else {
+    withdrawMsg.textContent = '';
+  }
+}
+
+/* Admin access prompt */
+function openAdminPrompt(){
+  const pwd = prompt('Enter admin password:');
+  if(!pwd) return;
+  if(pwd === ADMIN_PASSWORD){ openAdminSidebar(); } else { alert('Wrong password'); }
+}
+
+/* Collapsible My Team (vertical) */
+function loadExpandedSet(){ return loadJSON(KEY_EXPANDED, {}); }
+function saveExpandedSet(obj){ saveJSON(KEY_EXPANDED, obj); }
+function toggleNodeExpand(idx){ const set = loadExpandedSet(); if(set[idx]) delete set[idx]; else set[idx]=true; saveExpandedSet(set); renderMyTeamList(); }
 
 function renderMyTeamList(){
-  myTeamList.innerHTML = ''; const myMobile = localStorage.getItem(KEY_MOBILE); if(!myMobile){ myTeamList.textContent = 'Login to view your team'; return; }
-  const nodes = loadTree(); const me = nodes.find(n => n && n.mobile === myMobile); if(!me){ myTeamList.textContent = 'आपका रिकॉर्ड tree में नहीं मिला'; return; }
+  myTeamList.innerHTML=''; const myMobile = localStorage.getItem(KEY_MOBILE); if(!myMobile){ myTeamList.textContent='Login to view your team'; return; }
+  const nodes = loadTree(); const me = nodes.find(n=>n&&n.mobile===myMobile); if(!me){ myTeamList.textContent='आपका रिकॉर्ड tree में नहीं मिला'; return; }
   const expanded = loadExpandedSet();
   function renderNode(idx, container, depth){
     const node = nodes[idx]; if(!node) return;
     const row = document.createElement('div'); row.style.display='flex'; row.style.alignItems='center'; row.style.gap='8px'; row.style.marginLeft=(depth*12)+'px'; row.style.marginTop='6px';
-    const hasChild = (node.left !== null) || (node.right !== null);
-    if(hasChild){ const btn=document.createElement('button'); btn.style.minWidth='34px'; btn.style.height='34px'; btn.style.borderRadius='8px'; btn.style.border='1px solid #cfcfcf'; btn.style.background=expanded[idx] ? '#ffdcae' : '#fff'; btn.textContent = expanded[idx] ? '−' : '+'; btn.onclick = function(e){ e.stopPropagation(); toggleNodeExpand(idx); }; row.appendChild(btn); } else { const spacer=document.createElement('div'); spacer.style.width='34px'; row.appendChild(spacer); }
+    const hasChild = (node.left!==null)||(node.right!==null);
+    if(hasChild){ const btn=document.createElement('button'); btn.style.minWidth='34px'; btn.style.height='34px'; btn.style.borderRadius='8px'; btn.style.border='1px solid #cfcfcf'; btn.style.background=expanded[idx]? '#ffdcae' : '#fff'; btn.textContent = expanded[idx] ? '−' : '+'; btn.onclick = (e)=>{ e.stopPropagation(); toggleNodeExpand(idx); }; row.appendChild(btn); } else { const spacer=document.createElement('div'); spacer.style.width='34px'; row.appendChild(spacer); }
     const nameDiv=document.createElement('div'); nameDiv.textContent = node.name || ('User-'+node.index); nameDiv.style.fontWeight='700'; nameDiv.style.padding='8px'; nameDiv.style.background='#fff'; nameDiv.style.borderRadius='8px'; nameDiv.style.boxShadow='0 6px 12px rgba(0,0,0,0.06)'; row.appendChild(nameDiv);
     container.appendChild(row);
-    if(hasChild && expanded[idx]){ if(node.left!==null) renderNode(node.left, container, depth+1); if(node.right!==null) renderNode(node.right, container, depth+1); }
+    if(hasChild && expanded[idx]){
+      if(node.left!==null) renderNode(node.left, container, depth+1);
+      if(node.right!==null) renderNode(node.right, container, depth+1);
+    }
   }
   renderNode(me.index, myTeamList, 0);
 }
 
-/* LOGIN / REGISTER flows (updated: login page shows logo; no separate logo page) */
+/* sheet logging (optional) */
+async function saveToSheet(action, mobile, name, amount, extra, note){
+  if(!SHEET_WEBHOOK_URL || !SHEET_WEBHOOK_URL.startsWith('http')) return;
+  const payload = { secret: SHEET_SECRET, action, mobile, name, amount, extra, note };
+  try{ await fetch(SHEET_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }); }catch(e){ console.warn('sheet log failed', e); }
+}
+
+/* LOGIN / REGISTER flows */
 btnShowRegister.addEventListener('click', ()=>{ inlineReg.style.display='block'; document.getElementById('regMobile').value = document.getElementById('loginMobile').value || ''; });
 btnCancelReg.addEventListener('click', ()=>{ inlineReg.style.display='none'; regError.textContent=''; });
 
-btnLogin.addEventListener('click', ()=>{ const mobile = el('loginMobile').value.trim(); loginError.textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ loginError.textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes = loadTree(); const found = nodes.find(n=>n&&n.mobile===mobile); if(found){ localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, found.name||''); loginP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderTxns('my'); } else { loginError.textContent='यह नंबर रजिस्टर नहीं है — रजिस्टर करें।'; inlineReg.style.display='block'; el('regMobile').value = mobile; } });
+btnLogin.addEventListener('click', ()=>{ const mobile = el('loginMobile').value.trim(); loginError.textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ loginError.textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes = loadTree(); const found = nodes.find(n=>n&&n.mobile===mobile); if(found){ localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, found.name||''); loginP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderTxns('my'); checkWithdrawStatusForUser(); } else { loginError.textContent='यह नंबर रजिस्टर नहीं है — रजिस्टर करें।'; inlineReg.style.display='block'; el('regMobile').value = mobile; } });
 
-btnRegister.addEventListener('click', ()=>{ const name = el('regName').value.trim(), mobile = el('regMobile').value.trim(), gender = el('regGender').value || 'unknown'; regError.textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ regError.textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes = loadTree(); const exists = nodes.find(n=>n&&n.mobile===mobile); if(exists){ regError.textContent='यह नंबर पहले से रजिस्टर है — लॉगिन करें।'; return; } localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name||''); ensureBalance(mobile); setBalance(mobile,0); const res = addNodeToTree(name,mobile,gender); addTxn('register',null,mobile,0,'Registered'); inlineReg.style.display='none'; loginP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderTxns('my'); alert('रजिस्टर सफल — आपका Node index: '+res.placedAt); });
+btnRegister.addEventListener('click', ()=>{ const name = el('regName').value.trim(), mobile = el('regMobile').value.trim(), gender = el('regGender').value || 'unknown'; regError.textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ regError.textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes = loadTree(); const exists = nodes.find(n=>n&&n.mobile===mobile); if(exists){ regError.textContent='यह नंबर पहले से रजिस्टर है — लॉगिन करें।'; return; } localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name||''); ensureBalance(mobile); setBalance(mobile,0); const res = addNodeToTree(name,mobile,gender); addTxn('register',null,mobile,0,'Registered'); inlineReg.style.display='none'; loginP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderTxns('my'); checkWithdrawStatusForUser(); saveToSheet('register', mobile, name, 0, '', res.placedAt); alert('रजिस्टर सफल — आपका Node index: '+res.placedAt); });
 
-btnLogout.addEventListener('click', ()=>{ localStorage.removeItem(KEY_MOBILE); mainP.style.display='none'; loginP.style.display='block'; walletBtn.style.display='none'; walletSidebar.classList.remove('open'); teamSidebar.classList.remove('open'); });
+btnLogout.addEventListener('click', ()=>{ localStorage.removeItem(KEY_MOBILE); mainP.style.display='none'; loginP.style.display='block'; walletBtn.style.display='none'; walletSidebar.classList.remove('open'); teamSidebar.classList.remove('open'); adminSidebar.classList.remove('open'); });
 
 /* wallet UI update */
 function updateWalletUI(){ const mob = localStorage.getItem(KEY_MOBILE) || '—'; ensureBalance(mob); const amt = getBalance(mob); try{ walletMobileEl.textContent = 'मोबाइल: ' + mob; walletAmountEl.textContent = '₹' + amt; }catch(e){} }
+
+/* admin polling UI refresh */
+let adminInterval = null;
+function startAdminPolling(){
+  if(adminInterval) clearInterval(adminInterval);
+  adminInterval = setInterval(()=>{ if(adminSidebar.classList.contains('open')) renderAdminRequests(); }, adminReqRefreshInterval);
+}
+startAdminPolling();
+
+/* check withdraw status periodically for user */
+setInterval(checkWithdrawStatusForUser, 15000);
 
 /* init */
 window.addEventListener('DOMContentLoaded', ()=>{
   if(!localStorage.getItem(KEY_TREE)) localStorage.setItem(KEY_TREE, JSON.stringify([]));
   if(!localStorage.getItem(KEY_TXN)) localStorage.setItem(KEY_TXN, JSON.stringify([]));
   if(!localStorage.getItem(KEY_BALANCES)) localStorage.setItem(KEY_BALANCES, JSON.stringify({}));
+  if(!localStorage.getItem(KEY_BANK)) localStorage.setItem(KEY_BANK, JSON.stringify({}));
+  if(!localStorage.getItem(KEY_WITHDRAW)) localStorage.setItem(KEY_WITHDRAW, JSON.stringify([]));
   loginP.style.display = 'block'; mainP.style.display = 'none'; walletBtn.style.display = 'none';
   renderTxns('my'); updateWalletUI();
 });
 
-/* close menu when clicking outside */
-window.addEventListener('click', (e)=>{ if(menuPanel && !menuPanel.contains(e.target) && e.target !== walletBtn) { menuPanel.style.display='none'; } });
+/* close menu on outside click */
+window.addEventListener('click', (e)=>{ if(menuPanel && !menuPanel.contains(e.target) && e.target !== walletBtn) menuPanel.style.display='none'; });
 
 </script>
 </body>

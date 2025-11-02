@@ -71,8 +71,19 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 <body>
 
 <!-- ========== LOCKED UI START ========== -->
-<!-- Register Overlay -->
-<div id="registerPage" class="overlay">
+<!-- Login Overlay — now initial screen -->
+<div id="loginPage" class="overlay">
+  <div class="panel">
+    <h2>लॉगिन करें</h2>
+    <input id="loginMobile" placeholder="रजिस्टर किया हुआ मोबाइल" inputmode="numeric" maxlength="10" />
+    <button id="btnLogin" class="btn-primary">लॉगिन</button>
+    <p id="loginError" style="color:#b00"></p>
+    <p class="info-small">यदि नंबर रजिस्टर नहीं है, तो आप रजिस्टर फॉर्म पर पहुंच जाएंगे।</p>
+  </div>
+</div>
+
+<!-- Register Overlay (hidden initially) -->
+<div id="registerPage" class="overlay" style="display:none">
   <div class="panel">
     <h2>रजिस्टर करें</h2>
     <input id="regName" placeholder="नाम (वैकल्पिक)" />
@@ -85,17 +96,7 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
     </select>
     <button id="btnRegister" class="btn-primary">रजिस्टर करें</button>
     <p id="regError" style="color:#b00"></p>
-    <p class="info-small">नोट: रजिस्टर होते ही आप MLM tree में पहली खाली जगह पर जुड़ जाएंगे (ऊपर → नीचे)।</p>
-  </div>
-</div>
-
-<!-- Login Overlay -->
-<div id="loginPage" class="overlay" style="display:none">
-  <div class="panel">
-    <h2>लॉगिन करें</h2>
-    <input id="loginMobile" placeholder="रजिस्टर किया हुआ मोबाइल" inputmode="numeric" maxlength="10" />
-    <button id="btnLogin" class="btn-primary">लॉगिन</button>
-    <p id="loginError" style="color:#b00"></p>
+    <p class="info-small">रजिस्टर होने पर आप tree में पहली खाली जगह पर जुड़ जाएंगे।</p>
   </div>
 </div>
 
@@ -257,7 +258,6 @@ function addNodeToTree(name, mobile, gender){
 function computeLevels(nodes){
   if(!nodes || nodes.length===0) return [];
   const levels = [];
-  // root at index 0
   const queue = [{ idx:0, level:0 }];
   const seen = new Set();
   while(queue.length){
@@ -275,12 +275,10 @@ function computeLevels(nodes){
 
 /* draw tree using absolute positioning + svg lines */
 function renderGraphicTree(){
-  // clear existing
   treeCanvas.innerHTML = '<svg class="connector-svg" id="connectorSvg"></svg>';
   const svg = el('connectorSvg');
   const nodes = loadTree();
   if(nodes.length===0){
-    // set canvas small
     treeCanvas.style.width = '800px'; treeCanvas.style.height = '320px';
     svg.setAttribute('width', treeCanvas.style.width); svg.setAttribute('height', treeCanvas.style.height);
     return;
@@ -292,7 +290,6 @@ function renderGraphicTree(){
   treeCanvas.style.width = width + 'px'; treeCanvas.style.height = height + 'px';
   svg.setAttribute('width', width); svg.setAttribute('height', height);
 
-  // position map: idx -> {x,y,centerX,centerY}
   const pos = {};
   for(let lvl=0; lvl<levels.length; lvl++){
     const row = levels[lvl];
@@ -303,28 +300,22 @@ function renderGraphicTree(){
       const x = segment*(i+1) - 75; // node left
       const y = 40 + lvl*140;
       pos[idx] = { x,y, cx: x + 75, cy: y + 28 }; // center
-      // create node element
       const node = nodes[idx];
       const elNode = document.createElement('div');
       elNode.className = 'tree-node';
       elNode.style.left = x + 'px';
       elNode.style.top = y + 'px';
       elNode.id = 'node-' + idx;
-      // emoji by gender
       let emoji = '🧍';
       if(node.gender === 'male') emoji = '👨';
       else if(node.gender === 'female') emoji = '👩';
-      // short name
       const nameShort = node.name || ('User-'+node.index);
-      const meta = 'idx:' + node.index + (node.parent===null? '': ' • p:'+node.parent);
       elNode.innerHTML = `<div class="node-left"><div class="node-emoji">${emoji}</div><div><div class="node-name">${escapeHtml(nameShort)}</div><div class="node-meta">${node.mobile}</div></div></div>
         <div class="node-actions"><div class="node-circle" title="add/join">+</div><div style="font-size:11px;color:#666;margin-top:4px">${node.left!==null? '👥':''}</div></div>`;
       treeCanvas.appendChild(elNode);
     }
   }
 
-  // draw connectors (parent -> children)
-  // clear svg children
   while(svg.firstChild) svg.removeChild(svg.firstChild);
   for(let i=0;i<nodes.length;i++){
     const node = nodes[i];
@@ -339,7 +330,6 @@ function renderGraphicTree(){
 
 /* draw a smooth path between two points */
 function drawLine(svg, x1, y1, x2, y2){
-  // create a cubic bezier for a smooth curved line
   const midY = (y1 + y2) / 2;
   const path = document.createElementNS("http://www.w3.org/2000/svg","path");
   const d = `M ${x1} ${y1} C ${x1} ${midY} ${x2} ${midY} ${x2} ${y2}`;
@@ -350,7 +340,6 @@ function drawLine(svg, x1, y1, x2, y2){
   svg.appendChild(path);
 }
 
-/* helpers for HTML escaping */
 function escapeHtml(text){ return String(text).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
 
 /* ====== Balances & Transactions (localStorage) ====== */
@@ -396,23 +385,64 @@ viewMyTeamBtn.addEventListener('click', ()=>{ renderMySubtreeList(); sidebar.cla
 filterAll.addEventListener('click', ()=>{ renderTxns('all'); });
 filterMy.addEventListener('click', ()=>{ renderTxns('my'); });
 
-/* Register & Login flows */
+/* Register & Login flows (updated behavior) */
+
+/* Login button: check if mobile exists in tree
+   - if exists -> set KEY_MOBILE and go to Logo page
+   - if not exists -> open Register overlay with mobile prefilled
+*/
+el('btnLogin').addEventListener('click', ()=>{
+  const mobile = el('loginMobile').value.trim(); el('loginError').textContent='';
+  if(!/^[0-9]{10}$/.test(mobile)){ el('loginError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
+  const nodes = loadTree();
+  const found = nodes.find(n => n && n.mobile === mobile);
+  if(found){
+    // mobile registered -> set as current user and go to logo
+    localStorage.setItem(KEY_MOBILE, mobile);
+    // optional: remember name
+    localStorage.setItem(KEY_NAME, found.name || '');
+    logP.style.display='none';
+    logoP.style.display='flex';
+  } else {
+    // not registered -> open register form with mobile prefilled
+    el('regMobile').value = mobile;
+    el('regName').value = '';
+    el('regGender').value = 'unknown';
+    el('loginError').textContent = 'यह नंबर रजिस्टर नहीं है — कृपया रजिस्टर करें।';
+    // show register overlay
+    logP.style.display='none';
+    regP.style.display='flex';
+  }
+});
+
+/* Register button: after successful register -> directly go to Logo page (not back to login) */
 el('btnRegister').addEventListener('click', async ()=>{
   const name = el('regName').value.trim(), mobile = el('regMobile').value.trim(), gender = el('regGender').value || 'unknown';
   el('regError').textContent = '';
   if(!/^[0-9]{10}$/.test(mobile)){ el('regError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
+  // ensure not duplicate
+  const nodes = loadTree();
+  const exists = nodes.find(n => n && n.mobile === mobile);
+  if(exists){ el('regError').textContent = 'यह नंबर पहले से रजिस्टर है — लॉगिन करें।'; return; }
+  // store and create tree node
   localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name||'');
   ensureBalance(mobile); setBalance(mobile, 0);
   const res = addNodeToTree(name, mobile, gender);
   alert('रजिस्टर हुआ — tree index: ' + res.placedAt + (res.parent!==null ? (' (parent: '+res.parent+')') : ' (root)'));
-  addTxn('register', null, mobile, 0, 'Registered'); await saveToSheet('register', mobile, name, res.placedAt);
-  regP.style.display='none'; logP.style.display='flex';
+  addTxn('register', null, mobile, 0, 'Registered');
+  await saveToSheet('register', mobile, name, res.placedAt);
+  // go to logo page directly
+  regP.style.display='none';
+  logoP.style.display='flex';
 });
 
-el('btnLogin').addEventListener('click', ()=>{ const mobile = el('loginMobile').value.trim(); el('loginError').textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ el('loginError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const saved = localStorage.getItem(KEY_MOBILE); if(!saved || mobile !== saved){ el('loginError').textContent='यह मोबाइल रजिस्टर नहीं है'; return; } logP.style.display='none'; logoP.style.display='flex'; });
+/* Logo -> Main: show wallet menu button after logo */
+el('btnNext').addEventListener('click', ()=>{
+  logoP.style.display = 'none'; mainP.style.display = 'block'; walletBtn.style.display = 'block';
+  updateWalletUI(); renderGraphicTree(); renderFullTreeList(); renderMySubtreeList(); renderTxns('my');
+});
 
-el('btnNext').addEventListener('click', ()=>{ logoP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderGraphicTree(); renderFullTreeList(); renderMySubtreeList(); renderTxns('my'); });
-
+/* logout */
 el('btnLogout').addEventListener('click', ()=>{ mainP.style.display='none'; logP.style.display='flex'; walletBtn.style.display='none'; });
 
 /* Full Tree & My Subtree (list form inside sidebar) */
@@ -433,7 +463,6 @@ function renderMySubtreeList(){
   const nodes = loadTree();
   const me = nodes.find(n => n && n.mobile===my);
   if(!me){ myTreeEl.textContent='आपका रिकॉर्ड tree में नहीं मिला'; return; }
-  // reuse renderSubtree for list-ish
   const pack = document.createElement('div');
   function rec(idx, container){
     const node = nodes[idx]; const elDiv = document.createElement('div'); elDiv.className='node'; elDiv.textContent = `${node.index}: ${node.name || '(No name)'} — ${node.mobile}`; container.appendChild(elDiv);
@@ -464,13 +493,13 @@ window.addEventListener('DOMContentLoaded', ()=>{
   // integrity check (locked markers)
   const html = document.documentElement.innerHTML;
   if(!html.includes('LOCKED UI START') || !html.includes('LOCKED UI END')){
-    alert('⚠️ Locked code modified. Reloading to recover original.');
+    alert('⚠️ Locked code modified. Reloadिंग to recover original.');
     location.reload();
   }
-  // initial UI state
-  regP.style.display='flex'; logP.style.display='none'; logoP.style.display='none'; mainP.style.display='none';
+  // initial UI state: show Login first (as requested)
+  regP.style.display='none'; logP.style.display='flex'; logoP.style.display='none'; mainP.style.display='none';
   walletBtn.style.display='none';
-  // init storage
+  // init storage if missing
   if(!localStorage.getItem(KEY_TREE)) localStorage.setItem(KEY_TREE, JSON.stringify([]));
   if(!localStorage.getItem(KEY_TXN)) localStorage.setItem(KEY_TXN, JSON.stringify([]));
   if(!localStorage.getItem(KEY_BALANCES)) localStorage.setItem(KEY_BALANCES, JSON.stringify({}));

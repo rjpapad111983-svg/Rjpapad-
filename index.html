@@ -1,455 +1,432 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RJ Papad — Loyalty Wallet & Withdraw</title>
-<style>
-:root{--bg:#fff8dc;--accent:#ffb300;--card:#fff}
-html,body{margin:0;font-family:system-ui,Roboto,Segoe UI,"Noto Sans",sans-serif;background:var(--bg);color:#222;height:100%}
-.container{max-width:1024px;margin:0 auto;padding:18px}
-.banner{margin:12px auto;max-width:980px}
-.banner img{width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
-.overlay{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:transparent;z-index:60}
-.panel{background:var(--card);max-width:520px;width:100%;border-radius:12px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.12)}
-h2{margin:0 0 12px;color:#c47d04}
-input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}
-button{cursor:pointer}
-.btn-primary{background:var(--accent);border:0;padding:10px;border-radius:8px;font-weight:700;color:#111}
-.btn-secondary{background:#eee;border:0;padding:10px;border-radius:8px;color:#111}
-
-/* menu icon left */
-#walletMenuBtn{display:none;position:fixed;top:12px;left:12px;z-index:999;background:var(--accent);border:none;color:#111;font-size:22px;padding:8px 10px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
-#menuPanel{position:fixed;top:54px;left:12px;z-index:1000;background:#fff;border-radius:8px;padding:8px;box-shadow:0 8px 28px rgba(0,0,0,.16);display:none;min-width:180px}
-.menu-item{display:block;padding:10px;border-radius:8px;margin:6px 0;background:#f6f6f6;border:1px solid #eee;text-align:left}
-.menu-item.primary{background:var(--accent);color:#111;font-weight:700}
-
-/* WALLET sidebar */
-#walletSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#fff3cd;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.16);transition:right .36s ease;z-index:998;overflow:auto}
-#walletSidebar.open{right:0}
-
-/* TEAM sidebar */
-#teamSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#f0f7ff;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.12);transition:right .36s ease;z-index:997;overflow:auto}
-#teamSidebar.open{right:0}
-
-/* ADMIN sidebar */
-#adminSidebar{position:fixed;top:0;left:-520px;width:520px;height:100%;background:#fff;padding:16px;box-shadow:8px 0 28px rgba(0,0,0,.12);transition:left .36s ease;z-index:999;overflow:auto}
-#adminSidebar.open{left:0}
-
-/* tree-list styling */
-.tree-list{font-size:14px;text-align:left;padding-left:6px}
-.node{padding:8px;border-radius:6px;margin:8px 0;background:#fff}
-
-/* misc */
-.lock-badge{position:fixed;left:12px;top:60px;background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.08);font-size:13px;z-index:120}
-@media(max-width:640px){ #walletSidebar,#teamSidebar{width:92%} #adminSidebar{width:92%} }
-.small{font-size:13px;color:#555}
-.txn-item{padding:8px;border-radius:8px;background:#fff;margin:6px 0;border-left:4px solid #ddd}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RJ Papad - Loyalty Wallet</title>
+  <style>
+    :root{
+      --bg:#fff8dc; --accent:#ffb300; --card:#fff; --muted:#666;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Poppins",sans-serif;color:#222}
+    header{background:var(--accent);color:#fff;padding:12px 16px;position:relative}
+    header h1{margin:0;font-size:18px}
+    .menu-btn{position:absolute;left:12px;top:8px;background:transparent;border:none;color:#fff;font-size:24px;cursor:pointer}
+    .container{padding:18px;max-width:720px;margin:0 auto}
+    .panel{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:18px 0}
+    .sidebar{position:fixed;left:-280px;top:0;width:260px;height:100%;background:#fff;box-shadow:2px 0 14px rgba(0,0,0,0.12);transition:left .28s;padding-top:70px}
+    .sidebar.open{left:0}
+    .sidebar button{display:block;width:100%;padding:12px 18px;border:none;text-align:left;background:none;cursor:pointer;border-bottom:1px solid #f0f0f0}
+    .sidebar button:hover{background:#fffbec}
+    .center{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+    .wallet-balance{font-size:20px;color:#d2691e;font-weight:700}
+    ul.requests{list-style:none;padding:0;margin:0}
+    ul.requests li{padding:10px;border-radius:8px;margin-bottom:10px;border:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+    .req-actions button{margin-left:8px}
+    .note{font-size:13px;color:#666;margin-top:8px}
+    .hidden{display:none}
+    .kbd{display:inline-block;padding:6px 8px;background:#f3f3f3;border-radius:6px;font-size:12px;margin-left:6px}
+  </style>
 </head>
 <body>
 
-<!-- LOGIN (with logo at top) -->
-<div id="loginPage" class="overlay">
-  <div class="panel" style="text-align:center;">
-    <img id="loginLogo" src="" alt="logo" style="max-width:62%;border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.08)" />
-    <h2 style="margin-top:10px">लॉगिन / रजिस्टर</h2>
-    <input id="loginMobile" placeholder="मोबाइल नंबर (10 अंक)" inputmode="numeric" maxlength="10" />
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button id="btnLogin" class="btn-primary" style="flex:1">लॉगिन</button>
-      <button id="btnShowRegister" class="btn-secondary" style="flex:1">रजिस्टर</button>
+<header>
+  <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+  <h1>RJ Papad — Loyalty Wallet</h1>
+</header>
+
+<!-- Sidebar / Menu -->
+<div id="sidebar" class="sidebar" aria-hidden="true">
+  <button onclick="openView('wallet')">💰 Wallet</button>
+  <button onclick="openView('team')">👥 My Team</button>
+  <button onclick="openAdminPrompt()">🔐 Admin (approve)</button>
+  <button onclick="toggleSidebar()">❌ Close</button>
+</div>
+
+<!-- Main content -->
+<div class="container" id="app">
+  <div id="homePanel" class="panel">
+    <h2>नमस्ते — RJ Papad Loyalty</h2>
+    <p class="small">Menu (☰) खोलें — Wallet, My Team और Admin (approve) यहाँ से खोलें।</p>
+    <div style="margin-top:12px">
+      <button class="btn" onclick="openView('wallet')">Open Wallet</button>
+      <button class="btn" style="background:#4caf50" onclick="openView('team')">My Team</button>
     </div>
-    <p id="loginError" style="color:#b00"></p>
-    <!-- REGISTER inline (hidden until requested) -->
-    <div id="inlineRegister" style="display:none;margin-top:8px;text-align:left">
-      <input id="regName" placeholder="नाम (वैकल्पिक)" />
-      <input id="regMobile" placeholder="मोबाइल नंबर (10 अंक)" inputmode="numeric" maxlength="10" />
-      <select id="regGender" style="margin-top:6px;">
-        <option value="unknown">लिंग (वैकल्पिक)</option>
-        <option value="male">पुरुष</option>
-        <option value="female">महिला</option>
-        <option value="other">Other</option>
-      </select>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button id="btnRegister" class="btn-primary" style="flex:1">रजिस्टर करें</button>
-        <button id="btnCancelReg" class="btn-secondary" style="flex:1">Cancel</button>
+  </div>
+
+  <!-- Wallet -->
+  <div id="walletPanel" class="panel hidden">
+    <h3>My Wallet</h3>
+    <div class="wallet-balance" id="walletBalance">₹0</div>
+    <div class="note" id="walletNote">आपका वॉलेट और withdraw रिकॉर्ड यहाँ आएगा।</div>
+
+    <div style="margin-top:12px">
+      <input id="addAmt" type="number" placeholder="Add amount (₹)" style="padding:8px;border-radius:8px;border:1px solid #ddd;width:160px">
+      <button class="btn" onclick="addMoney()">Add</button>
+      <button class="btn" style="background:#777;margin-left:8px" onclick="requestWithdraw()">Withdraw</button>
+    </div>
+
+    <div style="margin-top:12px" id="bankDetailsBox" class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="small">Bank / UPI details</div>
+          <div id="bankText" class="small">(Add below)</div>
+        </div>
+        <div>
+          <button onclick="promptEditBank()" class="btn" style="background:#2196f3">Edit</button>
+        </div>
       </div>
-      <p id="regError" style="color:#b00"></p>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN -->
-<div id="mainPage" style="display:none">
-  <div class="container">
-    <div class="banner"><img id="topBannerImg" src="" alt="top banner" /></div>
-
-    <div id="removedTreeNotice" style="background:#fff;padding:16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06);margin:12px 0">
-      <strong>My Team — मेनू (☰) → My Team से खोलें।</strong>
-      <p class="small" style="margin:8px 0 0">(Large graphic removed as requested.)</p>
     </div>
 
-    <div class="banner"><img id="bottomBannerImg" src="" alt="bottom banner" /></div>
-    <p id="welcomeText" style="font-weight:700;margin-top:12px">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
-    <div style="margin-top:12px"><button id="btnLogout" class="btn-secondary" style="max-width:200px">Logout</button></div>
-  </div>
-</div>
-
-<!-- MENU ICON (left) -->
-<button id="walletMenuBtn" aria-label="Menu">☰</button>
-<div id="menuPanel" role="menu" aria-hidden="true" style="display:none">
-  <div id="menuWallet" class="menu-item menu-wallet">Wallet</div>
-  <div id="menuMyTeam" class="menu-item">My Team</div>
-  <div id="menuAdmin" class="menu-item">Admin (approve)</div>
-  <div id="menuClose" class="menu-item" style="text-align:center">Close</div>
-</div>
-
-<!-- WALLET SIDEBAR -->
-<div id="walletSidebar" aria-hidden="true">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div><strong id="sidebarTitle">💰 Wallet</strong></div>
-    <div><button id="closeWallet" class="btn-secondary" style="padding:6px 10px">Close</button></div>
-  </div>
-  <div style="height:8px"></div>
-  <div id="walletInfo"><div id="walletMobile">मोबाइल: —</div><div class="amount" id="walletAmount">₹0</div></div>
-  <div style="height:8px"></div>
-  <div style="display:flex;gap:8px">
-    <button id="addMoney" class="btn-primary" style="flex:1">+ ₹10</button>
-    <button id="openTransfer" class="btn-secondary" style="flex:1">Transfer</button>
-  </div>
-
-  <!-- transfer -->
-  <div id="transferBox" style="display:none;margin-top:12px">
-    <h4 style="margin:6px 0">Transfer Money</h4>
-    <input id="transferTo" placeholder="To Mobile (10 digits)" inputmode="numeric" maxlength="10" />
-    <input id="transferAmount" placeholder="Amount (₹)" inputmode="numeric" />
-    <button id="btnTransfer" class="btn-primary">Send</button>
-    <p id="transferMsg" style="color:#b00"></p>
-  </div>
-
-  <!-- bank details -->
-  <div id="bankSection" style="margin-top:14px;background:#fff;padding:10px;border-radius:8px;">
-    <h4 style="margin:6px 0;">🏦 Bank / UPI Details</h4>
-    <input id="bankName" placeholder="Bank Name (optional if UPI used)" />
-    <input id="accountNumber" placeholder="Account Number" inputmode="numeric" />
-    <input id="ifscCode" placeholder="IFSC Code" />
-    <input id="upiId" placeholder="UPI ID (optional)" />
-    <button id="saveBank" class="btn-primary" style="width:100%;margin-top:6px;">Save Details</button>
-    <p id="bankMsg" style="color:green;font-size:13px;"></p>
-  </div>
-
-  <!-- withdraw -->
-  <div id="withdrawSection" style="margin-top:14px;background:#fff;padding:10px;border-radius:8px;">
-    <h4 style="margin:6px 0;">💸 Withdraw Request</h4>
-    <input id="withdrawAmount" placeholder="Amount (₹)" inputmode="numeric" />
-    <button id="withdrawBtn" class="btn-primary" style="width:100%;margin-top:6px;">Request Withdraw</button>
-    <p id="withdrawMsg" style="font-size:13px;"></p>
-    <div style="height:8px"></div>
-    <h4 style="margin:6px 0;">Transactions</h4>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <button id="filterAll" class="btn-secondary" style="flex:1">All</button>
-      <button id="filterMy" class="btn-secondary" style="flex:1">My</button>
-    </div>
-    <div id="txnList" style="max-height:240px;overflow:auto"></div>
-  </div>
-</div>
-
-<!-- TEAM SIDEBAR -->
-<div id="teamSidebar" aria-hidden="true">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div><strong>👥 My Team</strong></div>
-    <div><button id="closeTeam" class="btn-secondary" style="padding:6px 10px">Close</button></div>
-  </div>
-  <div style="margin-top:12px">
-    <h4 style="margin:8px 0 6px">Your Downline</h4>
-    <div id="myTeamList" class="tree-list" style="max-height:720px;overflow:auto"></div>
-  </div>
-</div>
-
-<!-- ADMIN SIDEBAR -->
-<div id="adminSidebar" aria-hidden="true">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div><strong>🔧 Admin — Withdraw Requests</strong></div>
-    <div><button id="closeAdmin" class="btn-secondary" style="padding:6px 10px">Close</button></div>
-  </div>
-  <div style="margin-top:12px">
-    <p class="small">यह Admin UI लोकल ब्राउज़र में है — आप इसे किसी trusted machine पर use करें।</p>
-    <div style="margin-top:8px">
-      <h4>Pending Requests</h4>
-      <div id="adminReqList" style="max-height:720px;overflow:auto"></div>
+    <div style="margin-top:12px">
+      <div class="small">Withdraw status</div>
+      <div id="withdrawMsg" class="note"></div>
     </div>
   </div>
-</div>
 
-<div class="lock-badge">🔒 Fixed — only config fields editable</div>
+  <!-- My Team -->
+  <div id="teamPanel" class="panel hidden">
+    <h3>My Team</h3>
+    <div id="myTeamContainer" class="note">MLM Tree view will appear here. (Only names shown)</div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="panel hidden">
+    <h3>Admin Panel — Pending Withdraw Requests</h3>
+    <div class="small">Only admin can approve/reject (password protected)</div>
+    <ul class="requests" id="requestsList"></ul>
+    <div class="note">Approve → mark Paid (admin must do manual bank/UPI transfer). Approve stores status. Reject → refund balance to user.</div>
+  </div>
+</div>
 
 <script>
-/* ================== CONFIG: change only these if needed ================== */
-const SHEET_WEBHOOK_URL = ""; // optional webhook to log events to your Apps Script
-const SHEET_SECRET = "rj_secret_2025_xyz";
-const ADMIN_PASSWORD = "admin123"; // change this to secure admin
-const LOGO_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png";
-const TOP_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
-const BOTTOM_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
-/* ======================================================================= */
+/* ============================
+   CONFIG
+   ============================ */
+// Fixed admin password you asked:
+const ADMIN_PASSWORD = "Rjpapad@2025";
 
-const KEY_MOBILE = "rj_mobile", KEY_NAME = "rj_name", KEY_BALANCES = "rj_balances", KEY_TREE = "rj_tree_nodes", KEY_TXN = "rj_txns";
-const KEY_BANK = "rj_bank_details", KEY_WITHDRAW = "rj_withdraw_requests", KEY_EXPANDED = "rj_expanded";
-const el = id => document.getElementById(id);
+// Optional: if you'd like to log actions to a Google Apps Script webhook (sheet),
+// set SHEET_WEBHOOK_URL to that script's published Web App URL.
+const SHEET_WEBHOOK_URL = ""; // e.g. "https://script.google.com/macros/s/XXXX/exec"
 
-/* images */
-try{ el('loginLogo').src = LOGO_URL; el('topBannerImg').src = TOP_BANNER_URL; el('bottomBannerImg').src = BOTTOM_BANNER_URL; }catch(e){}
+/* ============================
+   STORAGE KEYS & HELPERS
+   ============================ */
+const KEY_USERS = "rp_users_v1";            // store basic users (mobile -> user record)
+const KEY_WITHDRAWS = "rp_withdraws_v1";    // withdraw request list
+const KEY_ME = "rp_me";                     // current logged-in user mobile (simulate)
+const KEY_TREE = "rp_tree_v1";              // mlm tree nodes (simple array)
+const nowISO = ()=> (new Date()).toISOString();
 
-/* UI refs */
-const loginP = el('loginPage'), mainP = el('mainPage');
-const inlineReg = el('inlineRegister'), btnShowRegister = el('btnShowRegister'), btnCancelReg = el('btnCancelReg');
-const btnLogin = el('btnLogin'), btnRegister = el('btnRegister'), loginError = el('loginError'), regError = el('regError');
-const walletBtn = el('walletMenuBtn'), menuPanel = el('menuPanel'), menuWallet = el('menuWallet'), menuMyTeam = el('menuMyTeam'), menuAdmin = el('menuAdmin'), menuClose = el('menuClose');
-const walletSidebar = el('walletSidebar'), closeWallet = el('closeWallet'), txnList = el('txnList');
-const teamSidebar = el('teamSidebar'), closeTeam = el('closeTeam'), myTeamList = el('myTeamList');
-const adminSidebar = el('adminSidebar'), closeAdmin = el('closeAdmin'), adminReqList = el('adminReqList');
-const addMoneyBtn = el('addMoney'), openTransfer = el('openTransfer'), transferBox = el('transferBox');
-const transferTo = el('transferTo'), transferAmount = el('transferAmount'), btnTransfer = el('btnTransfer'), transferMsg = el('transferMsg');
-const walletAmountEl = el('walletAmount'), walletMobileEl = el('walletMobile');
-const filterAll = el('filterAll'), filterMy = el('filterMy');
-const btnLogout = el('btnLogout');
-const saveBankBtn = el('saveBank'), bankMsg = el('bankMsg');
-const withdrawBtn = el('withdrawBtn'), withdrawMsg = el('withdrawMsg');
-const adminReqRefreshInterval = 15000; // 15s polling in admin UI
+function loadJSON(key, def){ try{ const s=localStorage.getItem(key); return s?JSON.parse(s):def; }catch(e){return def;} }
+function saveJSON(key,obj){ localStorage.setItem(key, JSON.stringify(obj)); }
 
-/* storage helpers */
-function loadJSON(key, fallback){ try{ const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }catch(e){ return fallback; } }
-function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+/* ============================
+   Simple Demo User / Login
+   (for demo we'll use localStorage user)
+   ============================ */
+function ensureDemoUser(){
+  let users = loadJSON(KEY_USERS, {});
+  // if no users exist, create one demo user
+  if(Object.keys(users).length === 0){
+    users["9999999999"] = { mobile:"9999999999", name:"Demo User", balance:1500, bank:{name:"HDFC Bank", account:"XXXXXX1234", ifsc:"HDFC000000", upi:"demo@upi"}};
+    users["8888888888"] = { mobile:"8888888888", name:"Rajesh parmar", balance:2000, bank:{name:"SBI Bank", account:"XXXXXX5678", ifsc:"SBIN00000", upi:"rajesh@upi"}};
+    saveJSON(KEY_USERS, users);
+  }
+  // set "logged in" user for demo - keep KEY_ME set to one of the mobiles
+  if(!localStorage.getItem(KEY_ME)) localStorage.setItem(KEY_ME, "9999999999");
+}
+ensureDemoUser();
 
-/* tree helpers (same as before) */
-function loadTree(){ return loadJSON(KEY_TREE, []); }
-function saveTree(nodes){ saveJSON(KEY_TREE, nodes); }
-function findAvailableParent(nodes){ if(nodes.length===0) return null; for(let i=0;i<nodes.length;i++){ if(nodes[i].left===null || nodes[i].right===null) return nodes[i]; } return null; }
-function addNodeToTree(name, mobile, gender){
-  const nodes = loadTree(); const newIndex = nodes.length; const newNode = { index:newIndex, mobile, name, gender: gender||'unknown', parent:null, left:null, right:null };
-  if(nodes.length===0){ nodes.push(newNode); saveTree(nodes); return { nodes, placedAt:newIndex, parent:null }; } else {
-    const parent = findAvailableParent(nodes);
-    if(!parent){ newNode.parent = 0; nodes.push(newNode); nodes[0].left = newIndex; saveTree(nodes); return { nodes, placedAt:newIndex, parent:0 }; } else {
-      newNode.parent = parent.index; nodes.push(newNode); if(parent.left===null) parent.left = newIndex; else parent.right = newIndex; saveTree(nodes); return { nodes, placedAt:newIndex, parent: parent.index };
+/* ============================
+   UI Helpers
+   ============================ */
+function toggleSidebar(){ const s=document.getElementById("sidebar"); s.classList.toggle("open"); }
+function openView(name){
+  toggleSidebar();
+  document.getElementById("homePanel").classList.add("hidden");
+  document.getElementById("walletPanel").classList.add("hidden");
+  document.getElementById("teamPanel").classList.add("hidden");
+  document.getElementById("adminPanel").classList.add("hidden");
+  if(name==="wallet") document.getElementById("walletPanel").classList.remove("hidden");
+  if(name==="team") { document.getElementById("teamPanel").classList.remove("hidden"); renderMyTeamList(); }
+  if(name==="home") document.getElementById("homePanel").classList.remove("hidden");
+}
+
+/* ============================
+   Wallet logic (balance / add / withdraw)
+   ============================ */
+function getMeMobile(){ return localStorage.getItem(KEY_ME); }
+function getUser(mob){ const users = loadJSON(KEY_USERS, {}); return users[mob]||null; }
+function saveUser(user){ const users = loadJSON(KEY_USERS, {}); users[user.mobile] = user; saveJSON(KEY_USERS, users); }
+
+function renderWallet(){
+  const mob = getMeMobile();
+  const user = getUser(mob);
+  if(!user) return;
+  document.getElementById("walletBalance").textContent = "₹" + (user.balance || 0);
+  document.getElementById("bankText").textContent = user.bank? `${user.bank.name} • ${user.bank.upi || user.bank.account}` : "(Not Set)";
+  checkWithdrawStatusForUser();
+}
+renderWallet();
+
+function addMoney(){
+  const v = Number(document.getElementById("addAmt").value || 0);
+  if(!v || v<=0){ alert("कृपया सही राशि डालें"); return; }
+  const user = getUser(getMeMobile());
+  user.balance = (user.balance||0) + v;
+  saveUser(user);
+  renderWallet();
+  alert("₹"+v+" add हो गया");
+}
+
+function promptEditBank(){
+  const user = getUser(getMeMobile());
+  const name = prompt("Bank name", user.bank?.name || "");
+  const acct = prompt("Account or UPI", user.bank?.upi || user.bank?.account || "");
+  const ifsc = prompt("IFSC (if bank)", user.bank?.ifsc || "");
+  if(name===null) return;
+  user.bank = { name: name || "", account: acct || "", upi: acct || "", ifsc: ifsc || "" };
+  saveUser(user);
+  renderWallet();
+  alert("Bank/UPI saved");
+}
+
+/* ============================
+   Withdraw request store + rendering
+   ============================ */
+function loadWithdrawals(){ return loadJSON(KEY_WITHDRAWS, []); }
+function saveWithdrawals(arr){ saveJSON(KEY_WITHDRAWS, arr); }
+function createWithdrawRequest(mobile, amount){
+  const withdraws = loadWithdrawals();
+  const id = "w"+Date.now();
+  const fee = Math.round((amount*0.10)); // 10% cut
+  const after = amount - fee;
+  const obj = { id, mobile, amount, fee, after, status:"Pending", created: nowISO(), adminNote:"" };
+  withdraws.unshift(obj);
+  saveWithdrawals(withdraws);
+  // deduct immediately from balance
+  const u = getUser(mobile);
+  u.balance = (u.balance || 0) - amount;
+  saveUser(u);
+  renderWallet();
+  renderRequests();
+  maybeLogSheet({action:"withdraw_request", data:obj});
+  return obj;
+}
+
+function renderRequests(){
+  const list = document.getElementById("requestsList");
+  const arr = loadWithdrawals();
+  list.innerHTML = "";
+  if(arr.length===0){ list.innerHTML = "<li class='note'>No pending requests</li>"; return; }
+  arr.forEach(req=>{
+    const li = document.createElement("li");
+    const left = document.createElement("div");
+    left.innerHTML = `<div><strong>${getUser(req.mobile)?.name || req.mobile}</strong> • ₹${req.amount}</div>
+                      <div class="small">After 10%: ₹${req.after} • ${new Date(req.created).toLocaleString()}</div>
+                      <div class="small">Status: <span id="status_${req.id}">${req.status}</span></div>`;
+    const right = document.createElement("div");
+    right.className = "req-actions";
+    // Only show approve/reject for Pending
+    if(req.status==="Pending"){
+      const btnA = document.createElement("button"); btnA.className="btn"; btnA.textContent="Approve"; btnA.onclick = ()=> adminApprove(req.id);
+      const btnR = document.createElement("button"); btnR.className="btn"; btnR.style.background="#999"; btnR.textContent="Reject"; btnR.onclick = ()=> adminReject(req.id);
+      right.appendChild(btnA); right.appendChild(btnR);
+    } else {
+      const span = document.createElement("div"); span.className="small"; span.textContent = "Processed";
+      right.appendChild(span);
     }
-  }
-}
-
-/* balances & txns */
-function loadBalances(){ return loadJSON(KEY_BALANCES, {}); }
-function saveBalances(b){ saveJSON(KEY_BALANCES, b); }
-function ensureBalance(m){ const b = loadBalances(); if(!(m in b)){ b[m]=0; saveBalances(b);} return b; }
-function getBalance(m){ const b = loadBalances(); return Number(b[m]||0); }
-function setBalance(m,a){ const b = loadBalances(); b[m]=Number(a); saveBalances(b); }
-
-function loadTxns(){ return loadJSON(KEY_TXN, []); }
-function saveTxns(t){ saveJSON(KEY_TXN, t); }
-function addTxn(type, from, to, amount, note){ const txns = loadTxns(); const t = { id: Date.now(), type, from: from||null, to: to||null, amount: Number(amount), note: note||'', time: (new Date()).toISOString() }; txns.unshift(t); saveTxns(txns); renderTxns(currentFilter); }
-
-/* render transactions */
-let currentFilter = 'all';
-function renderTxns(filter){
-  currentFilter = filter || currentFilter; txnList.innerHTML = ''; const txns = loadTxns(); const my = localStorage.getItem(KEY_MOBILE);
-  const list = txns.filter(t => currentFilter==='all' ? true : (t.from===my || t.to===my));
-  if(list.length===0){ txnList.innerHTML = '<div style="color:#666">No transactions</div>'; return; }
-  list.forEach(t=>{ const d = document.createElement('div'); d.className = 'txn-item'; if(t.type==='add' || t.type==='register'){ d.innerHTML = `<div><strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong></div><div class="small">to: ${t.to||'—'} • ${new Date(t.time).toLocaleString()}</div><div class="small">${t.note||''}</div>`; } else if(t.type==='withdraw'){ d.innerHTML = `<div><strong>Withdraw Request ₹${t.amount}</strong></div><div class="small">Status: ${t.status||'Pending'} • ${new Date(t.time).toLocaleString()}</div><div class="small">${t.note||''}</div>`; } else { d.innerHTML = `<div><strong>Transfer ₹${t.amount}</strong></div><div class="small">from: ${t.from} → to: ${t.to} • ${new Date(t.time).toLocaleString()}</div><div class="small">${t.note||''}</div>`; } txnList.appendChild(d); });
-}
-
-/* menu behaviour */
-walletBtn.addEventListener('click', ()=>{ menuPanel.style.display = (menuPanel.style.display==='block') ? 'none' : 'block'; });
-menuClose.addEventListener('click', ()=>{ menuPanel.style.display='none'; });
-menuWallet.addEventListener('click', ()=>{ menuPanel.style.display='none'; openWalletSidebar(); });
-menuMyTeam.addEventListener('click', ()=>{ menuPanel.style.display='none'; openTeamSidebar(); });
-menuAdmin.addEventListener('click', ()=>{ menuPanel.style.display='none'; openAdminPrompt(); });
-
-function openWalletSidebar(){ teamSidebar.classList.remove('open'); teamSidebar.setAttribute('aria-hidden','true'); adminSidebar.classList.remove('open'); adminSidebar.setAttribute('aria-hidden','true'); walletSidebar.classList.add('open'); walletSidebar.setAttribute('aria-hidden','false'); updateWalletUI(); renderTxns('my'); }
-function openTeamSidebar(){ walletSidebar.classList.remove('open'); walletSidebar.setAttribute('aria-hidden','true'); adminSidebar.classList.remove('open'); adminSidebar.setAttribute('aria-hidden','true'); renderMyTeamList(); teamSidebar.classList.add('open'); teamSidebar.setAttribute('aria-hidden','false'); }
-function openAdminSidebar(){ walletSidebar.classList.remove('open'); teamSidebar.classList.remove('open'); adminSidebar.classList.add('open'); adminSidebar.setAttribute('aria-hidden','false'); renderAdminRequests(); }
-
-closeWallet.addEventListener('click', ()=>{ walletSidebar.classList.remove('open'); walletSidebar.setAttribute('aria-hidden','true'); });
-closeTeam.addEventListener('click', ()=>{ teamSidebar.classList.remove('open'); teamSidebar.setAttribute('aria-hidden','true'); });
-closeAdmin.addEventListener('click', ()=>{ adminSidebar.classList.remove('open'); adminSidebar.setAttribute('aria-hidden','true'); });
-
-/* wallet actions */
-addMoneyBtn.addEventListener('click', ()=>{ const m = localStorage.getItem(KEY_MOBILE); if(!m){ alert('Login required'); return; } ensureBalance(m); setBalance(m, getBalance(m)+10); updateWalletUI(); addTxn('add', null, m, 10, 'Manual +10'); alert('₹10 added'); });
-openTransfer.addEventListener('click', ()=>{ transferBox.style.display = transferBox.style.display==='none' ? 'block' : 'none'; transferMsg.textContent=''; });
-btnTransfer.addEventListener('click', ()=>{ transferMsg.textContent=''; const from = localStorage.getItem(KEY_MOBILE); if(!from){ transferMsg.textContent='Login required'; return; } const to = transferTo.value.trim(); const amtRaw = transferAmount.value.trim(); if(!/^[0-9]{10}$/.test(to)){ transferMsg.textContent='कृपया सही To मोबाइल डालें'; return; } if(!amtRaw||isNaN(amtRaw)||Number(amtRaw)<=0){ transferMsg.textContent='सही राशि डालें'; return; } const amt=Math.floor(Number(amtRaw)); const bal=getBalance(from); if(amt>bal){ transferMsg.textContent='Insufficient balance'; return; } const nodes = loadTree(); const exists = nodes.find(n=>n&&n.mobile===to); if(!exists){ transferMsg.textContent='Recipient not registered'; return; } setBalance(from, bal-amt); ensureBalance(to); setBalance(to, getBalance(to)+amt); addTxn('transfer', from, to, amt, 'User transfer'); updateWalletUI(); transferMsg.style.color='green'; transferMsg.textContent='Transfer successful'; transferTo.value=''; transferAmount.value=''; });
-
-filterAll.addEventListener('click', ()=>{ renderTxns('all'); });
-filterMy.addEventListener('click', ()=>{ renderTxns('my'); });
-
-/* bank details storage */
-function loadBankDetails(){ return loadJSON(KEY_BANK, {}); }
-function saveBankDetails(obj){ saveJSON(KEY_BANK, obj); }
-saveBankBtn.addEventListener('click', ()=>{
-  const bank = el('bankName').value.trim(), acc = el('accountNumber').value.trim(), ifsc = el('ifscCode').value.trim(), upi = el('upiId').value.trim(), mob = localStorage.getItem(KEY_MOBILE);
-  if(!mob){ alert('Login required'); return; }
-  if(!bank && !upi){ alert('कृपया बैंक या UPI डालें'); return; }
-  const all = loadBankDetails(); all[mob] = { bank, acc, ifsc, upi }; saveBankDetails(all);
-  bankMsg.textContent = '✅ Saved'; setTimeout(()=>{ bankMsg.textContent=''; },2000);
-});
-
-/* withdraw system (1st date only after 8pm) */
-function loadWithdrawals(){ return loadJSON(KEY_WITHDRAW, []); }
-function saveWithdrawals(list){ saveJSON(KEY_WITHDRAW, list); }
-withdrawBtn.addEventListener('click', ()=>{
-  withdrawMsg.style.color='red'; withdrawMsg.textContent='';
-  const mob = localStorage.getItem(KEY_MOBILE); if(!mob){ withdrawMsg.textContent='Login required'; return; }
-  // time rule
-  const now = new Date();
-  if(!(now.getDate()===1 && now.getHours()>=20)){
-    withdrawMsg.textContent = '❌ Withdraw allowed only on 1st date after 8PM.';
-    return;
-  }
-  const amtRaw = el('withdrawAmount').value.trim(); if(!amtRaw || isNaN(amtRaw) || Number(amtRaw)<=0){ withdrawMsg.textContent='Enter valid amount'; return; }
-  const amt = Math.floor(Number(amtRaw)); const bal = getBalance(mob);
-  if(amt>bal){ withdrawMsg.textContent='Insufficient balance'; return; }
-  // 10% deduction
-  const after = Math.floor(amt * 0.9);
-  // reduce balance by full amt now
-  setBalance(mob, bal - amt); updateWalletUI();
-  // create request
-  const req = { id: Date.now(), mobile: mob, amount: amt, afterDeduction: after, status: 'Pending', time: now.toISOString() };
-  const list = loadWithdrawals(); list.unshift(req); saveWithdrawals(list);
-  addTxn('withdraw', mob, null, amt, 'Withdraw Request (10% cut)');
-  withdrawMsg.style.color='green'; withdrawMsg.textContent = `Request sent: ₹${after} after 10% cut. Waiting admin approval.`;
-  el('withdrawAmount').value='';
-  // send to sheet if configured
-  saveToSheet('withdraw_request', mob, '', amt, '', after);
-});
-
-/* admin: render pending requests */
-function renderAdminRequests(){
-  adminReqList.innerHTML = '';
-  const list = loadWithdrawals();
-  if(!list.length){ adminReqList.innerHTML = '<div class="small">No withdraw requests</div>'; return; }
-  list.forEach(r=>{
-    const box = document.createElement('div'); box.style.background='#fff'; box.style.padding='10px'; box.style.margin='8px 0'; box.style.borderRadius='8px'; box.style.boxShadow='0 8px 18px rgba(0,0,0,.06)';
-    box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><strong>${r.mobile}</strong> • Requested ₹${r.amount}</div><div>${r.status}</div></div><div class="small" style="margin-top:6px">After cut: ₹${r.afterDeduction} • ${new Date(r.time).toLocaleString()}</div>`;
-    const row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.marginTop='8px';
-    const approve = document.createElement('button'); approve.className='btn-primary'; approve.textContent='Approve'; approve.onclick = ()=>{ updateRequestStatus(r.id,'Approved'); renderAdminRequests(); };
-    const reject = document.createElement('button'); reject.className='btn-secondary'; reject.textContent='Reject'; reject.onclick = ()=>{ updateRequestStatus(r.id,'Rejected'); renderAdminRequests(); };
-    row.appendChild(approve); row.appendChild(reject);
-    box.appendChild(row);
-    adminReqList.appendChild(box);
+    li.appendChild(left); li.appendChild(right);
+    list.appendChild(li);
   });
 }
 
-/* update request status (approve/reject) */
-function updateRequestStatus(id, newStatus){
-  const list = loadWithdrawals();
-  const idx = list.findIndex(x=>x.id===id);
-  if(idx===-1) return;
-  list[idx].status = newStatus;
-  if(newStatus==='Approved'){
-    // mark txn record status too
-    const txns = loadTxns();
-    const tx = txns.find(t=>t.type==='withdraw' && t.from===list[idx].mobile && t.amount===list[idx].amount);
-    if(tx) tx.status = 'Approved';
-    saveTxns(txns);
-    // (real payment must be done manually by admin through bank/UPI)
-  } else if(newStatus==='Rejected'){
-    // refund money to user (full amount refunded)
-    const m = list[idx].mobile;
-    const bal = getBalance(m); setBalance(m, bal + list[idx].amount);
-    // update txn status
-    const txns = loadTxns();
-    const tx = txns.find(t=>t.type==='withdraw' && t.from===m && t.amount===list[idx].amount);
-    if(tx) tx.status = 'Rejected';
-    saveTxns(txns);
-  }
-  saveWithdrawals(list);
-  // notify sheet if configured
-  saveToSheet('withdraw_status', list[idx].mobile, '', list[idx].amount, '', newStatus);
-}
+renderRequests();
 
-/* check user's latest withdraw status to show under wallet */
-function checkWithdrawStatusForUser(){
-  const mob = localStorage.getItem(KEY_MOBILE); if(!mob) return;
-  const list = loadWithdrawals(); const my = list.find(r=>r.mobile===mob);
-  if(my){
-    withdrawMsg.style.color = (my.status==='Approved') ? 'green' : (my.status==='Rejected' ? 'red' : 'orange');
-    withdrawMsg.textContent = `Status: ${my.status} | After cut: ₹${my.afterDeduction}`;
-  } else {
-    withdrawMsg.textContent = '';
-  }
-}
-
-/* Admin access prompt */
+/* ============================
+   Admin functions (prompt -> open panel)
+   ============================ */
 function openAdminPrompt(){
-  const pwd = prompt('Enter admin password:');
+  const pwd = prompt("Enter admin password:");
   if(!pwd) return;
-  if(pwd === ADMIN_PASSWORD){ openAdminSidebar(); } else { alert('Wrong password'); }
-}
-
-/* Collapsible My Team (vertical) */
-function loadExpandedSet(){ return loadJSON(KEY_EXPANDED, {}); }
-function saveExpandedSet(obj){ saveJSON(KEY_EXPANDED, obj); }
-function toggleNodeExpand(idx){ const set = loadExpandedSet(); if(set[idx]) delete set[idx]; else set[idx]=true; saveExpandedSet(set); renderMyTeamList(); }
-
-function renderMyTeamList(){
-  myTeamList.innerHTML=''; const myMobile = localStorage.getItem(KEY_MOBILE); if(!myMobile){ myTeamList.textContent='Login to view your team'; return; }
-  const nodes = loadTree(); const me = nodes.find(n=>n&&n.mobile===myMobile); if(!me){ myTeamList.textContent='आपका रिकॉर्ड tree में नहीं मिला'; return; }
-  const expanded = loadExpandedSet();
-  function renderNode(idx, container, depth){
-    const node = nodes[idx]; if(!node) return;
-    const row = document.createElement('div'); row.style.display='flex'; row.style.alignItems='center'; row.style.gap='8px'; row.style.marginLeft=(depth*12)+'px'; row.style.marginTop='6px';
-    const hasChild = (node.left!==null)||(node.right!==null);
-    if(hasChild){ const btn=document.createElement('button'); btn.style.minWidth='34px'; btn.style.height='34px'; btn.style.borderRadius='8px'; btn.style.border='1px solid #cfcfcf'; btn.style.background=expanded[idx]? '#ffdcae' : '#fff'; btn.textContent = expanded[idx] ? '−' : '+'; btn.onclick = (e)=>{ e.stopPropagation(); toggleNodeExpand(idx); }; row.appendChild(btn); } else { const spacer=document.createElement('div'); spacer.style.width='34px'; row.appendChild(spacer); }
-    const nameDiv=document.createElement('div'); nameDiv.textContent = node.name || ('User-'+node.index); nameDiv.style.fontWeight='700'; nameDiv.style.padding='8px'; nameDiv.style.background='#fff'; nameDiv.style.borderRadius='8px'; nameDiv.style.boxShadow='0 6px 12px rgba(0,0,0,0.06)'; row.appendChild(nameDiv);
-    container.appendChild(row);
-    if(hasChild && expanded[idx]){
-      if(node.left!==null) renderNode(node.left, container, depth+1);
-      if(node.right!==null) renderNode(node.right, container, depth+1);
-    }
+  if(pwd === ADMIN_PASSWORD){
+    // open admin panel
+    toggleSidebar();
+    document.getElementById("adminPanel").classList.remove("hidden");
+    document.getElementById("walletPanel").classList.add("hidden");
+    document.getElementById("teamPanel").classList.add("hidden");
+    renderRequests();
+    alert("✅ Welcome Admin — Access Granted");
+  } else {
+    alert("❌ Wrong password — access denied");
   }
-  renderNode(me.index, myTeamList, 0);
 }
 
-/* sheet logging (optional) */
-async function saveToSheet(action, mobile, name, amount, extra, note){
-  if(!SHEET_WEBHOOK_URL || !SHEET_WEBHOOK_URL.startsWith('http')) return;
-  const payload = { secret: SHEET_SECRET, action, mobile, name, amount, extra, note };
-  try{ await fetch(SHEET_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }); }catch(e){ console.warn('sheet log failed', e); }
+/* ============================
+   Approve / Reject logic
+   ============================ */
+function adminApprove(id){
+  // Admin must do manual bank/UPI transfer in real world.
+  if(!confirm("क्या आप वाकई इस request को APPROVE करना चाहते हैं? (Admin को manual transfer करना होगा)")) return;
+  const arr = loadWithdrawals();
+  const idx = arr.findIndex(r=>r.id===id);
+  if(idx===-1) return alert("Request not found");
+  arr[idx].status = "Approved";
+  arr[idx].adminNote = prompt("Optional: Enter Txn ID / Note (enter to skip)", "") || "";
+  arr[idx].processedAt = nowISO();
+  saveWithdrawals(arr);
+  renderRequests();
+  maybeLogSheet({ action:"withdraw_approve", data: arr[idx] });
+  alert("Request marked Approved. कृपया अब बैंक/UPI से manual पेमेंट करें और Txn ID जोड़ें (if not added).");
+  renderWallet();
 }
 
-/* LOGIN / REGISTER flows */
-btnShowRegister.addEventListener('click', ()=>{ inlineReg.style.display='block'; document.getElementById('regMobile').value = document.getElementById('loginMobile').value || ''; });
-btnCancelReg.addEventListener('click', ()=>{ inlineReg.style.display='none'; regError.textContent=''; });
-
-btnLogin.addEventListener('click', ()=>{ const mobile = el('loginMobile').value.trim(); loginError.textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ loginError.textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes = loadTree(); const found = nodes.find(n=>n&&n.mobile===mobile); if(found){ localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, found.name||''); loginP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderTxns('my'); checkWithdrawStatusForUser(); } else { loginError.textContent='यह नंबर रजिस्टर नहीं है — रजिस्टर करें।'; inlineReg.style.display='block'; el('regMobile').value = mobile; } });
-
-btnRegister.addEventListener('click', ()=>{ const name = el('regName').value.trim(), mobile = el('regMobile').value.trim(), gender = el('regGender').value || 'unknown'; regError.textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ regError.textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes = loadTree(); const exists = nodes.find(n=>n&&n.mobile===mobile); if(exists){ regError.textContent='यह नंबर पहले से रजिस्टर है — लॉगिन करें।'; return; } localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name||''); ensureBalance(mobile); setBalance(mobile,0); const res = addNodeToTree(name,mobile,gender); addTxn('register',null,mobile,0,'Registered'); inlineReg.style.display='none'; loginP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderTxns('my'); checkWithdrawStatusForUser(); saveToSheet('register', mobile, name, 0, '', res.placedAt); alert('रजिस्टर सफल — आपका Node index: '+res.placedAt); });
-
-btnLogout.addEventListener('click', ()=>{ localStorage.removeItem(KEY_MOBILE); mainP.style.display='none'; loginP.style.display='block'; walletBtn.style.display='none'; walletSidebar.classList.remove('open'); teamSidebar.classList.remove('open'); adminSidebar.classList.remove('open'); });
-
-/* wallet UI update */
-function updateWalletUI(){ const mob = localStorage.getItem(KEY_MOBILE) || '—'; ensureBalance(mob); const amt = getBalance(mob); try{ walletMobileEl.textContent = 'मोबाइल: ' + mob; walletAmountEl.textContent = '₹' + amt; }catch(e){} }
-
-/* admin polling UI refresh */
-let adminInterval = null;
-function startAdminPolling(){
-  if(adminInterval) clearInterval(adminInterval);
-  adminInterval = setInterval(()=>{ if(adminSidebar.classList.contains('open')) renderAdminRequests(); }, adminReqRefreshInterval);
+function adminReject(id){
+  if(!confirm("Reject करने पर user का amount वापस balance में add हो जाएगा — Confirm?")) return;
+  const arr = loadWithdrawals();
+  const idx = arr.findIndex(r=>r.id===id);
+  if(idx===-1) return alert("Request not found");
+  const req = arr[idx];
+  // Refund to user
+  const u = getUser(req.mobile);
+  u.balance = (u.balance || 0) + req.amount;
+  saveUser(u);
+  // mark rejected
+  req.status = "Rejected";
+  req.processedAt = nowISO();
+  req.adminNote = prompt("Reason (optional):","Rejected by admin") || req.adminNote || "Rejected";
+  saveWithdrawals(arr);
+  renderRequests();
+  maybeLogSheet({ action:"withdraw_reject", data: req });
+  alert("Rejected & refunded to user.");
+  renderWallet();
 }
-startAdminPolling();
 
-/* check withdraw status periodically for user */
-setInterval(checkWithdrawStatusForUser, 15000);
+/* ============================
+   check withdraw status for logged-in user
+   ============================ */
+function checkWithdrawStatusForUser(){
+  const mob = getMeMobile();
+  const arr = loadWithdrawals();
+  const latest = arr.find(r=>r.mobile === mob);
+  const el = document.getElementById("withdrawMsg");
+  if(!latest){ el.textContent = ""; return; }
+  let txt = `Last withdraw: ₹${latest.amount} — Status: ${latest.status}`;
+  if(latest.status === "Approved") txt += ` • After Cut: ₹${latest.after}`;
+  if(latest.status === "Rejected") txt += ` • Refund processed`;
+  el.textContent = txt;
+}
 
-/* init */
-window.addEventListener('DOMContentLoaded', ()=>{
-  if(!localStorage.getItem(KEY_TREE)) localStorage.setItem(KEY_TREE, JSON.stringify([]));
-  if(!localStorage.getItem(KEY_TXN)) localStorage.setItem(KEY_TXN, JSON.stringify([]));
-  if(!localStorage.getItem(KEY_BALANCES)) localStorage.setItem(KEY_BALANCES, JSON.stringify({}));
-  if(!localStorage.getItem(KEY_BANK)) localStorage.setItem(KEY_BANK, JSON.stringify({}));
-  if(!localStorage.getItem(KEY_WITHDRAW)) localStorage.setItem(KEY_WITHDRAW, JSON.stringify([]));
-  loginP.style.display = 'block'; mainP.style.display = 'none'; walletBtn.style.display = 'none';
-  renderTxns('my'); updateWalletUI();
-});
+/* ============================
+   API Hook: optional Google Sheet logging
+   ============================ */
+async function maybeLogSheet(payload){
+  if(!SHEET_WEBHOOK_URL) return;
+  try {
+    await fetch(SHEET_WEBHOOK_URL, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+  } catch(e){
+    console.warn("Sheet webhook failed", e);
+  }
+}
 
-/* close menu on outside click */
-window.addEventListener('click', (e)=>{ if(menuPanel && !menuPanel.contains(e.target) && e.target !== walletBtn) menuPanel.style.display='none'; });
+/* ============================
+   Withdraw request UI flow
+   ============================ */
+function requestWithdraw(){
+  const mob = getMeMobile();
+  const user = getUser(mob);
+  const v = Number(prompt("Enter withdraw amount (₹):", "100"));
+  if(!v || v<=0){ alert("Invalid amount"); return; }
+  if(v > (user.balance||0)){ alert("Insufficient balance"); return; }
+  // Only allow if bank/upi exist
+  if(!user.bank || (!user.bank.upi && !user.bank.account)){
+    alert("Bank/UPI details missing. Please set bank/UPI first.");
+    return;
+  }
+  // rule: allow immediate request; admin will approve later
+  createWithdrawRequest(mob, v);
+  alert("Withdraw request created and balance deducted. Admin will approve.");
+}
+
+/* ============================
+   Simple My Team (render names only)
+   ============================ */
+function renderMyTeamList(){
+  // For demo we'll show a simple static tree reading from KEY_TREE (or create sample)
+  let nodes = loadJSON(KEY_TREE, null);
+  if(!nodes){
+    nodes = [
+      { id:"root", name:"Rajesh parmar", parent:null, gender:"M" },
+      { id:"n1", name:"Maan", parent:"root", gender:"M" },
+      { id:"n2", name:"Bhavna", parent:"root", gender:"F" }
+    ];
+    saveJSON(KEY_TREE, nodes);
+  }
+  const container = document.getElementById("myTeamContainer");
+  // render vertical simple list with expandable plus/minus (collapsed by default)
+  function buildHtml(parent){
+    const children = nodes.filter(n=>n.parent===parent);
+    if(children.length===0) return "";
+    let html = '<ul style="list-style:none;padding-left:14px">';
+    for(const c of children){
+      const emoji = c.gender==="F"?"👩":"👨";
+      html += `<li style="margin:8px 0"><div style="display:flex;align-items:center;gap:8px">
+        <span style="font-weight:700">${emoji} ${c.name}</span>
+        <button style="margin-left:8px;padding:6px;border-radius:8px" onclick="toggleExpand('${c.id}')">[+]</button>
+        </div>
+        <div id="children_${c.id}" style="margin-left:18px"></div></li>`;
+    }
+    html += "</ul>";
+    return html;
+  }
+  container.innerHTML = buildHtml("root");
+  // populate sub-children placeholders (they will be empty until + clicked)
+}
+
+function toggleExpand(nodeId){
+  // when user clicks +, show its children names (one-level) - simple demo
+  const nodes = loadJSON(KEY_TREE, []);
+  const children = nodes.filter(n=>n.parent===nodeId);
+  const target = document.getElementById("children_"+nodeId);
+  if(!target) return;
+  if(target.innerHTML.trim()!==""){ target.innerHTML=""; return; }
+  let html = "<ul style='list-style:none;padding-left:6px'>";
+  for(const c of children){
+    html += `<li style="margin:6px 0">${c.gender==='F'?'👩':'👨'} ${c.name}</li>`;
+  }
+  html += "</ul>";
+  target.innerHTML = html;
+}
+
+/* ============================
+   init render (on load)
+   ============================ */
+function init(){
+  renderWallet();
+  renderRequests();
+  // periodically update current user withdraw status
+  setInterval(checkWithdrawStatusForUser, 4000);
+}
+init();
+
+/* ============================
+   For easy testing (expose some functions)
+   ============================ */
+window.openAdminPrompt = openAdminPrompt;
+window.openView = openView;
+window.renderRequests = renderRequests;
+window.addMoney = addMoney;
+window.requestWithdraw = requestWithdraw;
+window.promptEditBank = promptEditBank;
 
 </script>
 </body>

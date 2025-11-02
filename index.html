@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RJ Papad — MLM Binary Tree + Wallet + Transactions (Balances)</title>
+<title>RJ Papad — MLM Tree (Vertical) + Wallet</title>
 <style>
 :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff}
 html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222;height:100%}
@@ -26,8 +26,8 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 .banner img{width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
 
 /* wallet sidebar */
-#walletMenuBtn{display:none;position:fixed;top:12px;right:12px;z-index:99;background:var(--accent);border:none;color:#111;font-size:20px;padding:8px 10px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
-#walletSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#fff3cd;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.16);transition:right .36s ease;z-index:98;overflow:auto}
+#walletMenuBtn{display:none;position:fixed;top:12px;right:12px;z-index:999;background:var(--accent);border:none;color:#111;font-size:20px;padding:8px 10px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+#walletSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#fff3cd;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.16);transition:right .36s ease;z-index:998;overflow:auto}
 #walletSidebar.open{right:0}
 .walletTop{background:#fff7e6;padding:10px;border-radius:8px;margin-bottom:12px}
 .amount{font-size:24px;font-weight:800;color:#0a7a07}
@@ -44,8 +44,27 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 .txn-type-transfer{border-left-color:#0073a8}
 .balance-small{font-size:12px;color:#333}
 
-/* responsive */
-@media(max-width:520px){#walletSidebar{width:92%}}
+/* Tree canvas */
+#treeCanvasWrap{position:relative;height:520px;border-radius:10px;background:transparent;overflow:auto;margin:12px 0}
+#treeCanvas{position:relative;width:1200px;height:520px}
+.tree-node{
+  position:absolute;background:#fff;border-radius:8px;padding:8px 12px;min-width:150px;box-shadow:0 10px 20px rgba(0,0,0,.06);
+  display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;
+}
+.node-left{display:flex;align-items:center;gap:10px}
+.node-emoji{font-size:20px;margin-right:6px}
+.node-name{font-weight:700;color:#7b1f00}
+.node-meta{font-size:12px;color:#666}
+.node-actions{display:flex;flex-direction:column;gap:6px}
+.node-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e8f8ff;border:2px solid #4fb1e6;color:#0a66a0;cursor:pointer;font-weight:700}
+.connector-svg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+
+/* responsive small */
+@media(max-width:640px){
+  #treeCanvas{width:920px}
+  .tree-node{min-width:140px;font-size:13px}
+  #walletSidebar{width:92%}
+}
 /* ========== LOCKED CSS END ========== */
 </style>
 </head>
@@ -58,9 +77,15 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
     <h2>रजिस्टर करें</h2>
     <input id="regName" placeholder="नाम (वैकल्पिक)" />
     <input id="regMobile" placeholder="मोबाइल नंबर (10 अंक)" inputmode="numeric" maxlength="10" />
+    <select id="regGender" style="margin-top:6px;">
+      <option value="unknown">लिंग चुनें (अनिवार्य नहीं)</option>
+      <option value="male">Male (पुरुष)</option>
+      <option value="female">Female (महिला)</option>
+      <option value="other">Other</option>
+    </select>
     <button id="btnRegister" class="btn-primary">रजिस्टर करें</button>
     <p id="regError" style="color:#b00"></p>
-    <p class="info-small">नोट: रजिस्टर होते ही आप MLM tree में पहली खाली जगह पर जुड़ जाएंगे (left → right)।</p>
+    <p class="info-small">नोट: रजिस्टर होते ही आप MLM tree में पहली खाली जगह पर जुड़ जाएंगे (ऊपर → नीचे)।</p>
   </div>
 </div>
 
@@ -77,7 +102,6 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 <!-- Logo Overlay -->
 <div id="logoPage" class="overlay" style="display:none">
   <div class="panel" style="text-align:center;max-width:520px">
-    <!-- EDITABLE: logo (only change LOGO_URL in config) -->
     <img id="logoImg" src="" alt="logo" style="max-width:72%;border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.08)" />
     <div class="lang-row" style="margin-top:12px">
       <button class="lang-btn active" data-lang="hi">हिंदी</button>
@@ -92,17 +116,16 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 <!-- Main Page -->
 <div id="mainPage" style="display:none">
   <div class="container">
-    <div class="banner">
-      <img id="topBannerImg" src="" alt="top banner" />
-    </div>
+    <div class="banner"><img id="topBannerImg" src="" alt="top banner" /></div>
 
-    <div style="height:12px"></div>
+    <div id="treeCanvasWrap"><div id="treeCanvas">
+      <svg class="connector-svg" id="connectorSvg"></svg>
+      <!-- nodes injected by JS -->
+    </div></div>
 
-    <div class="banner">
-      <img id="bottomBannerImg" src="" alt="bottom banner" />
-    </div>
+    <div class="banner"><img id="bottomBannerImg" src="" alt="bottom banner" /></div>
 
-    <p id="welcomeText" style="font-weight:700;margin-top:18px">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
+    <p id="welcomeText" style="font-weight:700;margin-top:12px">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
     <div style="margin-top:12px">
       <button id="btnLogout" class="btn-secondary" style="max-width:200px">Logout</button>
     </div>
@@ -119,13 +142,10 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
       <div><button id="closeWallet" class="btn-secondary" style="padding:6px 10px">Close</button></div>
     </div>
     <div style="height:8px"></div>
-    <div id="walletInfo">
-      <div id="walletMobile">मोबाइल: —</div>
-      <div class="amount" id="walletAmount">₹0</div>
-    </div>
+    <div id="walletInfo"><div id="walletMobile">मोबाइल: —</div><div class="amount" id="walletAmount">₹0</div></div>
     <div style="height:8px"></div>
     <div style="display:flex;gap:8px">
-      <button id="addMoney" class="btn-primary" style="flex:1">+ ₹10 जोड़ें</button>
+      <button id="addMoney" class="btn-primary" style="flex:1">+ ₹10</button>
       <button id="openTransfer" class="btn-secondary" style="flex:1">Transfer</button>
     </div>
     <div style="height:8px"></div>
@@ -152,7 +172,7 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
       <button id="filterAll" class="btn-secondary" style="flex:1">All</button>
       <button id="filterMy" class="btn-secondary" style="flex:1">My</button>
     </div>
-    <div id="txnList" style="max-height:320px;overflow:auto"></div>
+    <div id="txnList" style="max-height:220px;overflow:auto"></div>
   </div>
 
   <hr style="border:none;height:12px" />
@@ -164,7 +184,7 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
   </div>
 
   <div style="height:12px"></div>
-  <div style="font-size:12px;color:#333">Note: Tree fills left → right (BFS). New joins go to first empty spot.</div>
+  <div style="font-size:12px;color:#333">Note: Tree fills top→down, left→right. New joins go to first empty spot (BFS).</div>
 </div>
 
 <!-- small locked badge -->
@@ -177,8 +197,8 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
  - And banner/logo image URLs
  DO NOT edit other code below — it's locked and auto-restore protected.
 =========================== */
-const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE"; // <-- put Apps Script WebApp URL (optional)
-const SHEET_SECRET = "rj_secret_2025_xyz";        // <-- put secret token (optional)
+const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE"; // <-- Apps Script WebApp URL (optional)
+const SHEET_SECRET = "rj_secret_2025_xyz";        // <-- secret token (optional)
 
 const LOGO_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png";
 const TOP_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
@@ -205,6 +225,8 @@ const walletAmountEl = el('walletAmount'), walletMobileEl = el('walletMobile');
 const treeCountEl = el('treeCount'), fullTreeEl = el('fullTree'), myTreeEl = el('myTree');
 const txnList = el('txnList'), filterAll = el('filterAll'), filterMy = el('filterMy'), viewMyTeamBtn = el('viewMyTeam');
 
+const treeCanvas = el('treeCanvas'), connectorSvg = el('connectorSvg');
+
 /* Language buttons */
 document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click', ()=>{
   document.querySelectorAll('.lang-btn').forEach(x=>x.classList.remove('active'));
@@ -215,14 +237,14 @@ document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click', ()
 
 /* ====== Tree functions ======
 Nodes stored as array in localStorage under KEY_TREE
-node = { index:number, mobile:string, name:string, parent:index|null, left:index|null, right:index|null }
+node = { index:number, mobile:string, name:string, gender:'male'|'female'|'other'|'unknown', parent:index|null, left:index|null, right:index|null }
 Fill rule: BFS (first node with left==null or right==null)
 ===========================*/
 function loadTree(){ try{ const raw = localStorage.getItem(KEY_TREE); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
 function saveTree(nodes){ localStorage.setItem(KEY_TREE, JSON.stringify(nodes)); }
 function findAvailableParent(nodes){ if(nodes.length===0) return null; for(let i=0;i<nodes.length;i++){ if(nodes[i].left===null || nodes[i].right===null) return nodes[i]; } return null; }
-function addNodeToTree(name, mobile){
-  const nodes = loadTree(); const newIndex = nodes.length; const newNode = { index:newIndex, mobile, name, parent:null, left:null, right:null };
+function addNodeToTree(name, mobile, gender){
+  const nodes = loadTree(); const newIndex = nodes.length; const newNode = { index:newIndex, mobile, name, gender: gender||'unknown', parent:null, left:null, right:null };
   if(nodes.length===0){ nodes.push(newNode); saveTree(nodes); return { nodes, placedAt:newIndex, parent:null }; } else {
     const parent = findAvailableParent(nodes);
     if(!parent){ newNode.parent = 0; nodes.push(newNode); nodes[0].left = newIndex; saveTree(nodes); return { nodes, placedAt:newIndex, parent:0 }; } else {
@@ -231,176 +253,198 @@ function addNodeToTree(name, mobile){
   }
 }
 
-function renderSubtree(nodes, idx){
-  if(!nodes || nodes.length===0 || idx===null || typeof idx==='undefined') return document.createElement('div');
-  const node = nodes[idx]; if(!node) return document.createElement('div');
-  const container = document.createElement('div'); const nodeEl = document.createElement('div'); nodeEl.className = 'node';
-  nodeEl.innerHTML = `<div><strong>${node.name || '(No name)'}</strong> — ${node.mobile}</div><div style="font-size:12px;color:#555">index:${node.index} parent:${node.parent===null?'-':node.parent}</div>`;
-  container.appendChild(nodeEl);
-  if(node.left!==null || node.right!==null){ const sub = document.createElement('div'); sub.className='subtree'; if(node.left!==null) sub.appendChild(renderSubtree(nodes, node.left)); if(node.right!==null) sub.appendChild(renderSubtree(nodes, node.right)); container.appendChild(sub); }
-  return container;
+/* compute levels for drawing (BFS by parent relationships) */
+function computeLevels(nodes){
+  if(!nodes || nodes.length===0) return [];
+  const levels = [];
+  // root at index 0
+  const queue = [{ idx:0, level:0 }];
+  const seen = new Set();
+  while(queue.length){
+    const cur = queue.shift();
+    if(seen.has(cur.idx)) continue;
+    seen.add(cur.idx);
+    if(!levels[cur.level]) levels[cur.level]=[];
+    levels[cur.level].push(cur.idx);
+    const node = nodes[cur.idx];
+    if(node.left!==null) queue.push({ idx:node.left, level: cur.level+1 });
+    if(node.right!==null) queue.push({ idx:node.right, level: cur.level+1 });
+  }
+  return levels;
 }
 
-function renderFullTreeUI(){ const nodes = loadTree(); fullTreeEl.innerHTML = ''; if(nodes.length===0){ fullTreeEl.textContent = 'Tree empty'; treeCountEl.textContent='0'; return; } treeCountEl.textContent = String(nodes.length); const root = renderSubtree(nodes, 0); fullTreeEl.appendChild(root); }
-function renderMySubtreeUI(){ myTreeEl.innerHTML = ''; const myMobile = localStorage.getItem(KEY_MOBILE); if(!myMobile){ myTreeEl.textContent = 'Login to view your team'; return; } const nodes = loadTree(); const myNode = nodes.find(n => n && n.mobile === myMobile); if(!myNode){ myTreeEl.textContent = 'आपका रिकॉर्ड tree में नहीं मिला'; return; } myTreeEl.appendChild(renderSubtree(nodes, myNode.index)); }
+/* draw tree using absolute positioning + svg lines */
+function renderGraphicTree(){
+  // clear existing
+  treeCanvas.innerHTML = '<svg class="connector-svg" id="connectorSvg"></svg>';
+  const svg = el('connectorSvg');
+  const nodes = loadTree();
+  if(nodes.length===0){
+    // set canvas small
+    treeCanvas.style.width = '800px'; treeCanvas.style.height = '320px';
+    svg.setAttribute('width', treeCanvas.style.width); svg.setAttribute('height', treeCanvas.style.height);
+    return;
+  }
+  const levels = computeLevels(nodes);
+  const levelCount = levels.length;
+  const width = Math.max(900, levels.reduce((m,l)=>Math.max(m,l.length*220),0));
+  const height = Math.max(420, levelCount*140 + 80);
+  treeCanvas.style.width = width + 'px'; treeCanvas.style.height = height + 'px';
+  svg.setAttribute('width', width); svg.setAttribute('height', height);
 
-/* ====== Balances & Transactions (localStorage) ======
-balances = { mobile1: number, mobile2:number, ... }
-txn = { id: timestampNumber, type: 'add'|'transfer'|'register', from:mobile|null, to:mobile|null, amount:number, note:string, time:ISO }
-*/
+  // position map: idx -> {x,y,centerX,centerY}
+  const pos = {};
+  for(let lvl=0; lvl<levels.length; lvl++){
+    const row = levels[lvl];
+    const n = row.length;
+    for(let i=0;i<n;i++){
+      const idx = row[i];
+      const segment = width / (n+1);
+      const x = segment*(i+1) - 75; // node left
+      const y = 40 + lvl*140;
+      pos[idx] = { x,y, cx: x + 75, cy: y + 28 }; // center
+      // create node element
+      const node = nodes[idx];
+      const elNode = document.createElement('div');
+      elNode.className = 'tree-node';
+      elNode.style.left = x + 'px';
+      elNode.style.top = y + 'px';
+      elNode.id = 'node-' + idx;
+      // emoji by gender
+      let emoji = '🧍';
+      if(node.gender === 'male') emoji = '👨';
+      else if(node.gender === 'female') emoji = '👩';
+      // short name
+      const nameShort = node.name || ('User-'+node.index);
+      const meta = 'idx:' + node.index + (node.parent===null? '': ' • p:'+node.parent);
+      elNode.innerHTML = `<div class="node-left"><div class="node-emoji">${emoji}</div><div><div class="node-name">${escapeHtml(nameShort)}</div><div class="node-meta">${node.mobile}</div></div></div>
+        <div class="node-actions"><div class="node-circle" title="add/join">+</div><div style="font-size:11px;color:#666;margin-top:4px">${node.left!==null? '👥':''}</div></div>`;
+      treeCanvas.appendChild(elNode);
+    }
+  }
+
+  // draw connectors (parent -> children)
+  // clear svg children
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  for(let i=0;i<nodes.length;i++){
+    const node = nodes[i];
+    if(node.left!==null){
+      drawLine(svg, pos[i].cx, pos[i].cy, pos[node.left].cx, pos[node.left].cy);
+    }
+    if(node.right!==null){
+      drawLine(svg, pos[i].cx, pos[i].cy, pos[node.right].cx, pos[node.right].cy);
+    }
+  }
+}
+
+/* draw a smooth path between two points */
+function drawLine(svg, x1, y1, x2, y2){
+  // create a cubic bezier for a smooth curved line
+  const midY = (y1 + y2) / 2;
+  const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+  const d = `M ${x1} ${y1} C ${x1} ${midY} ${x2} ${midY} ${x2} ${y2}`;
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', '#cfcfcf');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke-width','3');
+  svg.appendChild(path);
+}
+
+/* helpers for HTML escaping */
+function escapeHtml(text){ return String(text).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+
+/* ====== Balances & Transactions (localStorage) ====== */
 function loadBalances(){ try{ const raw = localStorage.getItem(KEY_BALANCES); return raw ? JSON.parse(raw) : {}; } catch(e){ return {}; } }
 function saveBalances(bals){ localStorage.setItem(KEY_BALANCES, JSON.stringify(bals)); }
+function ensureBalance(mobile){ const bals = loadBalances(); if(!(mobile in bals)){ bals[mobile]=0; saveBalances(bals);} return bals; }
+function getBalance(mobile){ const bals=loadBalances(); return Number(bals[mobile]||0); }
+function setBalance(mobile, amount){ const bals=loadBalances(); bals[mobile]=Number(amount); saveBalances(bals); }
+
 function loadTxns(){ try{ const raw = localStorage.getItem(KEY_TXN); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
 function saveTxns(txns){ localStorage.setItem(KEY_TXN, JSON.stringify(txns)); }
 
-function ensureBalance(mobile){
-  const bals = loadBalances();
-  if(!(mobile in bals)) { bals[mobile] = 0; saveBalances(bals); }
-  return bals;
-}
-
-function getBalance(mobile){
-  const bals = loadBalances();
-  return Number(bals[mobile] || 0);
-}
-
-function setBalance(mobile, amount){
-  const bals = loadBalances();
-  bals[mobile] = Number(amount);
-  saveBalances(bals);
-}
-
 function addTxn(type, from, to, amount, note){
-  const txns = loadTxns();
-  const t = { id: Date.now(), type, from: from||null, to: to||null, amount: Number(amount), note: note||'', time: (new Date()).toISOString() };
-  txns.unshift(t); saveTxns(txns);
-  // send to sheet optionally
-  saveToSheet(type, from||to, '', amount, to, undefined);
-  renderTxns(currentFilter);
+  const txns = loadTxns(); const t = { id: Date.now(), type, from: from||null, to: to||null, amount: Number(amount), note: note||'', time: (new Date()).toISOString() };
+  txns.unshift(t); saveTxns(txns); saveToSheet(type, from||to, '', amount, to, undefined); renderTxns(currentFilter);
 }
 
 /* render transactions */
 let currentFilter = 'all';
 function renderTxns(filter){
-  currentFilter = filter || currentFilter;
-  txnList.innerHTML = '';
-  const txns = loadTxns();
-  const myMobile = localStorage.getItem(KEY_MOBILE);
-  const list = txns.filter(t => {
-    if(currentFilter==='all') return true;
-    if(currentFilter==='my') return (t.from===myMobile || t.to===myMobile);
-    return true;
-  });
+  currentFilter = filter || currentFilter; txnList.innerHTML=''; const txns = loadTxns(); const myMobile = localStorage.getItem(KEY_MOBILE);
+  const list = txns.filter(t => currentFilter==='all' ? true : (t.from===myMobile || t.to===myMobile));
   if(list.length===0){ txnList.innerHTML = '<div style="color:#666">No transactions</div>'; return; }
-  list.forEach(t=>{
-    const div = document.createElement('div'); div.className='txn-item ' + (t.type==='add' ? 'txn-type-add' : 'txn-type-transfer');
-    const time = new Date(t.time).toLocaleString();
-    if(t.type==='add' || t.type==='register'){
-      div.innerHTML = `<div><strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong></div><div class="balance-small">to: ${t.to || '—'} • ${time}</div><div style="font-size:13px;color:#444">${t.note || ''}</div>`;
-    } else {
-      div.innerHTML = `<div><strong>Transfer ₹${t.amount}</strong></div><div class="balance-small">from: ${t.from} → to: ${t.to} • ${time}</div><div style="font-size:13px;color:#444">${t.note || ''}</div>`;
-    }
+  list.forEach(t=>{ const div = document.createElement('div'); div.className='txn-item ' + (t.type==='add' ? 'txn-type-add' : 'txn-type-transfer'); const time = new Date(t.time).toLocaleString();
+    if(t.type==='add' || t.type==='register'){ div.innerHTML = `<div><strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong></div><div class="balance-small">to: ${t.to||'—'} • ${time}</div><div style="font-size:13px;color:#444">${t.note||''}</div>`; }
+    else { div.innerHTML = `<div><strong>Transfer ₹${t.amount}</strong></div><div class="balance-small">from: ${t.from} → to: ${t.to} • ${time}</div><div style="font-size:13px;color:#444">${t.note||''}</div>`; }
     txnList.appendChild(div);
   });
 }
 
-/* ====== Wallet & UI flow ====== */
-function updateWalletUI(){
-  const mob = localStorage.getItem(KEY_MOBILE) || '—';
-  ensureBalance(mob);
-  const amt = getBalance(mob);
-  walletMobileEl.textContent = 'मोबाइल: ' + mob;
-  walletAmountEl.textContent = '₹' + amt;
-}
+/* ====== UI and Wallet flow ====== */
+function updateWalletUI(){ const mob = localStorage.getItem(KEY_MOBILE) || '—'; ensureBalance(mob); const amt = getBalance(mob); walletMobileEl.textContent = 'मोबाइल: ' + mob; walletAmountEl.textContent = '₹' + amt; }
+walletBtn.addEventListener('click', ()=>{ sidebar.classList.toggle('open'); sidebar.setAttribute('aria-hidden', sidebar.classList.contains('open') ? 'false' : 'true'); renderFullTreeList(); renderMySubtreeList(); renderTxns(currentFilter); });
+closeWallet.addEventListener('click', ()=>{ sidebar.classList.remove('open'); sidebar.setAttribute('aria-hidden','true'); });
 
-/* sidebar open/close */
-walletBtn.addEventListener('click', ()=>{
-  sidebar.classList.toggle('open'); sidebar.setAttribute('aria-hidden', sidebar.classList.contains('open') ? 'false' : 'true');
-  renderFullTreeUI(); renderMySubtreeUI(); renderTxns(currentFilter);
-});
-closeWallet.addEventListener('click', ()=> { sidebar.classList.remove('open'); sidebar.setAttribute('aria-hidden','true'); });
-
-addMoneyBtn.addEventListener('click', ()=>{
-  const mobile = localStorage.getItem(KEY_MOBILE);
-  if(!mobile){ alert('Login required'); return; }
-  ensureBalance(mobile);
-  const bal = getBalance(mobile);
-  const newBal = bal + 10;
-  setBalance(mobile, newBal);
-  updateWalletUI();
-  addTxn('add', null, mobile, 10, 'Manual add +10');
-  alert('₹10 added to ' + mobile);
-});
+addMoneyBtn.addEventListener('click', ()=>{ const mobile = localStorage.getItem(KEY_MOBILE); if(!mobile){ alert('Login required'); return;} ensureBalance(mobile); const bal = getBalance(mobile); setBalance(mobile, bal+10); updateWalletUI(); addTxn('add', null, mobile, 10, 'Manual add +10'); alert('₹10 added'); });
 
 openTransfer.addEventListener('click', ()=>{ transferBox.style.display = transferBox.style.display==='none' ? 'block' : 'none'; transferMsg.textContent=''; });
+btnTransfer.addEventListener('click', ()=>{ transferMsg.textContent=''; const from = localStorage.getItem(KEY_MOBILE); if(!from){ transferMsg.textContent='Login required'; return; } const to = transferTo.value.trim(); const amtRaw = transferAmount.value.trim(); if(!/^[0-9]{10}$/.test(to)){ transferMsg.textContent='कृपया सही To मोबाइल डालें'; return; } if(!amtRaw||isNaN(amtRaw)||Number(amtRaw)<=0){ transferMsg.textContent='सही राशि डालें'; return;} const amt=Math.floor(Number(amtRaw)); const bal=getBalance(from); if(amt>bal){ transferMsg.textContent='Insufficient balance'; return; } const nodes = loadTree(); const exists = nodes.find(n => n && n.mobile===to); if(!exists){ transferMsg.textContent='Recipient not registered'; return; } setBalance(from, bal-amt); ensureBalance(to); setBalance(to, getBalance(to)+amt); addTxn('transfer', from, to, amt, 'User transfer'); updateWalletUI(); transferMsg.style.color='green'; transferMsg.textContent='Transfer successful'; transferTo.value=''; transferAmount.value=''; });
 
-btnTransfer.addEventListener('click', ()=>{
-  transferMsg.textContent = '';
-  const from = localStorage.getItem(KEY_MOBILE);
-  if(!from){ transferMsg.textContent = 'Login required'; return; }
-  const to = transferTo.value.trim();
-  const amtRaw = transferAmount.value.trim();
-  if(!/^[0-9]{10}$/.test(to)){ transferMsg.textContent = 'कृपया सही To मोबाइल डालें'; return; }
-  if(!amtRaw || isNaN(amtRaw) || Number(amtRaw)<=0){ transferMsg.textContent = 'सही राशि डालें'; return; }
-  const amt = Math.floor(Number(amtRaw));
-  const bal = getBalance(from);
-  if(amt > bal){ transferMsg.textContent = 'Insufficient balance'; return; }
-  // verify 'to' exists in tree (registered)
-  const nodes = loadTree();
-  const exists = nodes.find(n => n && n.mobile === to);
-  if(!exists){ transferMsg.textContent = 'Recipient not registered'; return; }
-  // proceed transfer: update both balances
-  setBalance(from, bal - amt);
-  ensureBalance(to);
-  const toBal = getBalance(to);
-  setBalance(to, toBal + amt);
-  addTxn('transfer', from, to, amt, 'User transfer');
-  updateWalletUI();
-  transferMsg.style.color='green'; transferMsg.textContent = 'Transfer successful';
-  transferTo.value=''; transferAmount.value='';
-});
+viewMyTeamBtn.addEventListener('click', ()=>{ renderMySubtreeList(); sidebar.classList.add('open'); });
 
-/* view my team */
-viewMyTeamBtn.addEventListener('click', ()=>{ renderMySubtreeUI(); sidebar.classList.add('open'); });
-
-/* Register flow */
-el('btnRegister').addEventListener('click', async ()=>{
-  const name = el('regName').value.trim(), mobile = el('regMobile').value.trim();
-  el('regError').textContent = '';
-  if(!/^[0-9]{10}$/.test(mobile)){ el('regError').textContent = 'कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
-  // store basic info
-  localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name);
-  // ensure balances map and set to 0
-  ensureBalance(mobile); setBalance(mobile, 0);
-  // add to tree
-  const res = addNodeToTree(name, mobile);
-  alert('रजिस्टर हुआ — tree index: ' + res.placedAt + (res.parent!==null ? (' (parent: '+res.parent+')') : ' (root)'));
-  addTxn('register', null, mobile, 0, 'Registered'); await saveToSheet('register', mobile, name, res.placedAt);
-  // move to login
-  regP.style.display = 'none'; logP.style.display = 'flex';
-});
-
-/* Login flow */
-el('btnLogin').addEventListener('click', ()=>{
-  const mobile = el('loginMobile').value.trim(); el('loginError').textContent = '';
-  if(!/^[0-9]{10}$/.test(mobile)){ el('loginError').textContent = 'कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
-  const saved = localStorage.getItem(KEY_MOBILE);
-  if(!saved || mobile !== saved){ el('loginError').textContent = 'यह मोबाइल रजिस्टर नहीं है'; return; }
-  logP.style.display = 'none'; logoP.style.display = 'flex';
-});
-
-/* Logo -> Main: show wallet menu button after logo */
-el('btnNext').addEventListener('click', ()=>{
-  logoP.style.display = 'none'; mainP.style.display = 'block'; walletBtn.style.display = 'block';
-  updateWalletUI(); renderFullTreeUI(); renderMySubtreeUI(); renderTxns('my');
-});
-
-/* logout */
-el('btnLogout').addEventListener('click', ()=>{ mainP.style.display = 'none'; logP.style.display = 'flex'; walletBtn.style.display = 'none'; });
-
-/* txn filters */
 filterAll.addEventListener('click', ()=>{ renderTxns('all'); });
 filterMy.addEventListener('click', ()=>{ renderTxns('my'); });
+
+/* Register & Login flows */
+el('btnRegister').addEventListener('click', async ()=>{
+  const name = el('regName').value.trim(), mobile = el('regMobile').value.trim(), gender = el('regGender').value || 'unknown';
+  el('regError').textContent = '';
+  if(!/^[0-9]{10}$/.test(mobile)){ el('regError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
+  localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name||'');
+  ensureBalance(mobile); setBalance(mobile, 0);
+  const res = addNodeToTree(name, mobile, gender);
+  alert('रजिस्टर हुआ — tree index: ' + res.placedAt + (res.parent!==null ? (' (parent: '+res.parent+')') : ' (root)'));
+  addTxn('register', null, mobile, 0, 'Registered'); await saveToSheet('register', mobile, name, res.placedAt);
+  regP.style.display='none'; logP.style.display='flex';
+});
+
+el('btnLogin').addEventListener('click', ()=>{ const mobile = el('loginMobile').value.trim(); el('loginError').textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ el('loginError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const saved = localStorage.getItem(KEY_MOBILE); if(!saved || mobile !== saved){ el('loginError').textContent='यह मोबाइल रजिस्टर नहीं है'; return; } logP.style.display='none'; logoP.style.display='flex'; });
+
+el('btnNext').addEventListener('click', ()=>{ logoP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderGraphicTree(); renderFullTreeList(); renderMySubtreeList(); renderTxns('my'); });
+
+el('btnLogout').addEventListener('click', ()=>{ mainP.style.display='none'; logP.style.display='flex'; walletBtn.style.display='none'; });
+
+/* Full Tree & My Subtree (list form inside sidebar) */
+function renderFullTreeList(){
+  const nodes = loadTree();
+  fullTreeEl.innerHTML = '';
+  if(nodes.length===0){ fullTreeEl.textContent='Tree empty'; treeCountEl.textContent='0'; return; }
+  treeCountEl.textContent = String(nodes.length);
+  nodes.forEach(n => {
+    const d = document.createElement('div'); d.className='node'; d.textContent = `${n.index}: ${n.name || '(No name)'} — ${n.mobile}`;
+    fullTreeEl.appendChild(d);
+  });
+}
+function renderMySubtreeList(){
+  myTreeEl.innerHTML = '';
+  const my = localStorage.getItem(KEY_MOBILE);
+  if(!my){ myTreeEl.textContent='Login to view your team'; return; }
+  const nodes = loadTree();
+  const me = nodes.find(n => n && n.mobile===my);
+  if(!me){ myTreeEl.textContent='आपका रिकॉर्ड tree में नहीं मिला'; return; }
+  // reuse renderSubtree for list-ish
+  const pack = document.createElement('div');
+  function rec(idx, container){
+    const node = nodes[idx]; const elDiv = document.createElement('div'); elDiv.className='node'; elDiv.textContent = `${node.index}: ${node.name || '(No name)'} — ${node.mobile}`; container.appendChild(elDiv);
+    if(node.left!==null || node.right!==null){
+      const c = document.createElement('div'); c.className='subtree';
+      if(node.left!==null) rec(node.left, c); if(node.right!==null) rec(node.right, c);
+      container.appendChild(c);
+    }
+  }
+  rec(me.index, pack); myTreeEl.appendChild(pack);
+}
 
 /* ========== Sheet Save helper ========== */
 async function saveToSheet(action, mobile, name, amount, toMobile, toAmount){
@@ -426,11 +470,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
   // initial UI state
   regP.style.display='flex'; logP.style.display='none'; logoP.style.display='none'; mainP.style.display='none';
   walletBtn.style.display='none';
-  // init tree & txns storage if missing
+  // init storage
   if(!localStorage.getItem(KEY_TREE)) localStorage.setItem(KEY_TREE, JSON.stringify([]));
   if(!localStorage.getItem(KEY_TXN)) localStorage.setItem(KEY_TXN, JSON.stringify([]));
   if(!localStorage.getItem(KEY_BALANCES)) localStorage.setItem(KEY_BALANCES, JSON.stringify({}));
-  renderFullTreeUI(); updateWalletUI(); renderTxns('my');
+  renderGraphicTree(); renderFullTreeList(); updateWalletUI(); renderTxns('my');
 });
 /* ========== END ========== */
 </script>

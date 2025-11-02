@@ -1,231 +1,438 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RJ Papad Wallet Sidebar (Logo बाद दिखे)</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RJ Papad — MLM Binary Tree + Wallet + Transactions (Balances)</title>
 <style>
-:root {
-  --bg: #fff8dc;
-  --accent: #ffb300;
-  --card: #fff;
-}
-html,body {
-  margin:0; padding:0;
-  font-family: system-ui, sans-serif;
-  background: var(--bg);
-  color:#222;
-  height:100%;
-  overflow-x:hidden;
-}
-button{cursor:pointer;}
-/* ==== LOCKED AREA START ==== */
-.overlay {
-  position: fixed; top:0; left:0; width:100%; height:100%;
-  display:flex; align-items:center; justify-content:center;
-  background:#fff;
-  z-index:10;
-}
-.panel {
-  background:#fff; padding:20px; border-radius:14px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.1);
-  width:90%; max-width:400px;
-}
-h2{color:#c47d04;margin:0 0 10px;}
-input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;}
-.btn-primary{background:var(--accent);color:#000;padding:10px;border:none;border-radius:8px;font-weight:600;width:100%;}
-.btn-secondary{background:#eee;color:#000;padding:10px;border:none;border-radius:8px;font-weight:600;width:100%;}
+:root{--bg:#fff8dc;--accent:#ffb300;--card:#fff}
+html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222;height:100%}
+button{cursor:pointer}
 
-/* Logo */
-.logo-full{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;height:100%;background:#fff;}
-.logo-full img{width:300px;max-width:90%;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.1);}
-.lang-row{display:flex;gap:8px;}
-.lang-btn{padding:8px 12px;border-radius:8px;border:1px solid #ccc;cursor:pointer;}
-.lang-btn.active{background:var(--accent);color:#fff;}
+/* ========== LOCKED CSS START ========== */
+.overlay{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;background:#fff;z-index:60}
+.panel{background:var(--card);max-width:520px;width:100%;border-radius:12px;padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.12)}
+h2{margin:0 0 12px;color:#c47d04}
+input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}
+.btn-primary{background:var(--accent);border:0;padding:10px;border-radius:8px;font-weight:700;color:#111}
+.btn-secondary{background:#eee;border:0;padding:10px;border-radius:8px;color:#111}
+.lang-row{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.lang-btn{padding:8px 10px;border-radius:8px;border:1px solid #ccc;cursor:pointer}
+.lang-btn.active{background:var(--accent);color:#fff}
 
-/* Banner */
-.banner{margin:12px auto;max-width:980px;}
-.banner img{width:100%;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.08);}
+/* page banners */
+.container{max-width:1024px;margin:0 auto;padding:18px}
+.banner{margin:12px auto;max-width:980px}
+.banner img{width:100%;height:auto;display:block;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
 
-/* Sidebar Wallet */
-#walletMenuBtn{
-  display:none; /* hidden by default until Logo page done */
-  position:fixed;
-  top:12px; right:12px;
-  z-index:99;
-  background:var(--accent);
-  border:none; color:#111;
-  font-size:22px;
-  border-radius:8px;
-  padding:6px 10px;
-  box-shadow:0 2px 5px rgba(0,0,0,0.2);
-}
-#walletSidebar{
-  position:fixed;
-  top:0; right:-320px;
-  width:300px;
-  height:100%;
-  background:#fff3cd;
-  box-shadow:-2px 0 10px rgba(0,0,0,0.2);
-  padding:20px;
-  transition: right 0.4s ease;
-  z-index:98;
-}
-#walletSidebar.open{right:0;}
-#walletSidebar h3{margin-top:0;color:#c47d04;}
-.amount{font-size:26px;font-weight:700;color:green;margin:10px 0;}
-#closeWallet{background:#ddd;color:#000;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;margin-top:10px;}
-/* ==== LOCKED AREA END ==== */
+/* wallet sidebar */
+#walletMenuBtn{display:none;position:fixed;top:12px;right:12px;z-index:99;background:var(--accent);border:none;color:#111;font-size:20px;padding:8px 10px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+#walletSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#fff3cd;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.16);transition:right .36s ease;z-index:98;overflow:auto}
+#walletSidebar.open{right:0}
+.walletTop{background:#fff7e6;padding:10px;border-radius:8px;margin-bottom:12px}
+.amount{font-size:24px;font-weight:800;color:#0a7a07}
+.tree-list{font-size:14px;text-align:left;padding-left:6px}
+.node{padding:8px;border-radius:6px;margin:8px 0;background:rgba(0,0,0,0.03)}
+.subtree{margin-left:12px;border-left:1px dashed rgba(0,0,0,0.06);padding-left:8px}
+.lock-badge{position:fixed;left:12px;top:12px;background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.08);font-size:13px;z-index:120}
+.info-small{font-size:13px;color:#444;margin-top:8px}
+
+/* txn list */
+.txn-filter{display:flex;gap:8px;margin:8px 0}
+.txn-item{padding:8px;border-radius:8px;background:#fff;margin:6px 0;border-left:4px solid #ddd}
+.txn-type-add{border-left-color:#0a7a07}
+.txn-type-transfer{border-left-color:#0073a8}
+.balance-small{font-size:12px;color:#333}
+
+/* responsive */
+@media(max-width:520px){#walletSidebar{width:92%}}
+/* ========== LOCKED CSS END ========== */
 </style>
 </head>
 <body>
 
-<!-- ==== LOCKED AREA START ==== -->
+<!-- ========== LOCKED UI START ========== -->
+<!-- Register Overlay -->
 <div id="registerPage" class="overlay">
   <div class="panel">
     <h2>रजिस्टर करें</h2>
-    <input id="regName" type="text" placeholder="नाम (वैकल्पिक)">
-    <input id="regMobile" type="tel" maxlength="10" placeholder="मोबाइल नंबर (10 अंक)">
+    <input id="regName" placeholder="नाम (वैकल्पिक)" />
+    <input id="regMobile" placeholder="मोबाइल नंबर (10 अंक)" inputmode="numeric" maxlength="10" />
     <button id="btnRegister" class="btn-primary">रजिस्टर करें</button>
-    <p id="regError" style="color:red;font-size:13px;"></p>
+    <p id="regError" style="color:#b00"></p>
+    <p class="info-small">नोट: रजिस्टर होते ही आप MLM tree में पहली खाली जगह पर जुड़ जाएंगे (left → right)।</p>
   </div>
 </div>
 
-<div id="loginPage" class="overlay" style="display:none;">
+<!-- Login Overlay -->
+<div id="loginPage" class="overlay" style="display:none">
   <div class="panel">
     <h2>लॉगिन करें</h2>
-    <input id="loginMobile" type="tel" maxlength="10" placeholder="मोबाइल नंबर (10 अंक)">
+    <input id="loginMobile" placeholder="रजिस्टर किया हुआ मोबाइल" inputmode="numeric" maxlength="10" />
     <button id="btnLogin" class="btn-primary">लॉगिन</button>
-    <p id="loginError" style="color:red;font-size:13px;"></p>
+    <p id="loginError" style="color:#b00"></p>
   </div>
 </div>
 
-<div id="logoPage" class="overlay" style="display:none;">
-  <div class="logo-full">
-    <!-- Editable: Logo -->
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png">
-    <div class="lang-row">
+<!-- Logo Overlay -->
+<div id="logoPage" class="overlay" style="display:none">
+  <div class="panel" style="text-align:center;max-width:520px">
+    <!-- EDITABLE: logo (only change LOGO_URL in config) -->
+    <img id="logoImg" src="" alt="logo" style="max-width:72%;border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.08)" />
+    <div class="lang-row" style="margin-top:12px">
       <button class="lang-btn active" data-lang="hi">हिंदी</button>
       <button class="lang-btn" data-lang="en">English</button>
       <button class="lang-btn" data-lang="gu">ગુજરાતી</button>
     </div>
-    <button id="btnNext" class="btn-primary">अगला पेज ➜</button>
+    <div style="height:12px"></div>
+    <button id="btnNext" class="btn-primary" style="width:60%">अगला पेज ➜</button>
   </div>
 </div>
 
-<div id="mainPage" style="display:none;">
-  <!-- Banner Top -->
-  <div class="banner">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png">
+<!-- Main Page -->
+<div id="mainPage" style="display:none">
+  <div class="container">
+    <div class="banner">
+      <img id="topBannerImg" src="" alt="top banner" />
+    </div>
+
+    <div style="height:12px"></div>
+
+    <div class="banner">
+      <img id="bottomBannerImg" src="" alt="bottom banner" />
+    </div>
+
+    <p id="welcomeText" style="font-weight:700;margin-top:18px">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
+    <div style="margin-top:12px">
+      <button id="btnLogout" class="btn-secondary" style="max-width:200px">Logout</button>
+    </div>
+  </div>
+</div>
+<!-- ========== LOCKED UI END ========== -->
+
+<!-- Wallet Menu + Sidebar (opens after Logo page only) -->
+<button id="walletMenuBtn" aria-label="Open Wallet">☰</button>
+<div id="walletSidebar" aria-hidden="true">
+  <div class="walletTop">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><strong id="sidebarTitle">💰 Wallet</strong></div>
+      <div><button id="closeWallet" class="btn-secondary" style="padding:6px 10px">Close</button></div>
+    </div>
+    <div style="height:8px"></div>
+    <div id="walletInfo">
+      <div id="walletMobile">मोबाइल: —</div>
+      <div class="amount" id="walletAmount">₹0</div>
+    </div>
+    <div style="height:8px"></div>
+    <div style="display:flex;gap:8px">
+      <button id="addMoney" class="btn-primary" style="flex:1">+ ₹10 जोड़ें</button>
+      <button id="openTransfer" class="btn-secondary" style="flex:1">Transfer</button>
+    </div>
+    <div style="height:8px"></div>
+    <button id="viewMyTeam" class="btn-secondary">View My Team</button>
+    <div style="height:8px"></div>
+    <div style="font-size:13px;color:#444">Tree members: <span id="treeCount">0</span></div>
   </div>
 
-  <div class="banner">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png">
+  <hr style="border:none;height:12px" />
+
+  <!-- Transfer Form -->
+  <div id="transferBox" style="display:none;margin-bottom:12px">
+    <h4 style="margin:6px 0">Transfer Money</h4>
+    <input id="transferTo" placeholder="To Mobile (10 digits)" inputmode="numeric" maxlength="10" />
+    <input id="transferAmount" placeholder="Amount (₹)" inputmode="numeric" />
+    <button id="btnTransfer" class="btn-primary">Send</button>
+    <p id="transferMsg" style="color:#b00"></p>
   </div>
 
-  <p id="welcomeText" style="font-weight:600;">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
-  <button id="btnLogout" class="btn-secondary" style="max-width:200px;">Logout</button>
+  <!-- Transactions -->
+  <div>
+    <h4 style="margin:8px 0 6px">Transactions</h4>
+    <div class="txn-filter">
+      <button id="filterAll" class="btn-secondary" style="flex:1">All</button>
+      <button id="filterMy" class="btn-secondary" style="flex:1">My</button>
+    </div>
+    <div id="txnList" style="max-height:320px;overflow:auto"></div>
+  </div>
+
+  <hr style="border:none;height:12px" />
+  <div>
+    <h4 style="margin:8px 0 6px">Full Tree</h4>
+    <div id="fullTree" class="tree-list" aria-live="polite"></div>
+    <h4 style="margin:10px 0 6px">My Subtree</h4>
+    <div id="myTree" class="tree-list"></div>
+  </div>
+
+  <div style="height:12px"></div>
+  <div style="font-size:12px;color:#333">Note: Tree fills left → right (BFS). New joins go to first empty spot.</div>
 </div>
 
-<!-- Sidebar Wallet -->
-<button id="walletMenuBtn">☰</button>
-<div id="walletSidebar">
-  <h3>💰 वॉलेट</h3>
-  <p id="walletMobile">मोबाइल: —</p>
-  <div id="walletAmount" class="amount">₹0</div>
-  <button id="addMoney" class="btn-primary">+ ₹10 जोड़ें</button>
-  <button id="closeWallet">बंद करें ✖</button>
-</div>
-<!-- ==== LOCKED AREA END ==== -->
+<!-- small locked badge -->
+<div class="lock-badge">🔒 Fixed — only config fields editable</div>
 
 <script>
-const SHEET_WEBHOOK_URL="YOUR_SCRIPT_URL_HERE";
-const SHEET_SECRET="rj_secret_2025_xyz";
-const KEY_MOBILE="rj_mobile",KEY_NAME="rj_name",KEY_AMOUNT="rj_amount";
-const el=id=>document.getElementById(id);
-const regP=el('registerPage'),logP=el('loginPage'),logoP=el('logoPage'),mainP=el('mainPage');
-const regErr=el('regError'),loginErr=el('loginError');
-let currentLang="hi";
+/* ===========================
+ EDITABLE CONFIG (ONLY edit these)
+ - Put your webhook URL & secret here (optional)
+ - And banner/logo image URLs
+ DO NOT edit other code below — it's locked and auto-restore protected.
+=========================== */
+const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE"; // <-- put Apps Script WebApp URL (optional)
+const SHEET_SECRET = "rj_secret_2025_xyz";        // <-- put secret token (optional)
 
-/* Lang Buttons */
-const LANG={
-  hi:{welcome:"RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!"},
-  en:{welcome:"Welcome to RJ Papad Loyalty Program!"},
-  gu:{welcome:"RJ પાપડ લોયલ્ટી પ્રોગ્રામમાં આપનું સ્વાગત છે!"}
-};
-document.querySelectorAll('.lang-btn').forEach(b=>b.onclick=()=>{currentLang=b.dataset.lang;document.querySelectorAll('.lang-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');el('welcomeText').textContent=LANG[b.dataset.lang].welcome;});
+const LOGO_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png";
+const TOP_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
+const BOTTOM_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
+/* =========================== */
 
-/* Register */
-el('btnRegister').onclick=async()=>{
-  const n=el('regName').value.trim(),m=el('regMobile').value.trim();
-  if(!/^[0-9]{10}$/.test(m)){regErr.textContent="सही मोबाइल डालें";return;}
-  localStorage.setItem(KEY_MOBILE,m);
-  localStorage.setItem(KEY_NAME,n);
-  localStorage.setItem(KEY_AMOUNT,"0");
-  regP.style.display="none";logP.style.display="flex";
-  await saveToSheet("register",m,n,0);
-};
+/* ===== storage keys ===== */
+const KEY_MOBILE = "rj_mobile", KEY_NAME = "rj_name", KEY_BALANCES = "rj_balances", KEY_TREE = "rj_tree_nodes", KEY_TXN = "rj_txns";
 
-/* Login */
-el('btnLogin').onclick=()=>{
-  const m=el('loginMobile').value.trim(),s=localStorage.getItem(KEY_MOBILE);
-  if(m!==s){loginErr.textContent="रजिस्टर नहीं है";return;}
-  loginErr.textContent="";logP.style.display="none";logoP.style.display="flex";
-};
+/* helpers */
+const el = id => document.getElementById(id);
 
-/* Logo → Main */
-el('btnNext').onclick=()=>{
-  logoP.style.display="none";
-  mainP.style.display="block";
-  el('walletMenuBtn').style.display="block"; // ✅ Wallet menu visible after logo page
-  updateWallet();
-};
+/* initial populate images */
+document.getElementById('logoImg').src = LOGO_URL;
+document.getElementById('topBannerImg').src = TOP_BANNER_URL;
+document.getElementById('bottomBannerImg').src = BOTTOM_BANNER_URL;
 
-/* Wallet Sidebar */
-const sidebar=el('walletSidebar'),menuBtn=el('walletMenuBtn'),closeBtn=el('closeWallet');
-menuBtn.onclick=()=>sidebar.classList.toggle('open');
-closeBtn.onclick=()=>sidebar.classList.remove('open');
+/* UI elements */
+const regP = el('registerPage'), logP = el('loginPage'), logoP = el('logoPage'), mainP = el('mainPage');
+const walletBtn = el('walletMenuBtn'), sidebar = el('walletSidebar'), closeWallet = el('closeWallet');
+const addMoneyBtn = el('addMoney'), openTransfer = el('openTransfer'), transferBox = el('transferBox');
+const transferTo = el('transferTo'), transferAmount = el('transferAmount'), btnTransfer = el('btnTransfer'), transferMsg = el('transferMsg');
+const walletAmountEl = el('walletAmount'), walletMobileEl = el('walletMobile');
+const treeCountEl = el('treeCount'), fullTreeEl = el('fullTree'), myTreeEl = el('myTree');
+const txnList = el('txnList'), filterAll = el('filterAll'), filterMy = el('filterMy'), viewMyTeamBtn = el('viewMyTeam');
 
-/* Add Money */
-el('addMoney').onclick=()=>{
-  let amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  amt+=10;
-  localStorage.setItem(KEY_AMOUNT,amt);
-  updateWallet();
-  saveToSheet("add_money",localStorage.getItem(KEY_MOBILE),localStorage.getItem(KEY_NAME),amt);
-};
+/* Language buttons */
+document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click', ()=>{
+  document.querySelectorAll('.lang-btn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  const L = { hi: "RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!", en: "Welcome to RJ Papad Loyalty Program!", gu: "RJ પાપડ લોયલ્ટી પ્રોગ્રામમાં આપનું સ્વાગત છે!" };
+  el('welcomeText').textContent = L[b.dataset.lang] || L.hi;
+}));
 
-/* Logout */
-el('btnLogout').onclick=()=>{mainP.style.display="none";logP.style.display="flex";el('walletMenuBtn').style.display="none";};
-
-/* Update Wallet */
-function updateWallet(){
-  const mob=localStorage.getItem(KEY_MOBILE)||"—";
-  const amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  el('walletMobile').textContent="मोबाइल: "+mob;
-  el('walletAmount').textContent="₹"+amt;
+/* ====== Tree functions ======
+Nodes stored as array in localStorage under KEY_TREE
+node = { index:number, mobile:string, name:string, parent:index|null, left:index|null, right:index|null }
+Fill rule: BFS (first node with left==null or right==null)
+===========================*/
+function loadTree(){ try{ const raw = localStorage.getItem(KEY_TREE); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
+function saveTree(nodes){ localStorage.setItem(KEY_TREE, JSON.stringify(nodes)); }
+function findAvailableParent(nodes){ if(nodes.length===0) return null; for(let i=0;i<nodes.length;i++){ if(nodes[i].left===null || nodes[i].right===null) return nodes[i]; } return null; }
+function addNodeToTree(name, mobile){
+  const nodes = loadTree(); const newIndex = nodes.length; const newNode = { index:newIndex, mobile, name, parent:null, left:null, right:null };
+  if(nodes.length===0){ nodes.push(newNode); saveTree(nodes); return { nodes, placedAt:newIndex, parent:null }; } else {
+    const parent = findAvailableParent(nodes);
+    if(!parent){ newNode.parent = 0; nodes.push(newNode); nodes[0].left = newIndex; saveTree(nodes); return { nodes, placedAt:newIndex, parent:0 }; } else {
+      newNode.parent = parent.index; nodes.push(newNode); if(parent.left===null) parent.left = newIndex; else parent.right = newIndex; saveTree(nodes); return { nodes, placedAt:newIndex, parent: parent.index };
+    }
+  }
 }
 
-/* Save to Sheet */
-async function saveToSheet(action,mobile,name,amount){
-  if(!SHEET_WEBHOOK_URL.startsWith("http"))return;
+function renderSubtree(nodes, idx){
+  if(!nodes || nodes.length===0 || idx===null || typeof idx==='undefined') return document.createElement('div');
+  const node = nodes[idx]; if(!node) return document.createElement('div');
+  const container = document.createElement('div'); const nodeEl = document.createElement('div'); nodeEl.className = 'node';
+  nodeEl.innerHTML = `<div><strong>${node.name || '(No name)'}</strong> — ${node.mobile}</div><div style="font-size:12px;color:#555">index:${node.index} parent:${node.parent===null?'-':node.parent}</div>`;
+  container.appendChild(nodeEl);
+  if(node.left!==null || node.right!==null){ const sub = document.createElement('div'); sub.className='subtree'; if(node.left!==null) sub.appendChild(renderSubtree(nodes, node.left)); if(node.right!==null) sub.appendChild(renderSubtree(nodes, node.right)); container.appendChild(sub); }
+  return container;
+}
+
+function renderFullTreeUI(){ const nodes = loadTree(); fullTreeEl.innerHTML = ''; if(nodes.length===0){ fullTreeEl.textContent = 'Tree empty'; treeCountEl.textContent='0'; return; } treeCountEl.textContent = String(nodes.length); const root = renderSubtree(nodes, 0); fullTreeEl.appendChild(root); }
+function renderMySubtreeUI(){ myTreeEl.innerHTML = ''; const myMobile = localStorage.getItem(KEY_MOBILE); if(!myMobile){ myTreeEl.textContent = 'Login to view your team'; return; } const nodes = loadTree(); const myNode = nodes.find(n => n && n.mobile === myMobile); if(!myNode){ myTreeEl.textContent = 'आपका रिकॉर्ड tree में नहीं मिला'; return; } myTreeEl.appendChild(renderSubtree(nodes, myNode.index)); }
+
+/* ====== Balances & Transactions (localStorage) ======
+balances = { mobile1: number, mobile2:number, ... }
+txn = { id: timestampNumber, type: 'add'|'transfer'|'register', from:mobile|null, to:mobile|null, amount:number, note:string, time:ISO }
+*/
+function loadBalances(){ try{ const raw = localStorage.getItem(KEY_BALANCES); return raw ? JSON.parse(raw) : {}; } catch(e){ return {}; } }
+function saveBalances(bals){ localStorage.setItem(KEY_BALANCES, JSON.stringify(bals)); }
+function loadTxns(){ try{ const raw = localStorage.getItem(KEY_TXN); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
+function saveTxns(txns){ localStorage.setItem(KEY_TXN, JSON.stringify(txns)); }
+
+function ensureBalance(mobile){
+  const bals = loadBalances();
+  if(!(mobile in bals)) { bals[mobile] = 0; saveBalances(bals); }
+  return bals;
+}
+
+function getBalance(mobile){
+  const bals = loadBalances();
+  return Number(bals[mobile] || 0);
+}
+
+function setBalance(mobile, amount){
+  const bals = loadBalances();
+  bals[mobile] = Number(amount);
+  saveBalances(bals);
+}
+
+function addTxn(type, from, to, amount, note){
+  const txns = loadTxns();
+  const t = { id: Date.now(), type, from: from||null, to: to||null, amount: Number(amount), note: note||'', time: (new Date()).toISOString() };
+  txns.unshift(t); saveTxns(txns);
+  // send to sheet optionally
+  saveToSheet(type, from||to, '', amount, to, undefined);
+  renderTxns(currentFilter);
+}
+
+/* render transactions */
+let currentFilter = 'all';
+function renderTxns(filter){
+  currentFilter = filter || currentFilter;
+  txnList.innerHTML = '';
+  const txns = loadTxns();
+  const myMobile = localStorage.getItem(KEY_MOBILE);
+  const list = txns.filter(t => {
+    if(currentFilter==='all') return true;
+    if(currentFilter==='my') return (t.from===myMobile || t.to===myMobile);
+    return true;
+  });
+  if(list.length===0){ txnList.innerHTML = '<div style="color:#666">No transactions</div>'; return; }
+  list.forEach(t=>{
+    const div = document.createElement('div'); div.className='txn-item ' + (t.type==='add' ? 'txn-type-add' : 'txn-type-transfer');
+    const time = new Date(t.time).toLocaleString();
+    if(t.type==='add' || t.type==='register'){
+      div.innerHTML = `<div><strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong></div><div class="balance-small">to: ${t.to || '—'} • ${time}</div><div style="font-size:13px;color:#444">${t.note || ''}</div>`;
+    } else {
+      div.innerHTML = `<div><strong>Transfer ₹${t.amount}</strong></div><div class="balance-small">from: ${t.from} → to: ${t.to} • ${time}</div><div style="font-size:13px;color:#444">${t.note || ''}</div>`;
+    }
+    txnList.appendChild(div);
+  });
+}
+
+/* ====== Wallet & UI flow ====== */
+function updateWalletUI(){
+  const mob = localStorage.getItem(KEY_MOBILE) || '—';
+  ensureBalance(mob);
+  const amt = getBalance(mob);
+  walletMobileEl.textContent = 'मोबाइल: ' + mob;
+  walletAmountEl.textContent = '₹' + amt;
+}
+
+/* sidebar open/close */
+walletBtn.addEventListener('click', ()=>{
+  sidebar.classList.toggle('open'); sidebar.setAttribute('aria-hidden', sidebar.classList.contains('open') ? 'false' : 'true');
+  renderFullTreeUI(); renderMySubtreeUI(); renderTxns(currentFilter);
+});
+closeWallet.addEventListener('click', ()=> { sidebar.classList.remove('open'); sidebar.setAttribute('aria-hidden','true'); });
+
+addMoneyBtn.addEventListener('click', ()=>{
+  const mobile = localStorage.getItem(KEY_MOBILE);
+  if(!mobile){ alert('Login required'); return; }
+  ensureBalance(mobile);
+  const bal = getBalance(mobile);
+  const newBal = bal + 10;
+  setBalance(mobile, newBal);
+  updateWalletUI();
+  addTxn('add', null, mobile, 10, 'Manual add +10');
+  alert('₹10 added to ' + mobile);
+});
+
+openTransfer.addEventListener('click', ()=>{ transferBox.style.display = transferBox.style.display==='none' ? 'block' : 'none'; transferMsg.textContent=''; });
+
+btnTransfer.addEventListener('click', ()=>{
+  transferMsg.textContent = '';
+  const from = localStorage.getItem(KEY_MOBILE);
+  if(!from){ transferMsg.textContent = 'Login required'; return; }
+  const to = transferTo.value.trim();
+  const amtRaw = transferAmount.value.trim();
+  if(!/^[0-9]{10}$/.test(to)){ transferMsg.textContent = 'कृपया सही To मोबाइल डालें'; return; }
+  if(!amtRaw || isNaN(amtRaw) || Number(amtRaw)<=0){ transferMsg.textContent = 'सही राशि डालें'; return; }
+  const amt = Math.floor(Number(amtRaw));
+  const bal = getBalance(from);
+  if(amt > bal){ transferMsg.textContent = 'Insufficient balance'; return; }
+  // verify 'to' exists in tree (registered)
+  const nodes = loadTree();
+  const exists = nodes.find(n => n && n.mobile === to);
+  if(!exists){ transferMsg.textContent = 'Recipient not registered'; return; }
+  // proceed transfer: update both balances
+  setBalance(from, bal - amt);
+  ensureBalance(to);
+  const toBal = getBalance(to);
+  setBalance(to, toBal + amt);
+  addTxn('transfer', from, to, amt, 'User transfer');
+  updateWalletUI();
+  transferMsg.style.color='green'; transferMsg.textContent = 'Transfer successful';
+  transferTo.value=''; transferAmount.value='';
+});
+
+/* view my team */
+viewMyTeamBtn.addEventListener('click', ()=>{ renderMySubtreeUI(); sidebar.classList.add('open'); });
+
+/* Register flow */
+el('btnRegister').addEventListener('click', async ()=>{
+  const name = el('regName').value.trim(), mobile = el('regMobile').value.trim();
+  el('regError').textContent = '';
+  if(!/^[0-9]{10}$/.test(mobile)){ el('regError').textContent = 'कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
+  // store basic info
+  localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name);
+  // ensure balances map and set to 0
+  ensureBalance(mobile); setBalance(mobile, 0);
+  // add to tree
+  const res = addNodeToTree(name, mobile);
+  alert('रजिस्टर हुआ — tree index: ' + res.placedAt + (res.parent!==null ? (' (parent: '+res.parent+')') : ' (root)'));
+  addTxn('register', null, mobile, 0, 'Registered'); await saveToSheet('register', mobile, name, res.placedAt);
+  // move to login
+  regP.style.display = 'none'; logP.style.display = 'flex';
+});
+
+/* Login flow */
+el('btnLogin').addEventListener('click', ()=>{
+  const mobile = el('loginMobile').value.trim(); el('loginError').textContent = '';
+  if(!/^[0-9]{10}$/.test(mobile)){ el('loginError').textContent = 'कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
+  const saved = localStorage.getItem(KEY_MOBILE);
+  if(!saved || mobile !== saved){ el('loginError').textContent = 'यह मोबाइल रजिस्टर नहीं है'; return; }
+  logP.style.display = 'none'; logoP.style.display = 'flex';
+});
+
+/* Logo -> Main: show wallet menu button after logo */
+el('btnNext').addEventListener('click', ()=>{
+  logoP.style.display = 'none'; mainP.style.display = 'block'; walletBtn.style.display = 'block';
+  updateWalletUI(); renderFullTreeUI(); renderMySubtreeUI(); renderTxns('my');
+});
+
+/* logout */
+el('btnLogout').addEventListener('click', ()=>{ mainP.style.display = 'none'; logP.style.display = 'flex'; walletBtn.style.display = 'none'; });
+
+/* txn filters */
+filterAll.addEventListener('click', ()=>{ renderTxns('all'); });
+filterMy.addEventListener('click', ()=>{ renderTxns('my'); });
+
+/* ========== Sheet Save helper ========== */
+async function saveToSheet(action, mobile, name, amount, toMobile, toAmount){
+  if(!SHEET_WEBHOOK_URL || !SHEET_WEBHOOK_URL.startsWith('http')){ console.log('Webhook not configured'); return; }
+  const payload = { secret: SHEET_SECRET, action, user_mobile: mobile, user_name: name, language: (document.querySelector('.lang-btn.active')?.dataset?.lang || 'hi') };
+  if(typeof amount !== 'undefined') payload.amount = amount;
+  if(typeof toMobile !== 'undefined') payload.toMobile = toMobile;
+  if(typeof toAmount !== 'undefined') payload.toAmount = toAmount;
   try{
-    await fetch(SHEET_WEBHOOK_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({secret:SHEET_SECRET,action,user_mobile:mobile,user_name:name,language:currentLang,amount})
-    });
-  }catch(e){console.log(e);}
+    const res = await fetch(SHEET_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    console.log('sheet response', await res.text());
+  }catch(e){ console.warn('sheet failed', e); }
 }
 
-/* Auto-Lock */
-window.addEventListener('DOMContentLoaded',()=>{
-  const html=document.documentElement.innerHTML;
-  if(!html.includes("LOCKED AREA START")||!html.includes("LOCKED AREA END")){
-    alert("⚠️ Locked कोड एडिट नहीं किया जा सकता!");
+/* ========== Auto-Lock & Init ========== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  // integrity check (locked markers)
+  const html = document.documentElement.innerHTML;
+  if(!html.includes('LOCKED UI START') || !html.includes('LOCKED UI END')){
+    alert('⚠️ Locked code modified. Reloading to recover original.');
     location.reload();
   }
+  // initial UI state
+  regP.style.display='flex'; logP.style.display='none'; logoP.style.display='none'; mainP.style.display='none';
+  walletBtn.style.display='none';
+  // init tree & txns storage if missing
+  if(!localStorage.getItem(KEY_TREE)) localStorage.setItem(KEY_TREE, JSON.stringify([]));
+  if(!localStorage.getItem(KEY_TXN)) localStorage.setItem(KEY_TXN, JSON.stringify([]));
+  if(!localStorage.getItem(KEY_BALANCES)) localStorage.setItem(KEY_BALANCES, JSON.stringify({}));
+  renderFullTreeUI(); updateWalletUI(); renderTxns('my');
 });
+/* ========== END ========== */
 </script>
 </body>
 </html>

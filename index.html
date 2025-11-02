@@ -3,39 +3,33 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RJ Papad - Loyalty Wallet</title>
+  <title>RJ Papad — Login / Register / Wallet</title>
   <style>
-    :root{
-      --bg:#fff8dc; --accent:#ffb300; --card:#fff; --muted:#666;
-    }
+    :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff;--muted:#666}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Poppins",sans-serif;color:#222}
     header{background:var(--accent);color:#fff;padding:12px 16px;position:relative}
-    header h1{margin:0;font-size:18px}
+    header h1{margin:0;font-size:18px;text-align:center}
     .menu-btn{position:absolute;left:12px;top:8px;background:transparent;border:none;color:#fff;font-size:24px;cursor:pointer}
     .container{padding:18px;max-width:720px;margin:0 auto}
     .panel{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:18px 0}
+    .full-center{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:20px}
+    input[type="text"], input[type="tel"], input[type="number"]{width:100%;padding:12px;border-radius:8px;border:1px solid #ddd;margin:8px 0}
+    .btn{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
     .sidebar{position:fixed;left:-280px;top:0;width:260px;height:100%;background:#fff;box-shadow:2px 0 14px rgba(0,0,0,0.12);transition:left .28s;padding-top:70px}
     .sidebar.open{left:0}
     .sidebar button{display:block;width:100%;padding:12px 18px;border:none;text-align:left;background:none;cursor:pointer;border-bottom:1px solid #f0f0f0}
-    .sidebar button:hover{background:#fffbec}
-    .center{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
-    .btn{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
-    .small{font-size:13px;color:var(--muted)}
     .wallet-balance{font-size:20px;color:#d2691e;font-weight:700}
     ul.requests{list-style:none;padding:0;margin:0}
-    ul.requests li{padding:10px;border-radius:8px;margin-bottom:10px;border:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
-    .req-actions button{margin-left:8px}
-    .note{font-size:13px;color:#666;margin-top:8px}
     .hidden{display:none}
-    .kbd{display:inline-block;padding:6px 8px;background:#f3f3f3;border-radius:6px;font-size:12px;margin-left:6px}
   </style>
 </head>
 <body>
 
 <header>
-  <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-  <h1>RJ Papad — Loyalty Wallet</h1>
+  <button id="menuBtn" class="menu-btn" onclick="toggleSidebar()" style="display:none">☰</button>
+  <h1 id="headerTitle">RJ Papad</h1>
 </header>
 
 <!-- Sidebar / Menu -->
@@ -43,391 +37,359 @@
   <button onclick="openView('wallet')">💰 Wallet</button>
   <button onclick="openView('team')">👥 My Team</button>
   <button onclick="openAdminPrompt()">🔐 Admin (approve)</button>
+  <button onclick="logout()">🚪 Logout</button>
   <button onclick="toggleSidebar()">❌ Close</button>
 </div>
 
-<!-- Main content -->
-<div class="container" id="app">
-  <div id="homePanel" class="panel">
-    <h2>नमस्ते — RJ Papad Loyalty</h2>
-    <p class="small">Menu (☰) खोलें — Wallet, My Team और Admin (approve) यहाँ से खोलें।</p>
+<!-- REGISTER (full screen) -->
+<div id="registerScreen" class="full-center">
+  <div style="width:100%;max-width:420px">
+    <div class="panel">
+      <h2 style="margin-top:0">रजिस्टर करें</h2>
+      <p class="small">पहले रजिस्टर करें ताकि आप लॉयल्टी और वॉलेट उपयोग कर सकें।</p>
+      <input id="reg_name" type="text" placeholder="नाम (वैकल्पिक)">
+      <input id="reg_mobile" type="tel" placeholder="मोबाइल नंबर (अनिवार्य)">
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" onclick="registerUser()">रजिस्टर करें</button>
+        <button class="btn" style="background:#999" onclick="showLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN screen -->
+<div id="loginScreen" class="full-center hidden">
+  <div style="width:100%;max-width:420px">
+    <div class="panel">
+      <h2 style="margin-top:0">Login</h2>
+      <p class="small">अपना मोबाइल नंबर दर्ज करें — यदि आपने पहले रजिस्टर किया है तो सीधे login होगा।</p>
+      <input id="login_mobile" type="tel" placeholder="मोबाइल नंबर">
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" onclick="loginUser()">Login</button>
+        <button class="btn" style="background:#999" onclick="showRegister()">Register</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGO / HOME (after login) -->
+<div id="homeScreen" class="container hidden">
+  <div class="panel" id="logoPanel" style="text-align:center;">
+    <!-- You can place your logo image here -->
+    <img id="topLogo" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="logo" style="max-width:100%;height:220px;object-fit:contain;border-radius:10px">
+    <h2 id="welcomeText">RJ पापड़ में आपका स्वागत है!</h2>
+    <p class="small">Menu खोलें — Wallet / My Team / Admin</p>
     <div style="margin-top:12px">
-      <button class="btn" onclick="openView('wallet')">Open Wallet</button>
-      <button class="btn" style="background:#4caf50" onclick="openView('team')">My Team</button>
+      <button class="btn" onclick="goToMain()">Proceed</button>
     </div>
   </div>
 
-  <!-- Wallet -->
+  <!-- Wallet Panel -->
   <div id="walletPanel" class="panel hidden">
     <h3>My Wallet</h3>
     <div class="wallet-balance" id="walletBalance">₹0</div>
-    <div class="note" id="walletNote">आपका वॉलेट और withdraw रिकॉर्ड यहाँ आएगा।</div>
-
+    <div class="small" id="bankText">(Bank/UPI not set)</div>
     <div style="margin-top:12px">
       <input id="addAmt" type="number" placeholder="Add amount (₹)" style="padding:8px;border-radius:8px;border:1px solid #ddd;width:160px">
       <button class="btn" onclick="addMoney()">Add</button>
       <button class="btn" style="background:#777;margin-left:8px" onclick="requestWithdraw()">Withdraw</button>
     </div>
-
-    <div style="margin-top:12px" id="bankDetailsBox" class="panel">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div class="small">Bank / UPI details</div>
-          <div id="bankText" class="small">(Add below)</div>
-        </div>
-        <div>
-          <button onclick="promptEditBank()" class="btn" style="background:#2196f3">Edit</button>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:12px">
-      <div class="small">Withdraw status</div>
-      <div id="withdrawMsg" class="note"></div>
-    </div>
+    <div style="margin-top:12px" id="withdrawMsg" class="small"></div>
   </div>
 
   <!-- My Team -->
   <div id="teamPanel" class="panel hidden">
     <h3>My Team</h3>
-    <div id="myTeamContainer" class="note">MLM Tree view will appear here. (Only names shown)</div>
+    <div id="myTeamContainer" class="small">My Team list will appear here (names only).</div>
   </div>
 
   <!-- Admin Panel -->
   <div id="adminPanel" class="panel hidden">
-    <h3>Admin Panel — Pending Withdraw Requests</h3>
-    <div class="small">Only admin can approve/reject (password protected)</div>
+    <h3>Admin Panel — Pending Withdraws</h3>
+    <div class="small">Only admin can approve/reject</div>
     <ul class="requests" id="requestsList"></ul>
-    <div class="note">Approve → mark Paid (admin must do manual bank/UPI transfer). Approve stores status. Reject → refund balance to user.</div>
   </div>
 </div>
 
 <script>
-/* ============================
-   CONFIG
-   ============================ */
-// Fixed admin password you asked:
+/* ========== CONFIG ========== */
 const ADMIN_PASSWORD = "Rjpapad@2025";
+const KEY_USERS = "rp_users_v1";
+const KEY_ME = "rp_me";
+const KEY_WITHDRAWS = "rp_withdraws_v1";
+const KEY_TREE = "rp_tree_v1";
+const SHEET_WEBHOOK_URL = ""; // <-- paste your Apps Script URL here if used
 
-// Optional: if you'd like to log actions to a Google Apps Script webhook (sheet),
-// set SHEET_WEBHOOK_URL to that script's published Web App URL.
-const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzdekKL_FrMrfoENya3VkzZTZ4o25NOxoLpVue6St4VJ4jS5WOs7u1257a87vCnm5jx/exec";
+/* ========== UTIL ========== */
+function loadJSON(k,def){ try{const s=localStorage.getItem(k); return s?JSON.parse(s):def;}catch(e){return def;} }
+function saveJSON(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function nowISO(){ return (new Date()).toISOString(); }
 
-/* ============================
-   STORAGE KEYS & HELPERS
-   ============================ */
-const KEY_USERS = "rp_users_v1";            // store basic users (mobile -> user record)
-const KEY_WITHDRAWS = "rp_withdraws_v1";    // withdraw request list
-const KEY_ME = "rp_me";                     // current logged-in user mobile (simulate)
-const KEY_TREE = "rp_tree_v1";              // mlm tree nodes (simple array)
-const nowISO = ()=> (new Date()).toISOString();
-
-function loadJSON(key, def){ try{ const s=localStorage.getItem(key); return s?JSON.parse(s):def; }catch(e){return def;} }
-function saveJSON(key,obj){ localStorage.setItem(key, JSON.stringify(obj)); }
-
-/* ============================
-   Simple Demo User / Login
-   (for demo we'll use localStorage user)
-   ============================ */
-function ensureDemoUser(){
-  let users = loadJSON(KEY_USERS, {});
-  // if no users exist, create one demo user
-  if(Object.keys(users).length === 0){
-    users["9999999999"] = { mobile:"9999999999", name:"Demo User", balance:1500, bank:{name:"HDFC Bank", account:"XXXXXX1234", ifsc:"HDFC000000", upi:"demo@upi"}};
-    users["8888888888"] = { mobile:"8888888888", name:"Rajesh parmar", balance:2000, bank:{name:"SBI Bank", account:"XXXXXX5678", ifsc:"SBIN00000", upi:"rajesh@upi"}};
-    saveJSON(KEY_USERS, users);
-  }
-  // set "logged in" user for demo - keep KEY_ME set to one of the mobiles
-  if(!localStorage.getItem(KEY_ME)) localStorage.setItem(KEY_ME, "9999999999");
-}
-ensureDemoUser();
-
-/* ============================
-   UI Helpers
-   ============================ */
-function toggleSidebar(){ const s=document.getElementById("sidebar"); s.classList.toggle("open"); }
+/* ========== SHOW / HIDE SCREENS ========== */
+const regScreen = document.getElementById("registerScreen");
+const loginScreen = document.getElementById("loginScreen");
+const homeScreen = document.getElementById("homeScreen");
+const menuBtn = document.getElementById("menuBtn");
+const headerTitle = document.getElementById("headerTitle");
+function showRegister(){ regScreen.classList.remove("hidden"); loginScreen.classList.add("hidden"); homeScreen.classList.add("hidden"); menuBtn.style.display='none'; headerTitle.textContent='RJ Papad — Register'; }
+function showLogin(){ regScreen.classList.add("hidden"); loginScreen.classList.remove("hidden"); homeScreen.classList.add("hidden"); menuBtn.style.display='none'; headerTitle.textContent='RJ Papad — Login'; }
+function showHome(){ regScreen.classList.add("hidden"); loginScreen.classList.add("hidden"); homeScreen.classList.remove("hidden"); menuBtn.style.display='inline-block'; headerTitle.textContent='RJ Papad'; }
+function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("open"); }
 function openView(name){
-  toggleSidebar();
-  document.getElementById("homePanel").classList.add("hidden");
   document.getElementById("walletPanel").classList.add("hidden");
   document.getElementById("teamPanel").classList.add("hidden");
   document.getElementById("adminPanel").classList.add("hidden");
   if(name==="wallet") document.getElementById("walletPanel").classList.remove("hidden");
-  if(name==="team") { document.getElementById("teamPanel").classList.remove("hidden"); renderMyTeamList(); }
-  if(name==="home") document.getElementById("homePanel").classList.remove("hidden");
+  if(name==="team"){ document.getElementById("teamPanel").classList.remove("hidden"); renderMyTeamList(); }
+  if(name==="admin") document.getElementById("adminPanel").classList.remove("hidden");
+  document.getElementById("sidebar").classList.remove("open");
 }
 
-/* ============================
-   Wallet logic (balance / add / withdraw)
-   ============================ */
-function getMeMobile(){ return localStorage.getItem(KEY_ME); }
-function getUser(mob){ const users = loadJSON(KEY_USERS, {}); return users[mob]||null; }
-function saveUser(user){ const users = loadJSON(KEY_USERS, {}); users[user.mobile] = user; saveJSON(KEY_USERS, users); }
+/* ========== USER STORAGE ========== */
+function ensureUsers(){
+  let users = loadJSON(KEY_USERS, {});
+  if(Object.keys(users).length===0){
+    // create demo user(s)
+    users["9999999999"] = { mobile:"9999999999", name:"Demo User", balance:1500, bank:{name:"HDFC Bank", upi:"demo@upi"}, created: nowISO() };
+    saveJSON(KEY_USERS, users);
+  }
+}
+ensureUsers();
+
+function registerUser(){
+  const name = (document.getElementById("reg_name").value || "").trim();
+  const mobile = (document.getElementById("reg_mobile").value || "").trim();
+  if(!mobile){ alert("कृपया मोबाइल नंबर दर्ज करें"); return; }
+  // save user
+  const users = loadJSON(KEY_USERS, {});
+  if(users[mobile]){ alert("Mobile already registered. Please login."); showLogin(); return; }
+  users[mobile] = { mobile, name: name || ("User"+mobile.slice(-4)), balance:0, bank:null, created: nowISO() };
+  saveJSON(KEY_USERS, users);
+  // mark registered and auto-login
+  localStorage.setItem(KEY_ME, mobile);
+  alert("रजिस्टर सफल! आप लॉग इन हो गये हैं।");
+  showHome(); renderWallet(); renderRequests();
+}
+
+function loginUser(){
+  const mobile = (document.getElementById("login_mobile").value || "").trim();
+  if(!mobile){ alert("कृपया मोबाइल नंबर दर्ज करें"); return; }
+  const users = loadJSON(KEY_USERS, {});
+  if(!users[mobile]){ 
+    if(confirm("यह नंबर रजिस्टर नहीं है। क्या आप रजिस्टर करना चाहते हैं?")){ document.getElementById("reg_mobile").value = mobile; showRegister(); }
+    return;
+  }
+  // set logged in
+  localStorage.setItem(KEY_ME, mobile);
+  alert("Login successful");
+  showHome(); renderWallet(); renderRequests();
+}
+
+/* ========== WALLET ========== */
+function getMe(){ return localStorage.getItem(KEY_ME); }
+function getUser(mob){ const u = loadJSON(KEY_USERS, {}); return u[mob]||null; }
+function saveUser(u){ const users = loadJSON(KEY_USERS, {}); users[u.mobile]=u; saveJSON(KEY_USERS, users); }
 
 function renderWallet(){
-  const mob = getMeMobile();
-  const user = getUser(mob);
+  const me = getMe();
+  if(!me) return;
+  const user = getUser(me);
   if(!user) return;
   document.getElementById("walletBalance").textContent = "₹" + (user.balance || 0);
-  document.getElementById("bankText").textContent = user.bank? `${user.bank.name} • ${user.bank.upi || user.bank.account}` : "(Not Set)";
-  checkWithdrawStatusForUser();
+  document.getElementById("bankText").textContent = user.bank? `${user.bank.name} • ${user.bank.upi || user.bank.account}` : "(Bank/UPI not set)";
 }
-renderWallet();
 
+/* add money (demo) */
 function addMoney(){
   const v = Number(document.getElementById("addAmt").value || 0);
-  if(!v || v<=0){ alert("कृपया सही राशि डालें"); return; }
-  const user = getUser(getMeMobile());
+  if(!v || v<=0){ alert("सही राशि डालिए"); return; }
+  const me = getMe();
+  const user = getUser(me);
   user.balance = (user.balance||0) + v;
   saveUser(user);
   renderWallet();
-  alert("₹"+v+" add हो गया");
+  alert("₹"+v+" added");
 }
 
-function promptEditBank(){
-  const user = getUser(getMeMobile());
-  const name = prompt("Bank name", user.bank?.name || "");
-  const acct = prompt("Account or UPI", user.bank?.upi || user.bank?.account || "");
-  const ifsc = prompt("IFSC (if bank)", user.bank?.ifsc || "");
-  if(name===null) return;
-  user.bank = { name: name || "", account: acct || "", upi: acct || "", ifsc: ifsc || "" };
-  saveUser(user);
-  renderWallet();
-  alert("Bank/UPI saved");
-}
-
-/* ============================
-   Withdraw request store + rendering
-   ============================ */
+/* withdraw flow (creates request) */
 function loadWithdrawals(){ return loadJSON(KEY_WITHDRAWS, []); }
 function saveWithdrawals(arr){ saveJSON(KEY_WITHDRAWS, arr); }
 function createWithdrawRequest(mobile, amount){
-  const withdraws = loadWithdrawals();
+  const arr = loadWithdrawals();
   const id = "w"+Date.now();
-  const fee = Math.round((amount*0.10)); // 10% cut
+  const fee = Math.round(amount*0.10);
   const after = amount - fee;
   const obj = { id, mobile, amount, fee, after, status:"Pending", created: nowISO(), adminNote:"" };
-  withdraws.unshift(obj);
-  saveWithdrawals(withdraws);
-  // deduct immediately from balance
+  arr.unshift(obj);
+  saveWithdrawals(arr);
+  // deduct now
   const u = getUser(mobile);
-  u.balance = (u.balance || 0) - amount;
+  u.balance = (u.balance||0) - amount;
   saveUser(u);
   renderWallet();
   renderRequests();
   maybeLogSheet({action:"withdraw_request", data:obj});
-  return obj;
+  alert("Withdraw request created (Pending). Admin will approve.");
 }
 
+function requestWithdraw(){
+  const me = getMe();
+  const user = getUser(me);
+  const v = Number(prompt("Enter amount to withdraw (₹):", "100"));
+  if(!v || v<=0){ alert("Invalid amount"); return; }
+  if(v > (user.balance||0)){ alert("Insufficient balance"); return; }
+  if(!user.bank || (!user.bank.upi && !user.bank.account)){ alert("Bank/UPI details missing. Please edit bank first."); return; }
+  createWithdrawRequest(me, v);
+}
+
+/* render pending requests (admin view) */
 function renderRequests(){
   const list = document.getElementById("requestsList");
   const arr = loadWithdrawals();
   list.innerHTML = "";
-  if(arr.length===0){ list.innerHTML = "<li class='note'>No pending requests</li>"; return; }
+  if(!arr.length){ list.innerHTML = "<li class='small'>No pending requests</li>"; return; }
   arr.forEach(req=>{
     const li = document.createElement("li");
-    const left = document.createElement("div");
-    left.innerHTML = `<div><strong>${getUser(req.mobile)?.name || req.mobile}</strong> • ₹${req.amount}</div>
-                      <div class="small">After 10%: ₹${req.after} • ${new Date(req.created).toLocaleString()}</div>
-                      <div class="small">Status: <span id="status_${req.id}">${req.status}</span></div>`;
-    const right = document.createElement("div");
-    right.className = "req-actions";
-    // Only show approve/reject for Pending
+    li.style.marginBottom = "10px";
+    li.innerHTML = `<div><strong>${getUser(req.mobile)?.name || req.mobile}</strong> • ₹${req.amount} <div class="small">After 10%: ₹${req.after} • ${new Date(req.created).toLocaleString()}</div><div class="small">Status: ${req.status}</div></div>`;
+    const actions = document.createElement("div");
+    actions.style.marginTop = "8px";
     if(req.status==="Pending"){
-      const btnA = document.createElement("button"); btnA.className="btn"; btnA.textContent="Approve"; btnA.onclick = ()=> adminApprove(req.id);
-      const btnR = document.createElement("button"); btnR.className="btn"; btnR.style.background="#999"; btnR.textContent="Reject"; btnR.onclick = ()=> adminReject(req.id);
-      right.appendChild(btnA); right.appendChild(btnR);
+      const a = document.createElement("button"); a.className="btn"; a.textContent="Approve"; a.onclick = ()=> adminApprove(req.id);
+      const r = document.createElement("button"); r.className="btn"; r.style.background="#999"; r.textContent="Reject"; r.onclick = ()=> adminReject(req.id);
+      actions.appendChild(a); actions.appendChild(r);
     } else {
-      const span = document.createElement("div"); span.className="small"; span.textContent = "Processed";
-      right.appendChild(span);
+      const s = document.createElement("div"); s.className="small"; s.textContent = "Processed";
+      actions.appendChild(s);
     }
-    li.appendChild(left); li.appendChild(right);
+    li.appendChild(actions);
     list.appendChild(li);
   });
+  renderWallet();
 }
 
-renderRequests();
-
-/* ============================
-   Admin functions (prompt -> open panel)
-   ============================ */
+/* ========== ADMIN ========== */
 function openAdminPrompt(){
   const pwd = prompt("Enter admin password:");
   if(!pwd) return;
   if(pwd === ADMIN_PASSWORD){
-    // open admin panel
     toggleSidebar();
     document.getElementById("adminPanel").classList.remove("hidden");
     document.getElementById("walletPanel").classList.add("hidden");
     document.getElementById("teamPanel").classList.add("hidden");
     renderRequests();
-    alert("✅ Welcome Admin — Access Granted");
+    alert("Admin access granted");
   } else {
-    alert("❌ Wrong password — access denied");
+    alert("Wrong password");
   }
 }
 
-/* ============================
-   Approve / Reject logic
-   ============================ */
 function adminApprove(id){
-  // Admin must do manual bank/UPI transfer in real world.
-  if(!confirm("क्या आप वाकई इस request को APPROVE करना चाहते हैं? (Admin को manual transfer करना होगा)")) return;
+  if(!confirm("Approve this withdraw request? (Admin must do manual payout)")) return;
   const arr = loadWithdrawals();
-  const idx = arr.findIndex(r=>r.id===id);
-  if(idx===-1) return alert("Request not found");
-  arr[idx].status = "Approved";
-  arr[idx].adminNote = prompt("Optional: Enter Txn ID / Note (enter to skip)", "") || "";
-  arr[idx].processedAt = nowISO();
+  const idx = arr.findIndex(x=>x.id===id);
+  if(idx===-1) return alert("Not found");
+  const req = arr[idx];
+  req.status = "Approved";
+  req.adminNote = prompt("Txn ID / Note (optional):","") || "";
+  req.processedAt = nowISO();
   saveWithdrawals(arr);
+  maybeLogSheet({action:"withdraw_approve", data:req});
   renderRequests();
-  maybeLogSheet({ action:"withdraw_approve", data: arr[idx] });
-  alert("Request marked Approved. कृपया अब बैंक/UPI से manual पेमेंट करें और Txn ID जोड़ें (if not added).");
-  renderWallet();
+  alert("Marked Approved. कृपया अब बैंक/UPI से पेमेंट करें।");
 }
 
 function adminReject(id){
-  if(!confirm("Reject करने पर user का amount वापस balance में add हो जाएगा — Confirm?")) return;
+  if(!confirm("Reject and refund to user?")) return;
   const arr = loadWithdrawals();
-  const idx = arr.findIndex(r=>r.id===id);
-  if(idx===-1) return alert("Request not found");
+  const idx = arr.findIndex(x=>x.id===id);
+  if(idx===-1) return alert("Not found");
   const req = arr[idx];
-  // Refund to user
+  // refund
   const u = getUser(req.mobile);
-  u.balance = (u.balance || 0) + req.amount;
+  u.balance = (u.balance||0) + req.amount;
   saveUser(u);
-  // mark rejected
   req.status = "Rejected";
   req.processedAt = nowISO();
-  req.adminNote = prompt("Reason (optional):","Rejected by admin") || req.adminNote || "Rejected";
   saveWithdrawals(arr);
+  maybeLogSheet({action:"withdraw_reject", data:req});
   renderRequests();
-  maybeLogSheet({ action:"withdraw_reject", data: req });
-  alert("Rejected & refunded to user.");
-  renderWallet();
+  alert("Rejected and refunded.");
 }
 
-/* ============================
-   check withdraw status for logged-in user
-   ============================ */
-function checkWithdrawStatusForUser(){
-  const mob = getMeMobile();
-  const arr = loadWithdrawals();
-  const latest = arr.find(r=>r.mobile === mob);
-  const el = document.getElementById("withdrawMsg");
-  if(!latest){ el.textContent = ""; return; }
-  let txt = `Last withdraw: ₹${latest.amount} — Status: ${latest.status}`;
-  if(latest.status === "Approved") txt += ` • After Cut: ₹${latest.after}`;
-  if(latest.status === "Rejected") txt += ` • Refund processed`;
-  el.textContent = txt;
-}
-
-/* ============================
-   API Hook: optional Google Sheet logging
-   ============================ */
-async function maybeLogSheet(payload){
-  if(!SHEET_WEBHOOK_URL) return;
-  try {
-    await fetch(SHEET_WEBHOOK_URL, {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-  } catch(e){
-    console.warn("Sheet webhook failed", e);
-  }
-}
-
-/* ============================
-   Withdraw request UI flow
-   ============================ */
-function requestWithdraw(){
-  const mob = getMeMobile();
-  const user = getUser(mob);
-  const v = Number(prompt("Enter withdraw amount (₹):", "100"));
-  if(!v || v<=0){ alert("Invalid amount"); return; }
-  if(v > (user.balance||0)){ alert("Insufficient balance"); return; }
-  // Only allow if bank/upi exist
-  if(!user.bank || (!user.bank.upi && !user.bank.account)){
-    alert("Bank/UPI details missing. Please set bank/UPI first.");
-    return;
-  }
-  // rule: allow immediate request; admin will approve later
-  createWithdrawRequest(mob, v);
-  alert("Withdraw request created and balance deducted. Admin will approve.");
-}
-
-/* ============================
-   Simple My Team (render names only)
-   ============================ */
+/* ========== MY TEAM (simple) ========== */
 function renderMyTeamList(){
-  // For demo we'll show a simple static tree reading from KEY_TREE (or create sample)
   let nodes = loadJSON(KEY_TREE, null);
   if(!nodes){
     nodes = [
-      { id:"root", name:"Rajesh parmar", parent:null, gender:"M" },
-      { id:"n1", name:"Maan", parent:"root", gender:"M" },
-      { id:"n2", name:"Bhavna", parent:"root", gender:"F" }
+      {id:"root", name:"Rajesh parmar", parent:null, gender:"M"},
+      {id:"n1", name:"Maan", parent:"root", gender:"M"},
+      {id:"n2", name:"Bhavna", parent:"root", gender:"F"}
     ];
     saveJSON(KEY_TREE, nodes);
   }
   const container = document.getElementById("myTeamContainer");
-  // render vertical simple list with expandable plus/minus (collapsed by default)
-  function buildHtml(parent){
-    const children = nodes.filter(n=>n.parent===parent);
-    if(children.length===0) return "";
-    let html = '<ul style="list-style:none;padding-left:14px">';
-    for(const c of children){
-      const emoji = c.gender==="F"?"👩":"👨";
-      html += `<li style="margin:8px 0"><div style="display:flex;align-items:center;gap:8px">
-        <span style="font-weight:700">${emoji} ${c.name}</span>
-        <button style="margin-left:8px;padding:6px;border-radius:8px" onclick="toggleExpand('${c.id}')">[+]</button>
-        </div>
-        <div id="children_${c.id}" style="margin-left:18px"></div></li>`;
-    }
-    html += "</ul>";
-    return html;
-  }
-  container.innerHTML = buildHtml("root");
-  // populate sub-children placeholders (they will be empty until + clicked)
+  let html = "<ul style='list-style:none;padding-left:0;margin:0'>";
+  nodes.filter(n=>n.parent==="root").forEach(ch=>{
+    html += `<li style="margin:8px 0">${ch.gender==='F'?'👩':'👨'} ${ch.name} <button onclick="toggleExpand('${ch.id}')" style="margin-left:8px">[+]</button><div id="children_${ch.id}" style="margin-left:18px"></div></li>`;
+  });
+  html += "</ul>";
+  container.innerHTML = html;
 }
-
-function toggleExpand(nodeId){
-  // when user clicks +, show its children names (one-level) - simple demo
+function toggleExpand(id){
   const nodes = loadJSON(KEY_TREE, []);
-  const children = nodes.filter(n=>n.parent===nodeId);
-  const target = document.getElementById("children_"+nodeId);
+  const children = nodes.filter(n=>n.parent===id);
+  const target = document.getElementById("children_"+id);
   if(!target) return;
   if(target.innerHTML.trim()!==""){ target.innerHTML=""; return; }
   let html = "<ul style='list-style:none;padding-left:6px'>";
-  for(const c of children){
-    html += `<li style="margin:6px 0">${c.gender==='F'?'👩':'👨'} ${c.name}</li>`;
-  }
+  children.forEach(c=> html += `<li style="margin:6px 0">${c.gender==='F'?'👩':'👨'} ${c.name}</li>`);
   html += "</ul>";
   target.innerHTML = html;
 }
 
-/* ============================
-   init render (on load)
-   ============================ */
+/* ========== LOGGING (optional) ========== */
+async function maybeLogSheet(payload){
+  if(!SHEET_WEBHOOK_URL) return;
+  try{
+    await fetch(SHEET_WEBHOOK_URL, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+  }catch(e){ console.warn("sheet log failed", e); }
+}
+
+/* ========== BOOTSTRAP / ENTRY ========== */
+function logout(){
+  localStorage.removeItem(KEY_ME);
+  document.getElementById("sidebar").classList.remove("open");
+  menuBtn.style.display='none';
+  showLogin();
+}
+
+function goToMain(){
+  // after pressing Proceed on logo/homeScreen go to main container
+  document.getElementById("logoPanel").classList.add("hidden");
+  document.getElementById("walletPanel").classList.remove("hidden");
+}
+
 function init(){
-  renderWallet();
-  renderRequests();
-  // periodically update current user withdraw status
-  setInterval(checkWithdrawStatusForUser, 4000);
+  // if user logged in -> show home screen; else if mobile registered -> show login else show register
+  const logged = localStorage.getItem(KEY_ME);
+  const users = loadJSON(KEY_USERS, {});
+  menuBtn.style.display = 'none';
+  if(logged && users[logged]){
+    // user logged in
+    showHome(); renderWallet(); renderRequests();
+  } else {
+    // if any mobile present in users? show login, else show register
+    const allMobiles = Object.keys(users||{});
+    if(allMobiles.length>0){
+      showLogin();
+      document.getElementById("login_mobile").value = allMobiles[0]; // optional prefilling
+    } else {
+      showRegister();
+    }
+  }
 }
 init();
-
-/* ============================
-   For easy testing (expose some functions)
-   ============================ */
-window.openAdminPrompt = openAdminPrompt;
-window.openView = openView;
-window.renderRequests = renderRequests;
-window.addMoney = addMoney;
-window.requestWithdraw = requestWithdraw;
-window.promptEditBank = promptEditBank;
-
 </script>
 </body>
 </html>

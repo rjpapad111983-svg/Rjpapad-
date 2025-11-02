@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RJ Papad Wallet Transfer</title>
+<title>RJ Papad Wallet - Fixed Banners</title>
 <style>
 :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff;--muted:#666}
 html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222;text-align:center;}
-.overlay{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+.overlay{position:fixed;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;z-index:20}
 .panel{background:var(--card);max-width:420px;width:100%;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.15);padding:22px;box-sizing:border-box;}
 h2{margin:0 0 12px;color:#c47d04;font-size:20px;}
-input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc;font-size:15px;}
+input{width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc;font-size:15px;box-sizing:border-box;}
 button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:700;width:100%;}
 .btn-primary{background:var(--accent);color:#111;}
 .btn-secondary{background:#eee;color:#222;}
@@ -19,11 +19,12 @@ button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:
 .lang-row{display:flex;gap:8px;justify-content:center;}
 .lang-btn{padding:8px 12px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer;}
 .lang-btn.active{background:var(--accent);color:#fff;}
-.banner{background:#fff7e6;padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.05);font-weight:700;margin:12px;text-align:center;}
-.wallet{background:#fff3cd;border-radius:10px;padding:15px;margin:14px;box-shadow:0 2px 6px rgba(0,0,0,0.05);}
+.banner{display:block;background:#fff7e6;padding:14px;border-radius:10px;border:1px solid rgba(0,0,0,0.05);font-weight:700;margin:12px auto;text-align:center;max-width:980px;}
+.wallet{background:#fff3cd;border-radius:10px;padding:15px;margin:14px;box-shadow:0 2px 6px rgba(0,0,0,0.05);max-width:480px;margin-left:auto;margin-right:auto;}
 .amount{font-size:28px;font-weight:700;color:#008000;}
-#transferBox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;}
+#transferBox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:30;}
 #transferPanel{background:#fff;padding:20px;border-radius:12px;max-width:320px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+@media(max-width:520px){ .panel{padding:14px} .logo-full img{width:90%} h2{font-size:18px} .banner{margin:10px 10px} .wallet{margin:10px} }
 </style>
 </head>
 <body>
@@ -64,7 +65,8 @@ button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:
 
 <!-- MAIN -->
 <div id="mainPage" style="display:none;">
-  <div class="banner" id="bannerTop">🟡 Top Banner (हिंदी)</div>
+  <!-- ensure banners are visible and centered -->
+  <div id="bannerTop" class="banner">🟡 Top Banner (हिंदी)</div>
 
   <div class="wallet">
     <h2 id="walletTitle">💰 वॉलेट बैलेंस</h2>
@@ -75,9 +77,11 @@ button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:
     <button id="transferMoney" class="btn-secondary" style="margin-top:8px;">रकम ट्रांसफर करें ➜</button>
   </div>
 
-  <div class="banner" id="bannerBottom">🟡 Bottom Banner (हिंदी)</div>
+  <div id="bannerBottom" class="banner">🟡 Bottom Banner (हिंदी)</div>
   <p id="welcomeText" style="font-weight:600;margin-top:20px;">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
-  <button id="btnLogout" class="btn-secondary" style="max-width:200px;margin-top:15px;">Logout</button>
+  <div style="max-width:980px;margin:10px auto;">
+    <button id="btnLogout" class="btn-secondary" style="max-width:200px;margin-top:15px;">Logout</button>
+  </div>
 </div>
 
 <!-- TRANSFER POPUP -->
@@ -93,123 +97,168 @@ button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-weight:
 </div>
 
 <script>
+/* ========== CONFIG ========== */
 const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE";
 const SHEET_SECRET = "rj_secret_2025_xyz";
-const KEY_MOBILE="rj_mobile", KEY_NAME="rj_name", KEY_AMOUNT="rj_amount";
-const el=id=>document.getElementById(id);
-const regP=el('registerPage'), logP=el('loginPage'), logoP=el('logoPage'), mainP=el('mainPage');
-const regErr=el('regError'), loginErr=el('loginError');
-let currentLang="hi";
 
-/* LANG PACK */
-const LANG={
+/* ========== SHORTCUTS ========== */
+const el = id => document.getElementById(id);
+const regP = el('registerPage'), logP = el('loginPage'), logoP = el('logoPage'), mainP = el('mainPage');
+const regErr = el('regError'), loginErr = el('loginError');
+
+/* ========== STORAGE KEYS ========== */
+const KEY_MOBILE="rj_mobile", KEY_NAME="rj_name", KEY_AMOUNT="rj_amount";
+
+/* ========== LANG ========== */
+const LANG = {
   hi:{top:"🟡 टॉप बैनर (हिंदी)",bottom:"🟡 बॉटम बैनर (हिंदी)",welcome:"RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!",wallet:"💰 वॉलेट बैलेंस"},
   en:{top:"🟡 Top Banner (English)",bottom:"🟡 Bottom Banner (English)",welcome:"Welcome to RJ Papad Loyalty Program!",wallet:"💰 Wallet Balance"},
-  gu:{top:"🟡 ઉપરનો બેનર (ગુજરાતી)",bottom:"🟡 નીચેનો બેનર (ગુજરાતી)",welcome:"RJ પાપડ લોયલ્ટી પ્રોગ્રામમાં આપનું સ્વાગત છે!",wallet:"💰 વોલેટ બેલેન્સ"}
+  gu:{top:"🟡 ઉપરનો બેનર (ગુજરાતી)",bottom:"🟡 નીચેનો બેનર (ગુજરાતી)",welcome:"RJ પાપડ લોયલ્ટી પ્રোগ્રામમાં આપનું સ્વાગત છે!",wallet:"💰 વોલેટ બેલેન્સ"}
 };
+let currentLang = "hi";
+
 function setLang(l){
-  currentLang=l;
+  currentLang = l;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelector(`.lang-btn[data-lang="${l}"]`).classList.add('active');
-  el('bannerTop').textContent=LANG[l].top;
-  el('bannerBottom').textContent=LANG[l].bottom;
-  el('welcomeText').textContent=LANG[l].welcome;
-  el('walletTitle').textContent=LANG[l].wallet;
+  const btn = document.querySelector(`.lang-btn[data-lang="${l}"]`);
+  if(btn) btn.classList.add('active');
+  // update banners + texts immediately so they are visible when main shows
+  el('bannerTop').textContent = LANG[l].top;
+  el('bannerBottom').textContent = LANG[l].bottom;
+  el('welcomeText').textContent = LANG[l].welcome;
+  el('walletTitle').textContent = LANG[l].wallet;
 }
 
-/* REGISTER */
-el('btnRegister').onclick=async()=>{
-  const name=el('regName').value.trim(), mob=el('regMobile').value.trim();
-  if(!/^[0-9]{10}$/.test(mob)){regErr.textContent="कृपया सही मोबाइल नंबर डालें";return;}
-  localStorage.setItem(KEY_MOBILE,mob);
-  localStorage.setItem(KEY_NAME,name);
-  localStorage.setItem(KEY_AMOUNT,"0");
-  regErr.textContent="";
-  regP.style.display="none";
-  logP.style.display="flex";
-  await saveToSheet("register",mob,name,0);
-};
+/* wire language buttons */
+document.querySelectorAll('.lang-btn').forEach(b=>{
+  b.addEventListener('click', ()=> setLang(b.dataset.lang));
+});
 
-/* LOGIN */
-el('btnLogin').onclick=()=>{
-  const mob=el('loginMobile').value.trim(), saved=localStorage.getItem(KEY_MOBILE);
-  if(!/^[0-9]{10}$/.test(mob)){loginErr.textContent="कृपया सही मोबाइल नंबर डालें";return;}
-  if(mob!==saved){loginErr.textContent="यह मोबाइल रजिस्टर नहीं है";return;}
-  loginErr.textContent="";
-  logP.style.display="none";
-  logoP.style.display="flex";
-};
+/* ========== REGISTER ========== */
+el('btnRegister').addEventListener('click', async ()=>{
+  const name = el('regName').value.trim();
+  const mob = el('regMobile').value.trim();
+  if(!/^[0-9]{10}$/.test(mob)){ regErr.textContent = "कृपया सही मोबाइल नंबर डालें"; return; }
+  localStorage.setItem(KEY_MOBILE, mob);
+  localStorage.setItem(KEY_NAME, name);
+  localStorage.setItem(KEY_AMOUNT, "0");
+  regErr.textContent = "";
+  // Save remote (non-blocking)
+  await saveToSheet("register", mob, name, 0);
+  // show login page next
+  showLogin();
+});
 
-/* LOGO → MAIN */
-el('btnNext').onclick=()=>{
-  logoP.style.display="none";
+/* ========== LOGIN ========== */
+el('btnLogin').addEventListener('click', ()=>{
+  const mob = el('loginMobile').value.trim();
+  const saved = localStorage.getItem(KEY_MOBILE);
+  if(!/^[0-9]{10}$/.test(mob)){ loginErr.textContent = "कृपया सही मोबाइल नंबर डालें"; return; }
+  if(mob !== saved){ loginErr.textContent = "यह मोबाइल रजिस्टर नहीं है"; return; }
+  loginErr.textContent = "";
+  showLogo();
+});
+
+/* ========== SHOW / HIDE HELPERS ========== */
+function showRegister(){ regP.style.display="flex"; logP.style.display="none"; logoP.style.display="none"; hideMain(); }
+function showLogin(){ regP.style.display="none"; logP.style.display="flex"; logoP.style.display="none"; hideMain(); }
+function showLogo(){ regP.style.display="none"; logP.style.display="none"; logoP.style.display="flex"; hideMain(); }
+function showMain(){ // central place to ensure banners updated & visible
+  // ensure language texts are set before making visible
+  setLang(currentLang);
+  regP.style.display="none"; logP.style.display="none"; logoP.style.display="none";
+  // show main and ensure banners are block (not inline)
   mainP.style.display="block";
+  el('bannerTop').style.display = "block";
+  el('bannerBottom').style.display = "block";
+  // update wallet info
   updateWallet();
-};
+  // scroll to top to show top banner on small screens
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function hideMain(){ mainP.style.display="none"; }
 
-/* LOGOUT */
-el('btnLogout').onclick=()=>{
-  mainP.style.display="none";
-  logP.style.display="flex";
-};
+/* btnNext should call showMain (fix) */
+el('btnNext').addEventListener('click', ()=> showMain());
 
-/* ADD MONEY */
-el('addMoney').onclick=()=>{
-  let amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  amt+=10;
-  localStorage.setItem(KEY_AMOUNT,amt);
-  el('walletAmount').textContent="₹"+amt;
-  const mob=localStorage.getItem(KEY_MOBILE)||"", name=localStorage.getItem(KEY_NAME)||"";
-  saveToSheet("add_money",mob,name,amt);
-};
+/* ========== WALLET ACTIONS ========== */
+el('addMoney').addEventListener('click', ()=>{
+  let amt = parseInt(localStorage.getItem(KEY_AMOUNT) || "0");
+  amt += 10;
+  localStorage.setItem(KEY_AMOUNT, String(amt));
+  el('walletAmount').textContent = "₹" + amt;
+  const mob = localStorage.getItem(KEY_MOBILE) || "", name = localStorage.getItem(KEY_NAME) || "";
+  saveToSheet("add_money", mob, name, amt);
+});
 
-/* TRANSFER MONEY */
-const tBox=el('transferBox'), sendBtn=el('sendMoney'), closeBtn=el('closeTransfer');
-el('transferMoney').onclick=()=>{tBox.style.display="flex";}
-closeBtn.onclick=()=>{tBox.style.display="none";el('transferMsg').textContent="";}
+/* transfer popup handlers */
+const tBox = el('transferBox'), sendBtn = el('sendMoney'), closeBtn = el('closeTransfer');
+el('transferMoney').addEventListener('click', ()=> { tBox.style.display = "flex"; el('transferMobile').value=''; el('transferAmount').value=''; el('transferMsg').textContent=''; });
+closeBtn.addEventListener('click', ()=> { tBox.style.display = "none"; el('transferMsg').textContent=''; });
 
-sendBtn.onclick=()=>{
-  const senderMob=localStorage.getItem(KEY_MOBILE);
-  const amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  const recv=el('transferMobile').value.trim();
-  const val=parseInt(el('transferAmount').value.trim()||"0");
-  if(!/^[0-9]{10}$/.test(recv)){el('transferMsg').textContent="⚠️ सही रिसीवर मोबाइल डालें";el('transferMsg').style.color="red";return;}
-  if(val<=0){el('transferMsg').textContent="⚠️ राशि दर्ज करें";el('transferMsg').style.color="red";return;}
-  if(val>amt){el('transferMsg').textContent="❌ बैलेंस पर्याप्त नहीं";el('transferMsg').style.color="red";return;}
+sendBtn.addEventListener('click', ()=>{
+  const sender = localStorage.getItem(KEY_MOBILE) || "";
+  let balance = parseInt(localStorage.getItem(KEY_AMOUNT) || "0");
+  const recv = el('transferMobile').value.trim();
+  const val = parseInt(el('transferAmount').value.trim() || "0");
+  if(!/^[0-9]{10}$/.test(recv)){ el('transferMsg').textContent="⚠️ सही रिसीवर मोबाइल डालें"; el('transferMsg').style.color="red"; return; }
+  if(val <= 0){ el('transferMsg').textContent="⚠️ राशि दर्ज करें"; el('transferMsg').style.color="red"; return; }
+  if(val > balance){ el('transferMsg').textContent="❌ बैलेंस पर्याप्त नहीं"; el('transferMsg').style.color="red"; return; }
 
-  const newAmt=amt-val;
-  localStorage.setItem(KEY_AMOUNT,newAmt);
-  el('walletAmount').textContent="₹"+newAmt;
-  el('transferMsg').style.color="green";
-  el('transferMsg').textContent="✅ ₹"+val+" भेजी गई "+recv+" को";
-  saveToSheet("transfer",senderMob,localStorage.getItem(KEY_NAME)||"",newAmt,recv,val);
-  setTimeout(()=>{tBox.style.display="none";el('transferMsg').textContent="";},1500);
-};
+  balance -= val;
+  localStorage.setItem(KEY_AMOUNT, String(balance));
+  el('walletAmount').textContent = "₹" + balance;
+  el('transferMsg').style.color = "green";
+  el('transferMsg').textContent = "✅ ₹" + val + " भेजी गई " + recv + " को";
+  // record transfer on sheet: include toMobile & toAmount
+  saveToSheet("transfer", sender, localStorage.getItem(KEY_NAME)||"", balance, recv, val);
+  setTimeout(()=> { tBox.style.display = "none"; el('transferMsg').textContent = ""; }, 1400);
+});
 
-/* UPDATE WALLET */
+/* ========== UPDATE WALLET ========== */
 function updateWallet(){
-  const mob=localStorage.getItem(KEY_MOBILE)||"—";
-  const amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  el('walletMobile').textContent="मोबाइल: "+mob;
-  el('walletAmount').textContent="₹"+amt;
+  const mob = localStorage.getItem(KEY_MOBILE) || "—";
+  const amt = parseInt(localStorage.getItem(KEY_AMOUNT) || "0");
+  el('walletMobile').textContent = "मोबाइल: " + mob;
+  el('walletAmount').textContent = "₹" + amt;
 }
 
-/* LANG BUTTONS */
-document.querySelectorAll('.lang-btn').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+/* ========== LOGOUT ========== */
+el('btnLogout').addEventListener('click', ()=>{
+  hideMain();
+  showLogin();
+});
 
-/* DEFAULT LOAD */
-window.onload=()=>{setLang("hi");regP.style.display="flex";logP.style.display="none";logoP.style.display="none";mainP.style.display="none";};
-
-/* GOOGLE SHEET */
+/* ========== SAVE TO SHEET ========== */
 async function saveToSheet(action,mobile,name,amount,toMobile,toAmount){
-  if(!SHEET_WEBHOOK_URL.startsWith("http"))return;
+  if(!SHEET_WEBHOOK_URL || !SHEET_WEBHOOK_URL.startsWith("http")) { console.log("Webhook not configured"); return; }
+  const payload = { secret: SHEET_SECRET, action, user_mobile: mobile, user_name: name, language: currentLang };
+  if(typeof amount !== "undefined") payload.amount = amount;
+  if(typeof toMobile !== "undefined") payload.toMobile = toMobile;
+  if(typeof toAmount !== "undefined") payload.toAmount = toAmount;
   try{
-    await fetch(SHEET_WEBHOOK_URL,{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({secret:SHEET_SECRET,action,user_mobile:mobile,user_name:name,language:currentLang,amount,toMobile,toAmount})
+    const resp = await fetch(SHEET_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
-  }catch(e){console.log(e);}
+    // optional: log response
+    const txt = await resp.text();
+    console.log("Sheet:", txt);
+  }catch(e){ console.warn("Sheet save failed", e); }
 }
+
+/* ========== INITIAL LOAD ========== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  // ensure language defaults and that banner elements exist
+  setLang(currentLang || "hi");
+
+  // default flow: show register first
+  showRegister();
+
+  // If user already registered and session logic required, you can alter here.
+  // For now we keep always Register first as requested.
+});
 </script>
 </body>
 </html>

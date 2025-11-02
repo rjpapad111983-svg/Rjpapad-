@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RJ Papad Loyalty Wallet (Final)</title>
+<title>RJ Papad Loyalty Wallet (Final with Banners)</title>
 <style>
 :root {
   --bg: #fff8dc;
@@ -44,16 +44,28 @@ button {cursor: pointer; border: 0; border-radius: 10px; padding: 12px 16px; fon
 .lang-row {display: flex; gap: 8px; justify-content: center;}
 .lang-btn {padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.06); background: transparent; cursor: pointer;}
 .lang-btn.active {background: var(--accent); color: #fff;}
+/* banner container wraps image */
 .banner {
   display: block;
   background: #fff7e6;
-  padding: 14px;
+  padding: 10px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.05);
   font-weight: 700;
   margin: 12px auto;
   text-align: center;
   max-width: 980px;
+  box-sizing: border-box;
+}
+/* image style for banner */
+.banner img {
+  width: 100%;
+  height: auto;
+  max-width: 980px;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 .wallet {
   background: #fff3cd;
@@ -74,6 +86,13 @@ button {cursor: pointer; border: 0; border-radius: 10px; padding: 12px 16px; fon
 #transferPanel {
   background: #fff; padding: 20px; border-radius: 12px;
   max-width: 320px; width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+@media(max-width:520px){
+  .panel{padding:14px}
+  .logo-full img{width:90%}
+  h2{font-size:18px}
+  .banner{margin:10px 10px}
+  .wallet{margin:10px}
 }
 </style>
 </head>
@@ -115,7 +134,10 @@ button {cursor: pointer; border: 0; border-radius: 10px; padding: 12px 16px; fon
 
 <!-- MAIN PAGE -->
 <div id="mainPage" style="display:none;">
-  <div id="bannerTop" class="banner">🟡 Top Banner (हिंदी)</div>
+  <!-- TOP BANNER IMAGE (from your provided link) -->
+  <div id="bannerTop" class="banner" aria-hidden="false">
+    <img id="bannerTopImg" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="Top Banner">
+  </div>
 
   <div class="wallet">
     <h2 id="walletTitle">💰 वॉलेट बैलेंस</h2>
@@ -126,7 +148,11 @@ button {cursor: pointer; border: 0; border-radius: 10px; padding: 12px 16px; fon
     <button id="transferMoney" class="btn-secondary" style="margin-top:8px;">रकम ट्रांसफर करें ➜</button>
   </div>
 
-  <div id="bannerBottom" class="banner">🟡 Bottom Banner (हिंदी)</div>
+  <!-- BOTTOM BANNER IMAGE (from your provided link) -->
+  <div id="bannerBottom" class="banner" aria-hidden="false">
+    <img id="bannerBottomImg" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Bottom Banner">
+  </div>
+
   <p id="welcomeText" style="font-weight:600;margin-top:20px;">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
   <button id="btnLogout" class="btn-secondary" style="max-width:200px;margin:20px auto;">Logout</button>
 </div>
@@ -144,109 +170,183 @@ button {cursor: pointer; border: 0; border-radius: 10px; padding: 12px 16px; fon
 </div>
 
 <script>
-const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE";
+/* ========== CONFIG: Replace these with your values ========== */
+const SHEET_WEBHOOK_URL = "YOUR_SCRIPT_URL_HERE"; // example: "https://script.google.com/macros/s/AKfycb.../exec"
 const SHEET_SECRET = "rj_secret_2025_xyz";
+/* ========================================================= */
+
 const KEY_MOBILE="rj_mobile", KEY_NAME="rj_name", KEY_AMOUNT="rj_amount";
+const el = id => document.getElementById(id);
 
-const el=id=>document.getElementById(id);
-const regP=el('registerPage'), logP=el('loginPage'), logoP=el('logoPage'), mainP=el('mainPage');
-const regErr=el('regError'), loginErr=el('loginError');
-let currentLang="hi";
+const regP = el('registerPage'), logP = el('loginPage'), logoP = el('logoPage'), mainP = el('mainPage');
+const regErr = el('regError'), loginErr = el('loginError');
 
-const LANG={
-  hi:{top:"🟡 टॉप बैनर (हिंदी)",bottom:"🟡 बॉटम बैनर (हिंदी)",welcome:"RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!",wallet:"💰 वॉलेट बैलेंस"},
-  en:{top:"🟡 Top Banner (English)",bottom:"🟡 Bottom Banner (English)",welcome:"Welcome to RJ Papad Loyalty Program!",wallet:"💰 Wallet Balance"},
-  gu:{top:"🟡 ઉપરનો બેનર (ગુજરાતી)",bottom:"🟡 નીચેનો બેનર (ગુજરાતી)",welcome:"RJ પાપડ લોયલ્ટી પ્રોગ્રામમાં આપનું સ્વાગત છે!",wallet:"💰 વોલેટ બેલેન્સ"}
+let currentLang = "hi";
+
+/* Language texts */
+const LANG = {
+  hi:{topText:"🟡 टॉप बैनर (हिंदी)",bottomText:"🟡 बॉटम बैनर (हिंदी)",welcome:"RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!",wallet:"💰 वॉलेट बैलेंस"},
+  en:{topText:"🟡 Top Banner (English)",bottomText:"🟡 Bottom Banner (English)",welcome:"Welcome to RJ Papad Loyalty Program!",wallet:"💰 Wallet Balance"},
+  gu:{topText:"🟡 ઉપરનો બેનર (ગુજરાતી)",bottomText:"🟡 નીચેનો બેનર (ગુજરાતી)",welcome:"RJ પાપડ લોયલ્ટી પ્રોગ્રામમાં આપનું સ્વાગત છે!",wallet:"💰 વોલેટ બેલેન્સ"}
 };
 
+/* Set language UI (text + ensure banners stay visible) */
 function setLang(l){
-  currentLang=l;
+  currentLang = l;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelector(`.lang-btn[data-lang="${l}"]`).classList.add('active');
-  el('bannerTop').textContent=LANG[l].top;
-  el('bannerBottom').textContent=LANG[l].bottom;
-  el('welcomeText').textContent=LANG[l].welcome;
-  el('walletTitle').textContent=LANG[l].wallet;
+  const btn = document.querySelector(`.lang-btn[data-lang="${l}"]`);
+  if(btn) btn.classList.add('active');
+
+  // we keep banners as images (links). For accessibility/update alt/title we can set attributes:
+  el('bannerTop').setAttribute('aria-label', LANG[l].topText);
+  el('bannerBottom').setAttribute('aria-label', LANG[l].bottomText);
+  el('welcomeText').textContent = LANG[l].welcome;
+  el('walletTitle').textContent = LANG[l].wallet;
+
+  // Ensure banners are visible (force)
+  el('bannerTop').style.display = 'block';
+  el('bannerBottom').style.display = 'block';
 }
-document.querySelectorAll('.lang-btn').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
 
-el('btnRegister').onclick=async()=>{
-  const name=el('regName').value.trim(), mob=el('regMobile').value.trim();
-  if(!/^[0-9]{10}$/.test(mob)){regErr.textContent="कृपया सही मोबाइल नंबर डालें";return;}
-  localStorage.setItem(KEY_MOBILE,mob);
-  localStorage.setItem(KEY_NAME,name);
-  localStorage.setItem(KEY_AMOUNT,"0");
-  regErr.textContent="";
-  regP.style.display="none"; logP.style.display="flex";
-  await saveToSheet("register",mob,name,0);
-};
+/* Wire language buttons */
+document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click', ()=> setLang(b.dataset.lang)));
 
-el('btnLogin').onclick=()=>{
-  const mob=el('loginMobile').value.trim(), saved=localStorage.getItem(KEY_MOBILE);
-  if(!/^[0-9]{10}$/.test(mob)){loginErr.textContent="कृपया सही मोबाइल नंबर डालें";return;}
-  if(mob!==saved){loginErr.textContent="यह मोबाइल रजिस्टर नहीं है";return;}
-  loginErr.textContent="";
-  logP.style.display="none"; logoP.style.display="flex";
-};
+/* REGISTER */
+el('btnRegister').addEventListener('click', async ()=>{
+  const name = el('regName').value.trim();
+  const mob = el('regMobile').value.trim();
+  if(!/^[0-9]{10}$/.test(mob)){
+    regErr.textContent = "कृपया सही मोबाइल नंबर डालें";
+    return;
+  }
+  localStorage.setItem(KEY_MOBILE, mob);
+  localStorage.setItem(KEY_NAME, name);
+  localStorage.setItem(KEY_AMOUNT, "0");
+  regErr.textContent = "";
+  // remote save (non-blocking)
+  await saveToSheet("register", mob, name, 0);
+  // show login page
+  regP.style.display = "none";
+  logP.style.display = "flex";
+});
 
-el('btnNext').onclick=()=>{logoP.style.display="none"; showMain();};
+/* LOGIN */
+el('btnLogin').addEventListener('click', ()=>{
+  const mob = el('loginMobile').value.trim();
+  const saved = localStorage.getItem(KEY_MOBILE);
+  if(!/^[0-9]{10}$/.test(mob)){ loginErr.textContent = "कृपया सही मोबाइल नंबर डालें"; return; }
+  if(mob !== saved){ loginErr.textContent = "यह मोबाइल रजिस्टर नहीं है"; return; }
+  loginErr.textContent = "";
+  logP.style.display = "none";
+  logoP.style.display = "flex";
+});
 
+/* LOGO → MAIN */
+el('btnNext').addEventListener('click', ()=> {
+  logoP.style.display = "none";
+  showMain();
+});
+
+/* showMain ensures banners visible and wallet updated */
 function showMain(){
-  mainP.style.display="block";
-  el('bannerTop').style.display="block";
-  el('bannerBottom').style.display="block";
+  // explicitly ensure banner images exist and are visible
+  el('bannerTop').style.display = 'block';
+  el('bannerBottom').style.display = 'block';
+
+  // make main visible
+  mainP.style.display = 'block';
+
+  // update wallet display
   updateWallet();
+
+  // small safe scroll to top on mobile so top banner is visible
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-el('addMoney').onclick=()=>{
-  let amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  amt+=10;
-  localStorage.setItem(KEY_AMOUNT,amt);
-  el('walletAmount').textContent="₹"+amt;
-  saveToSheet("add_money",localStorage.getItem(KEY_MOBILE),localStorage.getItem(KEY_NAME),amt);
-};
+/* ADD MONEY */
+el('addMoney').addEventListener('click', ()=>{
+  let amt = parseInt(localStorage.getItem(KEY_AMOUNT) || "0");
+  amt += 10;
+  localStorage.setItem(KEY_AMOUNT, String(amt));
+  el('walletAmount').textContent = "₹" + amt;
+  // remote record
+  saveToSheet("add_money", localStorage.getItem(KEY_MOBILE), localStorage.getItem(KEY_NAME), amt);
+});
 
-const tBox=el('transferBox');
-el('transferMoney').onclick=()=>{tBox.style.display="flex";}
-el('closeTransfer').onclick=()=>{tBox.style.display="none"; el('transferMsg').textContent="";}
+/* TRANSFER HANDLERS */
+const tBox = el('transferBox');
+el('transferMoney').addEventListener('click', ()=> { tBox.style.display = "flex"; el('transferMobile').value = ''; el('transferAmount').value = ''; el('transferMsg').textContent = ''; });
+el('closeTransfer').addEventListener('click', ()=> { tBox.style.display = "none"; el('transferMsg').textContent = ''; });
 
-el('sendMoney').onclick=()=>{
-  const sender=localStorage.getItem(KEY_MOBILE)||"";
-  let balance=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  const recv=el('transferMobile').value.trim();
-  const val=parseInt(el('transferAmount').value.trim()||"0");
-  if(!/^[0-9]{10}$/.test(recv)){el('transferMsg').textContent="⚠️ सही रिसीवर मोबाइल डालें";el('transferMsg').style.color="red";return;}
-  if(val<=0){el('transferMsg').textContent="⚠️ राशि दर्ज करें";el('transferMsg').style.color="red";return;}
-  if(val>balance){el('transferMsg').textContent="❌ बैलेंस पर्याप्त नहीं";el('transferMsg').style.color="red";return;}
-  balance-=val;
-  localStorage.setItem(KEY_AMOUNT,balance);
-  el('walletAmount').textContent="₹"+balance;
-  el('transferMsg').style.color="green";
-  el('transferMsg').textContent="✅ ₹"+val+" भेजी गई "+recv+" को";
-  saveToSheet("transfer",sender,localStorage.getItem(KEY_NAME),balance,recv,val);
-  setTimeout(()=>{tBox.style.display="none";el('transferMsg').textContent="";},1500);
-};
+el('sendMoney').addEventListener('click', ()=>{
+  const sender = localStorage.getItem(KEY_MOBILE) || "";
+  let balance = parseInt(localStorage.getItem(KEY_AMOUNT) || "0");
+  const recv = el('transferMobile').value.trim();
+  const val = parseInt(el('transferAmount').value.trim() || "0");
+  if(!/^[0-9]{10}$/.test(recv)){ el('transferMsg').textContent = "⚠️ सही रिसीवर मोबाइल डालें"; el('transferMsg').style.color = "red"; return; }
+  if(val <= 0){ el('transferMsg').textContent = "⚠️ राशि दर्ज करें"; el('transferMsg').style.color = "red"; return; }
+  if(val > balance){ el('transferMsg').textContent = "❌ बैलेंस पर्याप्त नहीं"; el('transferMsg').style.color = "red"; return; }
 
-el('btnLogout').onclick=()=>{mainP.style.display="none"; logP.style.display="flex";};
+  balance -= val;
+  localStorage.setItem(KEY_AMOUNT, String(balance));
+  el('walletAmount').textContent = "₹" + balance;
+  el('transferMsg').style.color = "green";
+  el('transferMsg').textContent = "✅ ₹" + val + " भेजी गई " + recv + " को";
 
+  // record transfer on sheet (include toMobile & toAmount)
+  saveToSheet("transfer", sender, localStorage.getItem(KEY_NAME) || "", balance, recv, val);
+
+  setTimeout(()=> { tBox.style.display = "none"; el('transferMsg').textContent = ""; }, 1400);
+});
+
+/* LOGOUT */
+el('btnLogout').addEventListener('click', ()=>{
+  mainP.style.display = "none";
+  logP.style.display = "flex";
+});
+
+/* UPDATE WALLET UI */
 function updateWallet(){
-  const mob=localStorage.getItem(KEY_MOBILE)||"—";
-  const amt=parseInt(localStorage.getItem(KEY_AMOUNT)||"0");
-  el('walletMobile').textContent="मोबाइल: "+mob;
-  el('walletAmount').textContent="₹"+amt;
+  const mob = localStorage.getItem(KEY_MOBILE) || "—";
+  const amt = parseInt(localStorage.getItem(KEY_AMOUNT) || "0");
+  el('walletMobile').textContent = "मोबाइल: " + mob;
+  el('walletAmount').textContent = "₹" + amt;
 }
 
-async function saveToSheet(action,mobile,name,amount,toMobile,toAmount){
-  if(!SHEET_WEBHOOK_URL.startsWith("http"))return;
+/* Save to Google Sheet helper */
+async function saveToSheet(action, mobile, name, amount, toMobile, toAmount){
+  if(!SHEET_WEBHOOK_URL || !SHEET_WEBHOOK_URL.startsWith("http")) { console.log("Webhook not configured"); return; }
+  const payload = { secret: SHEET_SECRET, action, user_mobile: mobile, user_name: name, language: currentLang };
+  if(typeof amount !== "undefined") payload.amount = amount;
+  if(typeof toMobile !== "undefined") payload.toMobile = toMobile;
+  if(typeof toAmount !== "undefined") payload.toAmount = toAmount;
   try{
-    await fetch(SHEET_WEBHOOK_URL,{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({secret:SHEET_SECRET,action,user_mobile:mobile,user_name:name,language:currentLang,amount,toMobile,toAmount})
+    const resp = await fetch(SHEET_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
-  }catch(e){console.log(e);}
+    const txt = await resp.text();
+    console.log("Sheet response:", txt);
+  }catch(e){
+    console.warn("Sheet save failed", e);
+  }
 }
 
-window.onload=()=>{setLang("hi"); regP.style.display="flex";}
+/* INITIAL LOAD */
+window.addEventListener('DOMContentLoaded', ()=>{
+  setLang("hi"); // default language and ensures banners visible
+  // always start with register as you requested
+  regP.style.display = "flex";
+  logP.style.display = "none";
+  logoP.style.display = "none";
+  mainP.style.display = "none";
+
+  // ensure image elements loaded (preload) to avoid flicker
+  const topImg = el('bannerTopImg'), botImg = el('bannerBottomImg');
+  if(topImg) topImg.onload = ()=> { el('bannerTop').style.display = 'block'; };
+  if(botImg) botImg.onload = ()=> { el('bannerBottom').style.display = 'block'; };
+});
 </script>
 </body>
 </html>

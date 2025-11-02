@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RJ Papad Wallet Sidebar (Final Locked)</title>
+<title>RJ Papad Wallet Sidebar (Logo बाद दिखे)</title>
 <style>
 :root {
   --bg: #fff8dc;
@@ -19,7 +19,6 @@ html,body {
   overflow-x:hidden;
 }
 button{cursor:pointer;}
-
 /* ==== LOCKED AREA START ==== */
 .overlay {
   position: fixed; top:0; left:0; width:100%; height:100%;
@@ -50,6 +49,7 @@ input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8
 
 /* Sidebar Wallet */
 #walletMenuBtn{
+  display:none; /* hidden by default until Logo page done */
   position:fixed;
   top:12px; right:12px;
   z-index:99;
@@ -174,7 +174,12 @@ el('btnLogin').onclick=()=>{
 };
 
 /* Logo → Main */
-el('btnNext').onclick=()=>{logoP.style.display="none";mainP.style.display="block";updateWallet();};
+el('btnNext').onclick=()=>{
+  logoP.style.display="none";
+  mainP.style.display="block";
+  el('walletMenuBtn').style.display="block"; // ✅ Wallet menu visible after logo page
+  updateWallet();
+};
 
 /* Wallet Sidebar */
 const sidebar=el('walletSidebar'),menuBtn=el('walletMenuBtn'),closeBtn=el('closeWallet');
@@ -191,7 +196,7 @@ el('addMoney').onclick=()=>{
 };
 
 /* Logout */
-el('btnLogout').onclick=()=>{mainP.style.display="none";logP.style.display="flex";};
+el('btnLogout').onclick=()=>{mainP.style.display="none";logP.style.display="flex";el('walletMenuBtn').style.display="none";};
 
 /* Update Wallet */
 function updateWallet(){

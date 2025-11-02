@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RJ Papad — MLM Tree + Wallet</title>
+<title>RJ Papad — Wallet (wallet-only) + My Team</title>
 <style>
 :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff}
 html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",sans-serif;background:var(--bg);color:#222;height:100%}
@@ -31,38 +31,34 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 .menu-item{display:block;padding:10px;border-radius:8px;margin:6px 0;background:#f6f6f6;border:1px solid #eee;text-align:left}
 .menu-item.primary{background:var(--accent);color:#111;font-weight:700}
 
-/* wallet sidebar */
+/* wallet sidebar (wallet-only) */
 #walletSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#fff3cd;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.16);transition:right .36s ease;z-index:998;overflow:auto}
 #walletSidebar.open{right:0}
 .walletTop{background:#fff7e6;padding:10px;border-radius:8px;margin-bottom:12px}
 .amount{font-size:24px;font-weight:800;color:#0a7a07}
-.tree-list{font-size:14px;text-align:left;padding-left:6px}
-.node{padding:8px;border-radius:6px;margin:8px 0;background:rgba(0,0,0,0.03)}
-.subtree{margin-left:12px;border-left:1px dashed rgba(0,0,0,0.06);padding-left:8px}
-.lock-badge{position:fixed;left:12px;top:60px;background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.08);font-size:13px;z-index:120}
-.info-small{font-size:13px;color:#444;margin-top:8px}
+.balance-small{font-size:12px;color:#333}
 
-/* Tree canvas */
+/* team sidebar (for My Team only) */
+#teamSidebar{position:fixed;top:0;right:-420px;width:420px;height:100%;background:#f0f7ff;padding:16px;box-shadow:-8px 0 28px rgba(0,0,0,.12);transition:right .36s ease;z-index:997;overflow:auto}
+#teamSidebar.open{right:0}
+.team-header{background:#e9f3ff;padding:10px;border-radius:8px;margin-bottom:12px}
+
+/* tree-list (names only) */
+.tree-list{font-size:14px;text-align:left;padding-left:6px}
+.node{padding:8px;border-radius:6px;margin:8px 0;background:#fff}
+
+/* small locked badge */
+.lock-badge{position:fixed;left:12px;top:60px;background:#fff;padding:6px 10px;border-radius:8px;box-shadow:0 3px 10px rgba(0,0,0,.08);font-size:13px;z-index:120}
+
+/* Tree canvas (main page) */
 #treeCanvasWrap{position:relative;height:520px;border-radius:10px;background:transparent;overflow:auto;margin:12px 0}
 #treeCanvas{position:relative;width:1200px;height:520px}
-.tree-node{
-  position:absolute;background:#fff;border-radius:8px;padding:8px 12px;min-width:150px;box-shadow:0 10px 20px rgba(0,0,0,.06);
-  display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;
-}
-.node-left{display:flex;align-items:center;gap:10px}
-.node-emoji{font-size:20px;margin-right:6px}
+.tree-node{position:absolute;background:#fff;border-radius:8px;padding:8px 12px;min-width:150px;box-shadow:0 10px 20px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;}
 .node-name{font-weight:700;color:#7b1f00}
-.node-meta{font-size:12px;color:#666}
-.node-actions{display:flex;flex-direction:column;gap:6px}
-.node-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e8f8ff;border:2px solid #4fb1e6;color:#0a66a0;cursor:pointer;font-weight:700}
 .connector-svg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
 
-/* responsive small */
-@media(max-width:640px){
-  #treeCanvas{width:920px}
-  .tree-node{min-width:140px;font-size:13px}
-  #walletSidebar{width:92%}
-}
+/* responsive */
+@media(max-width:640px){ #treeCanvas{width:920px} #walletSidebar,#teamSidebar{width:92%} }
 /* ========== LOCKED CSS END ========== */
 </style>
 </head>
@@ -113,31 +109,22 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
 <div id="mainPage" style="display:none">
   <div class="container">
     <div class="banner"><img id="topBannerImg" src="" alt="top banner" /></div>
-
-    <div id="treeCanvasWrap"><div id="treeCanvas">
-      <svg class="connector-svg" id="connectorSvg"></svg>
-    </div></div>
-
+    <div id="treeCanvasWrap"><div id="treeCanvas"><svg class="connector-svg" id="connectorSvg"></svg></div></div>
     <div class="banner"><img id="bottomBannerImg" src="" alt="bottom banner" /></div>
-
     <p id="welcomeText" style="font-weight:700;margin-top:12px">RJ पापड़ लॉयल्टी प्रोग्राम में आपका स्वागत है!</p>
-    <div style="margin-top:12px">
-      <button id="btnLogout" class="btn-secondary" style="max-width:200px">Logout</button>
-    </div>
+    <div style="margin-top:12px"><button id="btnLogout" class="btn-secondary" style="max-width:200px">Logout</button></div>
   </div>
 </div>
 
 <!-- MENU ICON (left) -->
 <button id="walletMenuBtn" aria-label="Menu">☰</button>
-
-<!-- small menu panel that opens under the icon -->
 <div id="menuPanel" role="menu" aria-hidden="true">
   <div id="menuWallet" class="menu-item menu-wallet">Wallet</div>
   <div id="menuMyTeam" class="menu-item">My Team</div>
   <div id="menuClose" class="menu-item" style="text-align:center">Close</div>
 </div>
 
-<!-- Wallet Sidebar -->
+<!-- WALLET SIDEBAR (wallet-only) -->
 <div id="walletSidebar" aria-hidden="true">
   <div class="walletTop">
     <div style="display:flex;justify-content:space-between;align-items:center">
@@ -152,40 +139,38 @@ input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;bor
       <button id="openTransfer" class="btn-secondary" style="flex:1">Transfer</button>
     </div>
     <div style="height:8px"></div>
-    <button id="viewMyTeam" class="btn-secondary">View My Team</button>
-    <div style="height:8px"></div>
-    <div style="font-size:13px;color:#444">Tree members: <span id="treeCount">0</span></div>
-  </div>
-
-  <hr style="border:none;height:12px" />
-
-  <div id="transferBox" style="display:none;margin-bottom:12px">
-    <h4 style="margin:6px 0">Transfer Money</h4>
-    <input id="transferTo" placeholder="To Mobile (10 digits)" inputmode="numeric" maxlength="10" />
-    <input id="transferAmount" placeholder="Amount (₹)" inputmode="numeric" />
-    <button id="btnTransfer" class="btn-primary">Send</button>
-    <p id="transferMsg" style="color:#b00"></p>
-  </div>
-
-  <div>
-    <h4 style="margin:8px 0 6px">Transactions</h4>
-    <div class="txn-filter">
-      <button id="filterAll" class="btn-secondary" style="flex:1">All</button>
-      <button id="filterMy" class="btn-secondary" style="flex:1">My</button>
+    <!-- only wallet-related: transfer box and transactions -->
+    <div id="transferBox" style="display:none;margin-bottom:12px">
+      <h4 style="margin:6px 0">Transfer Money</h4>
+      <input id="transferTo" placeholder="To Mobile (10 digits)" inputmode="numeric" maxlength="10" />
+      <input id="transferAmount" placeholder="Amount (₹)" inputmode="numeric" />
+      <button id="btnTransfer" class="btn-primary">Send</button>
+      <p id="transferMsg" style="color:#b00"></p>
     </div>
-    <div id="txnList" style="max-height:220px;overflow:auto"></div>
-  </div>
 
-  <hr style="border:none;height:12px" />
+    <div style="margin-top:8px">
+      <h4 style="margin:8px 0 6px">Transactions</h4>
+      <div class="txn-filter">
+        <button id="filterAll" class="btn-secondary" style="flex:1">All</button>
+        <button id="filterMy" class="btn-secondary" style="flex:1">My</button>
+      </div>
+      <div id="txnList" style="max-height:300px;overflow:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM SIDEBAR (only for My Team) -->
+<div id="teamSidebar" aria-hidden="true">
+  <div class="team-header">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div><strong>👥 My Team</strong></div>
+      <div><button id="closeTeam" class="btn-secondary" style="padding:6px 10px">Close</button></div>
+    </div>
+  </div>
   <div>
-    <h4 style="margin:8px 0 6px">Full Tree (names only)</h4>
-    <div id="fullTree" class="tree-list" aria-live="polite"></div>
-    <h4 style="margin:10px 0 6px">My Subtree (downline)</h4>
-    <div id="myTree" class="tree-list"></div>
+    <h4 style="margin:8px 0 6px">Your Downline</h4>
+    <div id="myTeamList" class="tree-list" style="max-height:600px;overflow:auto"></div>
   </div>
-
-  <div style="height:12px"></div>
-  <div style="font-size:12px;color:#333">Note: Tree fills top→down, left→right. New joins go to first empty spot (BFS).</div>
 </div>
 
 <div class="lock-badge">🔒 Fixed — only config fields editable</div>
@@ -205,7 +190,7 @@ const BOTTOM_BANNER_URL = "https://raw.githubusercontent.com/rjpapad111983-svg/R
 const KEY_MOBILE = "rj_mobile", KEY_NAME = "rj_name", KEY_BALANCES = "rj_balances", KEY_TREE = "rj_tree_nodes", KEY_TXN = "rj_txns";
 const el = id => document.getElementById(id);
 
-/* images */
+/* populate images */
 el('logoImg').src = LOGO_URL;
 el('topBannerImg').src = TOP_BANNER_URL;
 el('bottomBannerImg').src = BOTTOM_BANNER_URL;
@@ -213,12 +198,13 @@ el('bottomBannerImg').src = BOTTOM_BANNER_URL;
 /* UI refs */
 const regP = el('registerPage'), logP = el('loginPage'), logoP = el('logoPage'), mainP = el('mainPage');
 const walletBtn = el('walletMenuBtn'), menuPanel = el('menuPanel'), menuWallet = el('menuWallet'), menuMyTeam = el('menuMyTeam'), menuClose = el('menuClose');
-const sidebar = el('walletSidebar'), closeWallet = el('closeWallet');
+const walletSidebar = el('walletSidebar'), closeWallet = el('closeWallet');
+const teamSidebar = el('teamSidebar'), closeTeam = el('closeTeam'), myTeamList = el('myTeamList');
 const addMoneyBtn = el('addMoney'), openTransfer = el('openTransfer'), transferBox = el('transferBox');
 const transferTo = el('transferTo'), transferAmount = el('transferAmount'), btnTransfer = el('btnTransfer'), transferMsg = el('transferMsg');
 const walletAmountEl = el('walletAmount'), walletMobileEl = el('walletMobile');
-const treeCountEl = el('treeCount'), fullTreeEl = el('fullTree'), myTreeEl = el('myTree');
-const txnList = el('txnList'), filterAll = el('filterAll'), filterMy = el('filterMy'), viewMyTeamBtn = el('viewMyTeam');
+const txnList = el('txnList'), filterAll = el('filterAll'), filterMy = el('filterMy');
+
 const treeCanvas = el('treeCanvas'), connectorSvg = el('connectorSvg');
 
 /* language toggle */
@@ -229,7 +215,7 @@ document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click', ()
   el('welcomeText').textContent = L[b.dataset.lang] || L.hi;
 }));
 
-/* ===== Tree localStorage management (same as before) ===== */
+/* ===== tree storage & helpers ===== */
 function loadTree(){ try{ const raw = localStorage.getItem(KEY_TREE); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
 function saveTree(nodes){ localStorage.setItem(KEY_TREE, JSON.stringify(nodes)); }
 function findAvailableParent(nodes){ if(nodes.length===0) return null; for(let i=0;i<nodes.length;i++){ if(nodes[i].left===null || nodes[i].right===null) return nodes[i]; } return null; }
@@ -244,9 +230,7 @@ function addNodeToTree(name, mobile, gender){
 }
 function computeLevels(nodes){
   if(!nodes || nodes.length===0) return [];
-  const levels = [];
-  const queue = [{ idx:0, level:0 }];
-  const seen = new Set();
+  const levels = []; const queue = [{ idx:0, level:0 }]; const seen = new Set();
   while(queue.length){
     const cur = queue.shift();
     if(seen.has(cur.idx)) continue;
@@ -260,40 +244,26 @@ function computeLevels(nodes){
   return levels;
 }
 
+/* draw main graphic tree (names only) */
 function renderGraphicTree(){
   treeCanvas.innerHTML = '<svg class="connector-svg" id="connectorSvg"></svg>';
-  const svg = el('connectorSvg');
-  const nodes = loadTree();
-  if(nodes.length===0){ treeCanvas.style.width = '800px'; treeCanvas.style.height = '320px'; svg.setAttribute('width', treeCanvas.style.width); svg.setAttribute('height', treeCanvas.style.height); return; }
-  const levels = computeLevels(nodes);
-  const levelCount = levels.length;
+  const svg = el('connectorSvg'); const nodes = loadTree();
+  if(nodes.length===0){ treeCanvas.style.width='800px'; treeCanvas.style.height='320px'; svg.setAttribute('width', treeCanvas.style.width); svg.setAttribute('height', treeCanvas.style.height); return; }
+  const levels = computeLevels(nodes); const levelCount = levels.length;
   const width = Math.max(900, levels.reduce((m,l)=>Math.max(m,l.length*220),0));
   const height = Math.max(420, levelCount*140 + 80);
   treeCanvas.style.width = width + 'px'; treeCanvas.style.height = height + 'px';
   svg.setAttribute('width', width); svg.setAttribute('height', height);
-
   const pos = {};
   for(let lvl=0; lvl<levels.length; lvl++){
-    const row = levels[lvl];
-    const n = row.length;
+    const row = levels[lvl]; const n = row.length;
     for(let i=0;i<n;i++){
-      const idx = row[i];
-      const segment = width / (n+1);
-      const x = segment*(i+1) - 75;
-      const y = 40 + lvl*140;
-      pos[idx] = { x,y, cx: x + 75, cy: y + 28 };
-      const node = nodes[idx];
-      const elNode = document.createElement('div');
-      elNode.className = 'tree-node';
-      elNode.style.left = x + 'px';
-      elNode.style.top = y + 'px';
-      elNode.id = 'node-' + idx;
-      let emoji = '🧍';
-      if(node.gender === 'male') emoji = '👨';
-      else if(node.gender === 'female') emoji = '👩';
+      const idx = row[i]; const segment = width/(n+1); const x = segment*(i+1) - 75; const y = 40 + lvl*140;
+      pos[idx] = { x,y, cx: x+75, cy: y+28 };
+      const node = nodes[idx]; const elNode = document.createElement('div'); elNode.className='tree-node'; elNode.style.left = x+'px'; elNode.style.top = y+'px'; elNode.id = 'node-'+idx;
+      let emoji = '🧍'; if(node.gender==='male') emoji='👨'; else if(node.gender==='female') emoji='👩';
       const nameShort = node.name || ('User-'+node.index);
-      elNode.innerHTML = `<div class="node-left"><div class="node-emoji">${emoji}</div><div><div class="node-name">${escapeHtml(nameShort)}</div></div></div>
-        <div class="node-actions"><div class="node-circle" title="add/join">+</div><div style="font-size:11px;color:#666;margin-top:4px">${node.left!==null? '👥':''}</div></div>`;
+      elNode.innerHTML = `<div style="display:flex;align-items:center;gap:10px"><div style="font-size:18px">${emoji}</div><div class="node-name">${escapeHtml(nameShort)}</div></div>`;
       treeCanvas.appendChild(elNode);
     }
   }
@@ -304,132 +274,76 @@ function renderGraphicTree(){
     if(node.right!==null) drawLine(svg, pos[i].cx, pos[i].cy, pos[node.right].cx, pos[node.right].cy);
   }
 }
-function drawLine(svg, x1, y1, x2, y2){
-  const midY = (y1 + y2) / 2;
-  const path = document.createElementNS("http://www.w3.org/2000/svg","path");
-  const d = `M ${x1} ${y1} C ${x1} ${midY} ${x2} ${midY} ${x2} ${y2}`;
-  path.setAttribute('d', d);
-  path.setAttribute('stroke', '#cfcfcf');
-  path.setAttribute('fill', 'none');
-  path.setAttribute('stroke-width','3');
-  svg.appendChild(path);
-}
-function escapeHtml(text){ return String(text).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+function drawLine(svg,x1,y1,x2,y2){ const midY=(y1+y2)/2; const path=document.createElementNS("http://www.w3.org/2000/svg","path"); const d=`M ${x1} ${y1} C ${x1} ${midY} ${x2} ${midY} ${x2} ${y2}`; path.setAttribute('d',d); path.setAttribute('stroke','#cfcfcf'); path.setAttribute('fill','none'); path.setAttribute('stroke-width','3'); svg.appendChild(path); }
+function escapeHtml(t){ return String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-/* balances/txns */
-function loadBalances(){ try{ const raw = localStorage.getItem(KEY_BALANCES); return raw ? JSON.parse(raw) : {}; } catch(e){ return {}; } }
+/* balances & txns */
+function loadBalances(){ try{ const raw=localStorage.getItem(KEY_BALANCES); return raw?JSON.parse(raw):{} }catch(e){return{}} }
 function saveBalances(bals){ localStorage.setItem(KEY_BALANCES, JSON.stringify(bals)); }
-function ensureBalance(mobile){ const bals = loadBalances(); if(!(mobile in bals)){ bals[mobile]=0; saveBalances(bals);} return bals; }
-function getBalance(mobile){ const bals=loadBalances(); return Number(bals[mobile]||0); }
-function setBalance(mobile, amount){ const bals=loadBalances(); bals[mobile]=Number(amount); saveBalances(bals); }
+function ensureBalance(m){ const b=loadBalances(); if(!(m in b)){ b[m]=0; saveBalances(b);} return b; }
+function getBalance(m){ const b=loadBalances(); return Number(b[m]||0); }
+function setBalance(m,a){ const b=loadBalances(); b[m]=Number(a); saveBalances(b); }
 
-function loadTxns(){ try{ const raw = localStorage.getItem(KEY_TXN); return raw ? JSON.parse(raw) : []; } catch(e){ return []; } }
-function saveTxns(txns){ localStorage.setItem(KEY_TXN, JSON.stringify(txns)); }
-function addTxn(type, from, to, amount, note){ const txns = loadTxns(); const t = { id: Date.now(), type, from: from||null, to: to||null, amount: Number(amount), note: note||'', time: (new Date()).toISOString() }; txns.unshift(t); saveTxns(txns); saveToSheet(type, from||to, '', amount, to, undefined); renderTxns(currentFilter); }
+function loadTxns(){ try{ const raw=localStorage.getItem(KEY_TXN); return raw?JSON.parse(raw):[] }catch(e){return[]}}
+function saveTxns(t){ localStorage.setItem(KEY_TXN, JSON.stringify(t)); }
+function addTxn(type, from, to, amount, note){ const txns=loadTxns(); const t={id:Date.now(),type,from:from||null,to:to||null,amount:Number(amount),note:note||'',time:(new Date()).toISOString()}; txns.unshift(t); saveTxns(txns); saveToSheet(type, from||to, '', amount, to, undefined); renderTxns(currentFilter); }
 
-let currentFilter = 'all';
-function renderTxns(filter){ currentFilter = filter || currentFilter; txnList.innerHTML=''; const txns = loadTxns(); const myMobile = localStorage.getItem(KEY_MOBILE); const list = txns.filter(t => currentFilter==='all' ? true : (t.from===myMobile || t.to===myMobile)); if(list.length===0){ txnList.innerHTML = '<div style="color:#666">No transactions</div>'; return; } list.forEach(t=>{ const div = document.createElement('div'); div.className='txn-item ' + (t.type==='add' ? 'txn-type-add' : 'txn-type-transfer'); const time = new Date(t.time).toLocaleString(); if(t.type==='add' || t.type==='register'){ div.innerHTML = `<div><strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong></div><div class="balance-small">to: ${t.to||'—'} • ${time}</div><div style="font-size:13px;color:#444">${t.note||''}</div>`; } else { div.innerHTML = `<div><strong>Transfer ₹${t.amount}</strong></div><div class="balance-small">from: ${t.from} → to: ${t.to} • ${time}</div><div style="font-size:13px;color:#444">${t.note||''}</div>`; } txnList.appendChild(div); }); }
+let currentFilter='all';
+function renderTxns(filter){
+  currentFilter = filter||currentFilter; txnList.innerHTML=''; const txns = loadTxns(); const my = localStorage.getItem(KEY_MOBILE);
+  const list = txns.filter(t => currentFilter==='all' ? true : (t.from===my || t.to===my));
+  if(list.length===0){ txnList.innerHTML = '<div style="color:#666">No transactions</div>'; return; }
+  list.forEach(t=>{ const d=document.createElement('div'); d.className='node'; d.innerHTML = (t.type==='add' || t.type==='register') ? `<strong>${t.type==='register'?'Registered':'Added ₹'+t.amount}</strong><div class="balance-small">to: ${t.to||'—'} • ${new Date(t.time).toLocaleString()}</div>` : `<strong>Transfer ₹${t.amount}</strong><div class="balance-small">from: ${t.from} → to: ${t.to} • ${new Date(t.time).toLocaleString()}</div>`; txnList.appendChild(d); });
+}
 
 /* UI interactions */
 /* menu open/close */
-walletBtn.addEventListener('click', (e)=>{
-  menuPanel.style.display = (menuPanel.style.display==='block') ? 'none' : 'block';
-  menuPanel.setAttribute('aria-hidden', menuPanel.style.display==='none'?'true':'false');
-});
+walletBtn.addEventListener('click', ()=>{ menuPanel.style.display = (menuPanel.style.display==='block') ? 'none' : 'block'; menuPanel.setAttribute('aria-hidden', menuPanel.style.display==='none'?'true':'false'); });
 menuClose.addEventListener('click', ()=>{ menuPanel.style.display='none'; menuPanel.setAttribute('aria-hidden','true'); });
 
-/* menu buttons */
-menuWallet.addEventListener('click', ()=>{
-  menuPanel.style.display='none';
-  openWalletSidebar();
-});
-menuMyTeam.addEventListener('click', ()=>{
-  menuPanel.style.display='none';
-  // open sidebar and render only my subtree
-  renderMySubtreeList();
-  sidebar.classList.add('open');
-  sidebar.setAttribute('aria-hidden','false');
-});
+/* Wallet: open walletSidebar (wallet-only) */
+menuWallet.addEventListener('click', ()=>{ menuPanel.style.display='none'; openWalletSidebar(); });
+function openWalletSidebar(){ teamSidebar.classList.remove('open'); teamSidebar.setAttribute('aria-hidden','true'); walletSidebar.classList.add('open'); walletSidebar.setAttribute('aria-hidden','false'); updateWalletUI(); renderTxns('my'); }
 
-/* wallet sidebar open/close */
-function openWalletSidebar(){ sidebar.classList.add('open'); sidebar.setAttribute('aria-hidden','false'); updateWalletUI(); renderFullTreeList(); renderTxns(currentFilter); }
-closeWallet.addEventListener('click', ()=>{ sidebar.classList.remove('open'); sidebar.setAttribute('aria-hidden','true'); });
+/* My Team: open teamSidebar and render downline only */
+menuMyTeam.addEventListener('click', ()=>{ menuPanel.style.display='none'; openTeamSidebar(); });
+function openTeamSidebar(){ walletSidebar.classList.remove('open'); walletSidebar.setAttribute('aria-hidden','true'); renderMyTeamList(); teamSidebar.classList.add('open'); teamSidebar.setAttribute('aria-hidden','false'); }
 
-addMoneyBtn.addEventListener('click', ()=>{ const mobile = localStorage.getItem(KEY_MOBILE); if(!mobile){ alert('Login required'); return;} ensureBalance(mobile); const bal = getBalance(mobile); setBalance(mobile, bal+10); updateWalletUI(); addTxn('add', null, mobile, 10, 'Manual add +10'); alert('₹10 added'); });
+/* close handlers */
+closeWallet.addEventListener('click', ()=>{ walletSidebar.classList.remove('open'); walletSidebar.setAttribute('aria-hidden','true'); });
+closeTeam.addEventListener('click', ()=>{ teamSidebar.classList.remove('open'); teamSidebar.setAttribute('aria-hidden','true'); });
 
+/* wallet actions */
+addMoneyBtn.addEventListener('click', ()=>{ const m = localStorage.getItem(KEY_MOBILE); if(!m){ alert('Login required'); return; } ensureBalance(m); setBalance(m, getBalance(m)+10); updateWalletUI(); addTxn('add', null, m, 10, 'Manual +10'); alert('₹10 added'); });
 openTransfer.addEventListener('click', ()=>{ transferBox.style.display = transferBox.style.display==='none' ? 'block' : 'none'; transferMsg.textContent=''; });
-btnTransfer.addEventListener('click', ()=>{ transferMsg.textContent=''; const from = localStorage.getItem(KEY_MOBILE); if(!from){ transferMsg.textContent='Login required'; return; } const to = transferTo.value.trim(); const amtRaw = transferAmount.value.trim(); if(!/^[0-9]{10}$/.test(to)){ transferMsg.textContent='कृपया सही To मोबाइल डालें'; return; } if(!amtRaw||isNaN(amtRaw)||Number(amtRaw)<=0){ transferMsg.textContent='सही राशि डालें'; return;} const amt=Math.floor(Number(amtRaw)); const bal=getBalance(from); if(amt>bal){ transferMsg.textContent='Insufficient balance'; return; } const nodes = loadTree(); const exists = nodes.find(n => n && n.mobile===to); if(!exists){ transferMsg.textContent='Recipient not registered'; return; } setBalance(from, bal-amt); ensureBalance(to); setBalance(to, getBalance(to)+amt); addTxn('transfer', from, to, amt, 'User transfer'); updateWalletUI(); transferMsg.style.color='green'; transferMsg.textContent='Transfer successful'; transferTo.value=''; transferAmount.value=''; });
-
-viewMyTeamBtn.addEventListener('click', ()=>{ renderMySubtreeList(); sidebar.classList.add('open'); });
+btnTransfer.addEventListener('click', ()=>{ transferMsg.textContent=''; const from = localStorage.getItem(KEY_MOBILE); if(!from){ transferMsg.textContent='Login required'; return; } const to = transferTo.value.trim(); const amtRaw = transferAmount.value.trim(); if(!/^[0-9]{10}$/.test(to)){ transferMsg.textContent='कृपया सही To मोबाइल डालें'; return; } if(!amtRaw||isNaN(amtRaw)||Number(amtRaw)<=0){ transferMsg.textContent='सही राशि डालें'; return; } const amt=Math.floor(Number(amtRaw)); const bal=getBalance(from); if(amt>bal){ transferMsg.textContent='Insufficient balance'; return; } const nodes = loadTree(); const exists = nodes.find(n=>n&&n.mobile===to); if(!exists){ transferMsg.textContent='Recipient not registered'; return; } setBalance(from, bal-amt); ensureBalance(to); setBalance(to, getBalance(to)+amt); addTxn('transfer', from, to, amt, 'User transfer'); updateWalletUI(); transferMsg.style.color='green'; transferMsg.textContent='Transfer successful'; transferTo.value=''; transferAmount.value=''; });
 
 filterAll.addEventListener('click', ()=>{ renderTxns('all'); });
 filterMy.addEventListener('click', ()=>{ renderTxns('my'); });
 
-/* full/my tree lists (names only) */
-function renderFullTreeList(){
-  const nodes = loadTree(); fullTreeEl.innerHTML = ''; if(nodes.length===0){ fullTreeEl.textContent='Tree empty'; treeCountEl.textContent='0'; return; }
-  treeCountEl.textContent = String(nodes.length);
-  nodes.forEach(n => { const d = document.createElement('div'); d.className='node'; d.textContent = `${n.index}: ${n.name || '(No name)'}`; fullTreeEl.appendChild(d); });
-}
-function renderMySubtreeList(){
-  myTreeEl.innerHTML = '';
-  const my = localStorage.getItem(KEY_MOBILE);
-  if(!my){ myTreeEl.textContent='Login to view your team'; return; }
-  const nodes = loadTree();
-  const me = nodes.find(n => n && n.mobile===my);
-  if(!me){ myTreeEl.textContent='आपका रिकॉर्ड tree में नहीं मिला'; return; }
-  const pack = document.createElement('div');
+/* render my team list (downline only, names only) */
+function renderMyTeamList(){
+  myTeamList.innerHTML=''; const my = localStorage.getItem(KEY_MOBILE); if(!my){ myTeamList.textContent='Login to view your team'; return; }
+  const nodes = loadTree(); const me = nodes.find(n=>n&&n.mobile===my); if(!me){ myTeamList.textContent='आपका रिकॉर्ड tree में नहीं मिला'; return; }
   function rec(idx, container){
-    const node = nodes[idx]; const elDiv = document.createElement('div'); elDiv.className='node'; elDiv.textContent = `${node.name || '(No name)'}`; container.appendChild(elDiv);
+    const node = nodes[idx]; const div = document.createElement('div'); div.className='node'; div.textContent = node.name || '(No name)'; container.appendChild(div);
     if(node.left!==null || node.right!==null){
-      const c = document.createElement('div'); c.className='subtree';
-      if(node.left!==null) rec(node.left, c); if(node.right!==null) rec(node.right, c);
-      container.appendChild(c);
+      const c = document.createElement('div'); c.className='tree-list'; if(node.left!==null) rec(node.left, c); if(node.right!==null) rec(node.right, c); container.appendChild(c);
     }
   }
-  rec(me.index, pack); myTreeEl.appendChild(pack);
+  rec(me.index, myTeamList);
 }
 
 /* register/login flows */
-el('btnLogin').addEventListener('click', ()=>{
-  const mobile = el('loginMobile').value.trim(); el('loginError').textContent='';
-  if(!/^[0-9]{10}$/.test(mobile)){ el('loginError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
-  const nodes = loadTree();
-  const found = nodes.find(n => n && n.mobile === mobile);
-  if(found){
-    localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, found.name || '');
-    logP.style.display='none'; logoP.style.display='flex';
-  } else {
-    el('regMobile').value = mobile; el('regName').value = ''; el('regGender').value = 'unknown';
-    el('loginError').textContent = 'यह नंबर रजिस्टर नहीं है — कृपया रजिस्टर करें।';
-    logP.style.display='none'; regP.style.display='flex';
-  }
-});
+el('btnLogin').addEventListener('click', ()=>{ const mobile = el('loginMobile').value.trim(); el('loginError').textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ el('loginError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes = loadTree(); const found = nodes.find(n=>n&&n.mobile===mobile); if(found){ localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, found.name||''); logP.style.display='none'; logoP.style.display='flex'; } else { el('regMobile').value=mobile; el('regName').value=''; el('regGender').value='unknown'; el('loginError').textContent='यह नंबर रजिस्टर नहीं है — कृपया रजिस्टर करें।'; logP.style.display='none'; regP.style.display='flex'; } });
 
-el('btnRegister').addEventListener('click', async ()=>{
-  const name = el('regName').value.trim(), mobile = el('regMobile').value.trim(), gender = el('regGender').value || 'unknown';
-  el('regError').textContent = '';
-  if(!/^[0-9]{10}$/.test(mobile)){ el('regError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; }
-  const nodes = loadTree();
-  const exists = nodes.find(n => n && n.mobile === mobile);
-  if(exists){ el('regError').textContent = 'यह नंबर पहले से रजिस्टर है — लॉगिन करें।'; return; }
-  localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name||'');
-  ensureBalance(mobile); setBalance(mobile, 0);
-  const res = addNodeToTree(name, mobile, gender);
-  alert('रजिस्टर हुआ — tree index: ' + res.placedAt + (res.parent!==null ? (' (parent: '+res.parent+')') : ' (root)'));
-  addTxn('register', null, mobile, 0, 'Registered');
-  await saveToSheet('register', mobile, name, res.placedAt);
-  regP.style.display='none'; logoP.style.display='flex';
-});
+el('btnRegister').addEventListener('click', async ()=>{ const name = el('regName').value.trim(), mobile = el('regMobile').value.trim(), gender = el('regGender').value || 'unknown'; el('regError').textContent=''; if(!/^[0-9]{10}$/.test(mobile)){ el('regError').textContent='कृपया 10 अंकों का मोबाइल नंबर डालें'; return; } const nodes=loadTree(); const exists = nodes.find(n=>n&&n.mobile===mobile); if(exists){ el('regError').textContent='यह नंबर पहले से रजिस्टर है — लॉगिन करें।'; return; } localStorage.setItem(KEY_MOBILE, mobile); localStorage.setItem(KEY_NAME, name||''); ensureBalance(mobile); setBalance(mobile,0); const res = addNodeToTree(name,mobile,gender); alert('रजिस्टर हुआ — tree index: '+res.placedAt+(res.parent!==null?(' (parent:'+res.parent+')'):' (root)')); addTxn('register',null,mobile,0,'Registered'); await saveToSheet('register',mobile,name,res.placedAt); regP.style.display='none'; logoP.style.display='flex'; });
 
-el('btnNext').addEventListener('click', ()=>{
-  logoP.style.display = 'none'; mainP.style.display = 'block'; walletBtn.style.display = 'block';
-  updateWalletUI(); renderGraphicTree(); renderFullTreeList(); renderTxns('my');
-});
+el('btnNext').addEventListener('click', ()=>{ logoP.style.display='none'; mainP.style.display='block'; walletBtn.style.display='block'; updateWalletUI(); renderGraphicTree(); renderTxns('my'); });
 
 el('btnLogout').addEventListener('click', ()=>{ mainP.style.display='none'; logP.style.display='flex'; walletBtn.style.display='none'; });
 
-/* sheet save */
+/* saveToSheet helper (optional) */
 async function saveToSheet(action, mobile, name, amount, toMobile, toAmount){
   if(!SHEET_WEBHOOK_URL || !SHEET_WEBHOOK_URL.startsWith('http')){ console.log('Webhook not configured'); return; }
   const payload = { secret: SHEET_SECRET, action, user_mobile: mobile, user_name: name, language: (document.querySelector('.lang-btn.active')?.dataset?.lang || 'hi') };
@@ -445,22 +359,17 @@ function updateWalletUI(){ const mob = localStorage.getItem(KEY_MOBILE) || '—'
 /* init & auto-lock check */
 window.addEventListener('DOMContentLoaded', ()=>{
   const html = document.documentElement.innerHTML;
-  if(!html.includes('LOCKED CSS START') || !html.includes('LOCKED CSS END')){
-    alert('⚠️ Locked code modified. Reloading to recover original.');
-    location.reload();
-  }
+  if(!html.includes('LOCKED CSS START') || !html.includes('LOCKED CSS END')){ alert('⚠️ Locked code modified. Reloading to recover original.'); location.reload(); }
   regP.style.display='none'; logP.style.display='flex'; logoP.style.display='none'; mainP.style.display='none';
   walletBtn.style.display='none';
   if(!localStorage.getItem(KEY_TREE)) localStorage.setItem(KEY_TREE, JSON.stringify([]));
   if(!localStorage.getItem(KEY_TXN)) localStorage.setItem(KEY_TXN, JSON.stringify([]));
   if(!localStorage.getItem(KEY_BALANCES)) localStorage.setItem(KEY_BALANCES, JSON.stringify({}));
-  renderGraphicTree(); renderFullTreeList(); updateWalletUI(); renderTxns('my');
+  renderGraphicTree(); updateWalletUI(); renderTxns('my');
 });
 
 /* close menu when clicking outside */
-window.addEventListener('click', (e)=>{
-  if(!menuPanel.contains(e.target) && e.target !== walletBtn) { menuPanel.style.display='none'; menuPanel.setAttribute('aria-hidden','true'); }
-});
+window.addEventListener('click', (e)=>{ if(!menuPanel.contains(e.target) && e.target !== walletBtn) { menuPanel.style.display='none'; menuPanel.setAttribute('aria-hidden','true'); } });
 </script>
 </body>
 </html>

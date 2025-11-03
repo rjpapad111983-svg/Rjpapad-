@@ -1,395 +1,586 @@
 <!doctype html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RJ Papad — Login / Register / Wallet</title>
-  <style>
-    :root{--bg:#fff8dc;--accent:#ffb300;--card:#fff;--muted:#666}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Poppins",sans-serif;color:#222}
-    header{background:var(--accent);color:#fff;padding:12px 16px;position:relative}
-    header h1{margin:0;font-size:18px;text-align:center}
-    .menu-btn{position:absolute;left:12px;top:8px;background:transparent;border:none;color:#fff;font-size:24px;cursor:pointer}
-    .container{padding:18px;max-width:720px;margin:0 auto}
-    .panel{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin:18px 0}
-    .full-center{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:20px}
-    input[type="text"], input[type="tel"], input[type="number"]{width:100%;padding:12px;border-radius:8px;border:1px solid #ddd;margin:8px 0}
-    .btn{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
-    .small{font-size:13px;color:var(--muted)}
-    .sidebar{position:fixed;left:-280px;top:0;width:260px;height:100%;background:#fff;box-shadow:2px 0 14px rgba(0,0,0,0.12);transition:left .28s;padding-top:70px}
-    .sidebar.open{left:0}
-    .sidebar button{display:block;width:100%;padding:12px 18px;border:none;text-align:left;background:none;cursor:pointer;border-bottom:1px solid #f0f0f0}
-    .wallet-balance{font-size:20px;color:#d2691e;font-weight:700}
-    ul.requests{list-style:none;padding:0;margin:0}
-    .hidden{display:none}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RJ Papad - Demo MLM + Wallet</title>
+<style>
+  :root{
+    --accent:#ffb300;
+    --bg:#fff8dc;
+    --card:#ffffff;
+    --muted:#666;
+    --success:#2c7a2c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",Helvetica,Arial;"line-height":1.4;background:var(--bg);color:#222}
+  header{background:var(--accent);padding:12px 14px;color:#fff;position:sticky;top:0;display:flex;align-items:center;z-index:5}
+  .menu-btn{font-size:26px;margin-right:12px;cursor:pointer}
+  header h1{font-size:18px;margin:0;text-align:center;flex:1}
+  main{padding:18px;max-width:900px;margin:0 auto}
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(10,10,10,0.06);margin-bottom:18px}
+  input,button,select{font-size:15px;padding:10px;border-radius:8px;border:1px solid #ddd}
+  .row{display:flex;gap:8px;align-items:center}
+  .full{width:100%}
+  button.primary{background:var(--accent);border:none;color:#fff;padding:10px 16px;border-radius:8px}
+  button.ghost{background:#f0f0f0;border:none;color:#333;padding:8px 10px;border-radius:8px}
+  .big-amount{font-size:26px;color:#d2691e;font-weight:700}
+  .muted{color:var(--muted)}
+  .langbar{display:flex;gap:8px;margin-bottom:12px}
+  .langbar button{padding:8px 12px;border-radius:999px;border:1px solid #eee;background:#fff}
+  .banner{width:100%;border-radius:12px;overflow:hidden;margin-bottom:12px}
+  .banner img{width:100%;display:block}
+  /* side drawer */
+  .drawer{position:fixed;left:0;top:0;bottom:0;width:260px;background:#fff;box-shadow:2px 0 14px rgba(0,0,0,0.12);transform:translateX(-120%);transition:transform .25s;z-index:20;padding:18px}
+  .drawer.open{transform:translateX(0)}
+  .drawer h3{margin:0 0 12px 0}
+  .drawer button{display:block;width:100%;text-align:left;margin-bottom:8px}
+  /* login screen */
+  #screen-register{min-height:80vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px}
+  #logo-page{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10}
+  #logo-page.hidden{display:none}
+  #logo-page img{max-width:80%;height:auto;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+  .lang-small{font-size:14px;margin-top:12px}
+  .tree-node{padding:10px;border-radius:8px;background:#fff;margin:8px 0;display:flex;align-items:center;justify-content:space-between}
+  .node-left{display:flex;align-items:center;gap:10px}
+  .emoji{font-size:20px}
+  .plusbtn{border:2px solid #4aa3ff;border-radius:50%;width:36px;height:36px;background:#fff;color:#4aa3ff;display:flex;align-items:center;justify-content:center;font-weight:bold}
+  .small-ghost{padding:4px 8px;border-radius:6px;border:1px solid #ccc;background:#fff}
+  .note{font-size:13px;color:#777;margin-top:8px}
+  /* admin panel */
+  #adminPanel{display:none}
+  /* responsive */
+  @media(min-width:800px){main{padding:28px}}
+</style>
 </head>
 <body>
-
 <header>
-  <button id="menuBtn" class="menu-btn" onclick="toggleSidebar()" style="display:none">☰</button>
-  <h1 id="headerTitle">RJ Papad</h1>
+  <div class="menu-btn" id="menuBtn">☰</div>
+  <h1>RJ Papad</h1>
 </header>
 
-<!-- Sidebar / Menu -->
-<div id="sidebar" class="sidebar" aria-hidden="true">
-  <button onclick="openView('wallet')">💰 Wallet</button>
-  <button onclick="openView('team')">👥 My Team</button>
-  <button onclick="openAdminPrompt()">🔐 Admin (approve)</button>
-  <button onclick="logout()">🚪 Logout</button>
-  <button onclick="toggleSidebar()">❌ Close</button>
+<!-- Drawer / Menu -->
+<div class="drawer" id="drawer">
+  <h3>Menu</h3>
+  <div id="menuLoggedAs" class="muted" style="margin-bottom:10px"></div>
+  <button id="menuWalletBtn">💰 Wallet</button>
+  <button id="menuMyTeamBtn">🧑‍🤝‍🧑 My Team</button>
+  <button id="menuTreeBtn">🌳 MLM Tree</button>
+  <button id="menuOrderBtn">🛒 Place Order (simulate)</button>
+  <hr/>
+  <button id="menuAdminBtn">🔒 Admin</button>
+  <div style="height:20px"></div>
+  <button id="menuLogoutBtn">🚪 Logout</button>
 </div>
 
-<!-- REGISTER (full screen) -->
-<div id="registerScreen" class="full-center">
-  <div style="width:100%;max-width:420px">
-    <div class="panel">
-      <h2 style="margin-top:0">रजिस्टर करें</h2>
-      <p class="small">पहले रजिस्टर करें ताकि आप लॉयल्टी और वॉलेट उपयोग कर सकें।</p>
-      <input id="reg_name" type="text" placeholder="नाम (वैकल्पिक)">
-      <input id="reg_mobile" type="tel" placeholder="मोबाइल नंबर (अनिवार्य)">
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn" onclick="registerUser()">रजिस्टर करें</button>
-        <button class="btn" style="background:#999" onclick="showLogin()">Login</button>
+<!-- Logo / Intro fullscreen page -->
+<div id="logo-page">
+  <img id="logoImg" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="RJ Papad Logo" />
+  <div style="height:14px"></div>
+  <div class="langbar">
+    <button id="lang-hi">हिन्दी</button>
+    <button id="lang-en">English</button>
+    <button id="lang-gu">ગુજરાતી</button>
+  </div>
+  <div class="lang-small muted">बैनर और नीचे का कंटेंट भाषा के अनुसार बदल जाएगा</div>
+  <div style="height:24px"></div>
+  <button class="primary" id="logoHideBtn">जारी रखें / Continue</button>
+</div>
+
+<main id="app">
+
+  <!-- Register / Login screen (first load if not registered) -->
+  <section id="screen-register" class="card">
+    <h2 id="regTitle">रजिस्टर करें / Register</h2>
+    <div style="height:10px"></div>
+    <div style="width:100%;max-width:420px">
+      <label>नाम (Optional)</label>
+      <input id="name" placeholder="Name (optional)" />
+      <div style="height:8px"></div>
+      <label>मोबाइल नंबर (Required)</label>
+      <input id="mobile" placeholder="Mobile number (required)" />
+      <div style="height:8px"></div>
+      <label>Joined by (Refer / Parent mobile or blank)</label>
+      <input id="joined_mobile" placeholder="Joined by mobile (optional)" />
+      <div style="height:10px"></div>
+      <div class="row">
+        <button class="primary full" id="registerBtn">Register / Login</button>
+      </div>
+      <div id="regMsg" class="note"></div>
+    </div>
+  </section>
+
+  <!-- Main area (after login) -->
+  <section id="mainArea" style="display:none">
+    <!-- language banners -->
+    <div id="bannersWrap">
+      <div class="card">
+        <div class="langbar">
+          <button id="hiBtn">हिन्दी</button>
+          <button id="enBtn">English</button>
+          <button id="guBtn">ગુજરાતી</button>
+        </div>
+        <div class="banner" id="bannerImgWrap">
+          <img id="bannerImg" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png" alt="banner" />
+        </div>
+        <div id="bannerText" class="muted">RJ पापड़ — स्वाद में खास</div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- LOGIN screen -->
-<div id="loginScreen" class="full-center hidden">
-  <div style="width:100%;max-width:420px">
-    <div class="panel">
-      <h2 style="margin-top:0">Login</h2>
-      <p class="small">अपना मोबाइल नंबर दर्ज करें — यदि आपने पहले रजिस्टर किया है तो सीधे login होगा।</p>
-      <input id="login_mobile" type="tel" placeholder="मोबाइल नंबर">
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn" onclick="loginUser()">Login</button>
-        <button class="btn" style="background:#999" onclick="showRegister()">Register</button>
+    <!-- Wallet card -->
+    <div id="walletCard" class="card" style="display:none;max-width:640px">
+      <h3>My Wallet</h3>
+      <div class="big-amount" id="walletAmount">₹0</div>
+      <div class="muted" id="walletBank">HDFC Bank • demo@upi</div>
+      <div style="height:10px"></div>
+      <div class="row">
+        <input id="addAmountInp" placeholder="Add amount (₹)" />
+        <button class="primary" id="addAmountBtn">Add</button>
       </div>
+      <div style="height:10px"></div>
+      <button class="ghost" id="withdrawBtn">Withdraw (Request)</button>
+      <div id="walletNote" class="note">Withdraws processed by admin. 10% fee applies on withdraw.</div>
     </div>
-  </div>
-</div>
 
-<!-- LOGO / HOME (after login) -->
-<div id="homeScreen" class="container hidden">
-  <div class="panel" id="logoPanel" style="text-align:center;">
-    <!-- You can place your logo image here -->
-    <img id="topLogo" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="logo" style="max-width:100%;height:220px;object-fit:contain;border-radius:10px">
-    <h2 id="welcomeText">RJ पापड़ में आपका स्वागत है!</h2>
-    <p class="small">Menu खोलें — Wallet / My Team / Admin</p>
-    <div style="margin-top:12px">
-      <button class="btn" onclick="goToMain()">Proceed</button>
+    <!-- My Team -->
+    <div id="myTeamCard" class="card" style="display:none;max-width:640px">
+      <h3>My Team</h3>
+      <div id="teamList"></div>
     </div>
-  </div>
 
-  <!-- Wallet Panel -->
-  <div id="walletPanel" class="panel hidden">
-    <h3>My Wallet</h3>
-    <div class="wallet-balance" id="walletBalance">₹0</div>
-    <div class="small" id="bankText">(Bank/UPI not set)</div>
-    <div style="margin-top:12px">
-      <input id="addAmt" type="number" placeholder="Add amount (₹)" style="padding:8px;border-radius:8px;border:1px solid #ddd;width:160px">
-      <button class="btn" onclick="addMoney()">Add</button>
-      <button class="btn" style="background:#777;margin-left:8px" onclick="requestWithdraw()">Withdraw</button>
+    <!-- MLM Tree area -->
+    <div id="treeCard" class="card" style="display:none;max-width:900px">
+      <h3>MLM Tree (Visual)</h3>
+      <div id="treeCanvasWrap" style="min-height:180px"></div>
+      <div class="note">Click [+] on a member to expand their downline in the list view (My Team)</div>
     </div>
-    <div style="margin-top:12px" id="withdrawMsg" class="small"></div>
-  </div>
 
-  <!-- My Team -->
-  <div id="teamPanel" class="panel hidden">
-    <h3>My Team</h3>
-    <div id="myTeamContainer" class="small">My Team list will appear here (names only).</div>
-  </div>
+    <!-- Admin Panel (only visible to admin after password) -->
+    <div id="adminPanel" class="card" style="max-width:640px">
+      <h3>Admin Panel — Pending Withdrawals</h3>
+      <div class="small muted">Approve withdraws to mark as completed (demo).</div>
+      <ul id="withdrawRequests"></ul>
+    </div>
 
-  <!-- Admin Panel -->
-  <div id="adminPanel" class="panel hidden">
-    <h3>Admin Panel — Pending Withdraws</h3>
-    <div class="small">Only admin can approve/reject</div>
-    <ul class="requests" id="requestsList"></ul>
-  </div>
-</div>
+  </section>
+
+</main>
 
 <script>
-/* ========== CONFIG ========== */
+/*
+  RJ Papad single-file demo app
+  - Data stored in localStorage keys
+  - ADMIN password: Rjpapad@2025
+  - Banners: use provided raw GitHub URLs
+*/
+
+/* ========= CONFIG =========== */
 const ADMIN_PASSWORD = "Rjpapad@2025";
-const KEY_USERS = "rp_users_v1";
-const KEY_ME = "rp_me";
-const KEY_WITHDRAWS = "rp_withdraws_v1";
-const KEY_TREE = "rp_tree_v1";
-const SHEET_WEBHOOK_URL = ""; // <-- paste your Apps Script URL here if used
+const BANNER_HI = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
+const BANNER_EN = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
+const LOGO_IMG = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png";
+const COMMISSION_ON_ORDER = 50; // ₹ to credit to sponsor when order completed (demo)
+const STORAGE_USERS = "rp_users_v1";
+const STORAGE_ME = "rp_me";
+const STORAGE_TREE = "rp_tree_v1";
+const STORAGE_WITHDRAWS = "rp_withdraws_v1";
+const STORAGE_LANG = "rp_lang_v1";
 
-/* ========== UTIL ========== */
-function loadJSON(k,def){ try{const s=localStorage.getItem(k); return s?JSON.parse(s):def;}catch(e){return def;} }
-function saveJSON(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
-function nowISO(){ return (new Date()).toISOString(); }
+/* ========= UTIL =========== */
+function loadJSON(key, def){ try{ const s = localStorage.getItem(key); return s ? JSON.parse(s) : def;}catch(e){return def}}
+function saveJSON(key,obj){ localStorage.setItem(key, JSON.stringify(obj)) }
+function now(){ return (new Date()).toISOString() }
 
-/* ========== SHOW / HIDE SCREENS ========== */
-const regScreen = document.getElementById("registerScreen");
-const loginScreen = document.getElementById("loginScreen");
-const homeScreen = document.getElementById("homeScreen");
-const menuBtn = document.getElementById("menuBtn");
-const headerTitle = document.getElementById("headerTitle");
-function showRegister(){ regScreen.classList.remove("hidden"); loginScreen.classList.add("hidden"); homeScreen.classList.add("hidden"); menuBtn.style.display='none'; headerTitle.textContent='RJ Papad — Register'; }
-function showLogin(){ regScreen.classList.add("hidden"); loginScreen.classList.remove("hidden"); homeScreen.classList.add("hidden"); menuBtn.style.display='none'; headerTitle.textContent='RJ Papad — Login'; }
-function showHome(){ regScreen.classList.add("hidden"); loginScreen.classList.add("hidden"); homeScreen.classList.remove("hidden"); menuBtn.style.display='inline-block'; headerTitle.textContent='RJ Papad'; }
-function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("open"); }
-function openView(name){
-  document.getElementById("walletPanel").classList.add("hidden");
-  document.getElementById("teamPanel").classList.add("hidden");
-  document.getElementById("adminPanel").classList.add("hidden");
-  if(name==="wallet") document.getElementById("walletPanel").classList.remove("hidden");
-  if(name==="team"){ document.getElementById("teamPanel").classList.remove("hidden"); renderMyTeamList(); }
-  if(name==="admin") document.getElementById("adminPanel").classList.remove("hidden");
-  document.getElementById("sidebar").classList.remove("open");
+/* ========= DATA HELPERS =========== */
+let users = loadJSON(STORAGE_USERS, {}); // map mobile -> {mobile,name,balance,parent,children:[]}
+let tree = loadJSON(STORAGE_TREE, {}); // same as users structure for quick tree
+let me = loadJSON(STORAGE_ME, null); // {mobile,name}
+let withdraws = loadJSON(STORAGE_WITHDRAWS, []);
+let currentLang = loadJSON(STORAGE_LANG, "hi");
+
+/* ensure keys exist */
+if(!users) users = {};
+if(!tree) tree = {};
+if(!withdraws) withdraws = [];
+
+/* ========= UI refs =========== */
+const drawer = document.getElementById('drawer');
+const menuBtn = document.getElementById('menuBtn');
+const menuWalletBtn = document.getElementById('menuWalletBtn');
+const menuMyTeamBtn = document.getElementById('menuMyTeamBtn');
+const menuTreeBtn = document.getElementById('menuTreeBtn');
+const menuOrderBtn = document.getElementById('menuOrderBtn');
+const menuAdminBtn = document.getElementById('menuAdminBtn');
+const menuLogoutBtn = document.getElementById('menuLogoutBtn');
+const menuLoggedAs = document.getElementById('menuLoggedAs');
+
+const logoPage = document.getElementById('logo-page');
+const logoImg = document.getElementById('logoImg');
+const logoHideBtn = document.getElementById('logoHideBtn');
+
+const registerScreen = document.getElementById('screen-register');
+const mainArea = document.getElementById('mainArea');
+const registerBtn = document.getElementById('registerBtn');
+const regMsg = document.getElementById('regMsg');
+
+const bannerImg = document.getElementById('bannerImg');
+const bannerText = document.getElementById('bannerText');
+const bannersWrap = document.getElementById('bannersWrap');
+
+const walletCard = document.getElementById('walletCard');
+const walletAmount = document.getElementById('walletAmount');
+const walletBank = document.getElementById('walletBank');
+const addAmountInp = document.getElementById('addAmountInp');
+const addAmountBtn = document.getElementById('addAmountBtn');
+const withdrawBtn = document.getElementById('withdrawBtn');
+
+const myTeamCard = document.getElementById('myTeamCard');
+const teamList = document.getElementById('teamList');
+
+const treeCard = document.getElementById('treeCard');
+const treeCanvasWrap = document.getElementById('treeCanvasWrap');
+
+const adminPanel = document.getElementById('adminPanel');
+const withdrawRequests = document.getElementById('withdrawRequests');
+
+const registerNameInp = document.getElementById('name');
+const registerMobileInp = document.getElementById('mobile');
+const registerJoinedInp = document.getElementById('joined_mobile');
+
+const hiBtn = document.getElementById('hiBtn');
+const enBtn = document.getElementById('enBtn');
+const guBtn = document.getElementById('guBtn');
+const langHi = document.getElementById('lang-hi');
+const langEn = document.getElementById('lang-en');
+const langGu = document.getElementById('lang-gu');
+
+/* ======= Startup display logic ======== */
+function saveAll(){
+  saveJSON(STORAGE_USERS, users);
+  saveJSON(STORAGE_TREE, tree);
+  saveJSON(STORAGE_ME, me);
+  saveJSON(STORAGE_WITHDRAWS, withdraws);
+  saveJSON(STORAGE_LANG, currentLang);
 }
 
-/* ========== USER STORAGE ========== */
-function ensureUsers(){
-  let users = loadJSON(KEY_USERS, {});
-  if(Object.keys(users).length===0){
-    // create demo user(s)
-    users["9999999999"] = { mobile:"9999999999", name:"Demo User", balance:1500, bank:{name:"HDFC Bank", upi:"demo@upi"}, created: nowISO() };
-    saveJSON(KEY_USERS, users);
+function showRegisterIfNeeded(){
+  if(!me){
+    registerScreen.style.display = "flex";
+    mainArea.style.display = "none";
+    logoPage.classList.remove('hidden');
+  } else {
+    registerScreen.style.display = "none";
+    mainArea.style.display = "block";
+    menuLoggedAs.innerText = "Logged as: " + (me.name ? me.name + " • " + me.mobile : me.mobile);
+    // show logo page first (per flow)
+    logoPage.classList.remove('hidden');
+    updateWalletUI();
+    renderTeamList();
+    renderWithdrawRequests();
+    renderTreeVisual();
   }
 }
-ensureUsers();
+showRegisterIfNeeded();
 
-function registerUser(){
-  const name = (document.getElementById("reg_name").value || "").trim();
-  const mobile = (document.getElementById("reg_mobile").value || "").trim();
-  if(!mobile){ alert("कृपया मोबाइल नंबर दर्ज करें"); return; }
-  // save user
-  const users = loadJSON(KEY_USERS, {});
-  if(users[mobile]){ alert("Mobile already registered. Please login."); showLogin(); return; }
-  users[mobile] = { mobile, name: name || ("User"+mobile.slice(-4)), balance:0, bank:null, created: nowISO() };
-  saveJSON(KEY_USERS, users);
-  // mark registered and auto-login
-  localStorage.setItem(KEY_ME, mobile);
-  alert("रजिस्टर सफल! आप लॉग इन हो गये हैं।");
-  showHome(); renderWallet(); renderRequests();
+/* ========= Drawer toggle ========== */
+menuBtn.addEventListener('click', ()=> drawer.classList.toggle('open'));
+document.getElementById('menuLogoutBtn').addEventListener('click', ()=> {
+  // logout -> clear me and reload to register page
+  me = null;
+  saveAll();
+  showRegisterIfNeeded();
+  drawer.classList.remove('open');
+});
+
+/* ========= Logo page behavior ========= */
+logoImg.src = LOGO_IMG;
+document.getElementById('logoHideBtn').addEventListener('click', ()=> {
+  logoPage.classList.add('hidden'); // hide logo page -> user sees banners/wallet etc
+});
+logoImg.addEventListener('click', ()=> {
+  // also hide on clicking image
+  logoPage.classList.add('hidden');
+});
+
+/* ========= Language buttons ========= */
+function applyLanguage(lang){
+  currentLang = lang;
+  // banner and text
+  if(lang==="hi"){ bannerImg.src = BANNER_HI; bannerText.innerText = "RJ पापड़ — स्वाद में खास"; }
+  if(lang==="en"){ bannerImg.src = BANNER_EN; bannerText.innerText = "RJ Papad — Homemade taste"; }
+  if(lang==="gu"){ bannerImg.src = BANNER_HI; bannerText.innerText = "RJ પાપડ — સ્વાદમાં ખાસ"; } // used same banner if not available
+  saveAll();
 }
+hiBtn.addEventListener('click', ()=> applyLanguage('hi'));
+enBtn.addEventListener('click', ()=> applyLanguage('en'));
+guBtn.addEventListener('click', ()=> applyLanguage('gu'));
+langHi.addEventListener('click', ()=> applyLanguage('hi'));
+langEn.addEventListener('click', ()=> applyLanguage('en'));
+langGu.addEventListener('click', ()=> applyLanguage('gu'));
+applyLanguage(currentLang);
 
-function loginUser(){
-  const mobile = (document.getElementById("login_mobile").value || "").trim();
-  if(!mobile){ alert("कृपया मोबाइल नंबर दर्ज करें"); return; }
-  const users = loadJSON(KEY_USERS, {});
-  if(!users[mobile]){ 
-    if(confirm("यह नंबर रजिस्टर नहीं है। क्या आप रजिस्टर करना चाहते हैं?")){ document.getElementById("reg_mobile").value = mobile; showRegister(); }
+/* ========= Registration / Login logic ========= */
+registerBtn.addEventListener('click', async ()=> {
+  const name = registerNameInp.value.trim();
+  const mobile = registerMobileInp.value.trim();
+  const joined = registerJoinedInp.value.trim();
+  if(!mobile){ regMsg.innerText = "कृपया मोबाइल नंबर दर्ज करें!"; return; }
+  // if user exists -> login
+  if(users[mobile]){
+    me = { mobile: mobile, name: users[mobile].name || "" };
+    saveAll();
+    regMsg.innerText = "Login successful.";
+    showRegisterIfNeeded();
     return;
   }
-  // set logged in
-  localStorage.setItem(KEY_ME, mobile);
-  alert("Login successful");
-  showHome(); renderWallet(); renderRequests();
-}
+  // create user
+  users[mobile] = { mobile, name: name || "", balance: 0, parent: null, children: [] };
+  // if joined provided and parent exists -> insert into binary slot
+  if(joined && users[joined]){
+    let parent = users[joined];
+    // push to children; simple binary fill: left (index 0) then right (1). If >2 then appended to children list.
+    if(!parent.children) parent.children = [];
+    parent.children.push(mobile);
+    users[mobile].parent = joined;
+  }
+  // save and set me
+  me = { mobile, name: name || "" };
+  saveAll();
+  regMsg.innerText = "Registered. Welcome!";
+  showRegisterIfNeeded();
+});
 
-/* ========== WALLET ========== */
-function getMe(){ return localStorage.getItem(KEY_ME); }
-function getUser(mob){ const u = loadJSON(KEY_USERS, {}); return u[mob]||null; }
-function saveUser(u){ const users = loadJSON(KEY_USERS, {}); users[u.mobile]=u; saveJSON(KEY_USERS, users); }
-
-function renderWallet(){
-  const me = getMe();
+/* ========= Wallet UI & actions ========= */
+function updateWalletUI(){
   if(!me) return;
-  const user = getUser(me);
-  if(!user) return;
-  document.getElementById("walletBalance").textContent = "₹" + (user.balance || 0);
-  document.getElementById("bankText").textContent = user.bank? `${user.bank.name} • ${user.bank.upi || user.bank.account}` : "(Bank/UPI not set)";
+  const u = users[me.mobile] || {balance:0,name:me.name||""};
+  walletAmount.innerText = "₹" + (u.balance || 0);
+  walletBank.innerText = (u.bank || "HDFC Bank") + " • " + (u.upi || "demo@upi");
+  walletCard.style.display = "block";
 }
+addAmountBtn.addEventListener('click', ()=> {
+  if(!me){ alert("Please login/register"); return; }
+  const amt = parseFloat(addAmountInp.value||0);
+  if(!amt || amt<=0){ alert("Enter valid amount"); return; }
+  users[me.mobile].balance = (users[me.mobile].balance||0) + amt;
+  saveAll(); updateWalletUI(); addAmountInp.value="";
+  alert("Amount added (demo).");
+});
+withdrawBtn.addEventListener('click', ()=> {
+  if(!me){ alert("Please login/register"); return; }
+  const u = users[me.mobile];
+  if((u.balance||0) <= 0){ alert("No balance"); return; }
+  const want = prompt("Enter withdraw amount (₹). 10% fee will be deducted.");
+  const amount = parseFloat(want);
+  if(!amount || amount<=0){ alert("Invalid"); return; }
+  if(amount > u.balance){ alert("Not enough balance"); return; }
+  // deduct immediately? We'll mark as pending and deduct hold
+  const fee = Math.round(amount * 0.10);
+  const afterFee = amount - fee;
+  // Reduce user's available balance now
+  u.balance = Math.round((u.balance - amount) * 100)/100;
+  // create withdraw request
+  const req = { id: "wd_"+Date.now(), mobile: me.mobile, amount, fee, afterFee, status:"pending", created: now() };
+  withdraws.push(req);
+  saveAll(); updateWalletUI(); renderWithdrawRequests();
+  alert("Withdraw requested. Admin will approve.");
+});
 
-/* add money (demo) */
-function addMoney(){
-  const v = Number(document.getElementById("addAmt").value || 0);
-  if(!v || v<=0){ alert("सही राशि डालिए"); return; }
-  const me = getMe();
-  const user = getUser(me);
-  user.balance = (user.balance||0) + v;
-  saveUser(user);
-  renderWallet();
-  alert("₹"+v+" added");
-}
-
-/* withdraw flow (creates request) */
-function loadWithdrawals(){ return loadJSON(KEY_WITHDRAWS, []); }
-function saveWithdrawals(arr){ saveJSON(KEY_WITHDRAWS, arr); }
-function createWithdrawRequest(mobile, amount){
-  const arr = loadWithdrawals();
-  const id = "w"+Date.now();
-  const fee = Math.round(amount*0.10);
-  const after = amount - fee;
-  const obj = { id, mobile, amount, fee, after, status:"Pending", created: nowISO(), adminNote:"" };
-  arr.unshift(obj);
-  saveWithdrawals(arr);
-  // deduct now
-  const u = getUser(mobile);
-  u.balance = (u.balance||0) - amount;
-  saveUser(u);
-  renderWallet();
-  renderRequests();
-  maybeLogSheet({action:"withdraw_request", data:obj});
-  alert("Withdraw request created (Pending). Admin will approve.");
-}
-
-function requestWithdraw(){
-  const me = getMe();
-  const user = getUser(me);
-  const v = Number(prompt("Enter amount to withdraw (₹):", "100"));
-  if(!v || v<=0){ alert("Invalid amount"); return; }
-  if(v > (user.balance||0)){ alert("Insufficient balance"); return; }
-  if(!user.bank || (!user.bank.upi && !user.bank.account)){ alert("Bank/UPI details missing. Please edit bank first."); return; }
-  createWithdrawRequest(me, v);
-}
-
-/* render pending requests (admin view) */
-function renderRequests(){
-  const list = document.getElementById("requestsList");
-  const arr = loadWithdrawals();
-  list.innerHTML = "";
-  if(!arr.length){ list.innerHTML = "<li class='small'>No pending requests</li>"; return; }
-  arr.forEach(req=>{
-    const li = document.createElement("li");
-    li.style.marginBottom = "10px";
-    li.innerHTML = `<div><strong>${getUser(req.mobile)?.name || req.mobile}</strong> • ₹${req.amount} <div class="small">After 10%: ₹${req.after} • ${new Date(req.created).toLocaleString()}</div><div class="small">Status: ${req.status}</div></div>`;
-    const actions = document.createElement("div");
-    actions.style.marginTop = "8px";
-    if(req.status==="Pending"){
-      const a = document.createElement("button"); a.className="btn"; a.textContent="Approve"; a.onclick = ()=> adminApprove(req.id);
-      const r = document.createElement("button"); r.className="btn"; r.style.background="#999"; r.textContent="Reject"; r.onclick = ()=> adminReject(req.id);
-      actions.appendChild(a); actions.appendChild(r);
-    } else {
-      const s = document.createElement("div"); s.className="small"; s.textContent = "Processed";
-      actions.appendChild(s);
-    }
-    li.appendChild(actions);
-    list.appendChild(li);
+/* ========= My Team (list) ========= */
+function renderTeamList(){
+  if(!me) return;
+  myTeamCard.style.display = "block";
+  teamList.innerHTML = "";
+  const root = me.mobile;
+  // We'll render only downline of me (one level + expandable via saveExpanded)
+  const nodes = loadTreeNodes(root);
+  nodes.forEach((m)=> {
+    const el = document.createElement('div');
+    el.className = "tree-node";
+    const left = document.createElement('div'); left.className = "node-left";
+    const emoji = document.createElement('div'); emoji.className="emoji"; emoji.innerText = (users[m] && users[m].name && users[m].name.toLowerCase().includes("a")? "👩":"👨");
+    const nm = document.createElement('div'); nm.innerText = (users[m] && users[m].name) ? users[m].name : m;
+    left.appendChild(emoji); left.appendChild(nm);
+    const right = document.createElement('div');
+    const plus = document.createElement('button'); plus.className="plusbtn"; plus.innerText="+";
+    plus.addEventListener('click', ()=> { // expand this node's children in-place
+      toggleNodeExpand(m, el);
+    });
+    right.appendChild(plus);
+    el.appendChild(left); el.appendChild(right);
+    teamList.appendChild(el);
   });
-  renderWallet();
+}
+function loadTreeNodes(root){
+  // return immediate children of root (for demo show two nodes)
+  const u = users[root];
+  if(!u) return [];
+  return (u.children && u.children.slice(0)) || [];
+}
+function toggleNodeExpand(mobileId, containerEl){
+  // If already expanded, collapse; else expand and show that user's children
+  const expanded = containerEl._expanded;
+  if(expanded){
+    // remove children nodes
+    const childs = containerEl.querySelectorAll('.child-node');
+    childs.forEach(n=>n.remove());
+    containerEl._expanded = false;
+  } else {
+    const kids = users[mobileId] && users[mobileId].children ? users[mobileId].children : [];
+    kids.forEach(k=>{
+      const c = document.createElement('div'); c.className='child-node'; c.style.padding="8px 12px"; c.style.marginTop="6px";
+      c.style.background="#fafafa"; c.style.borderRadius="8px";
+      c.innerText = (users[k] && users[k].name) ? users[k].name : k;
+      containerEl.appendChild(c);
+    });
+    containerEl._expanded = true;
+  }
 }
 
-/* ========== ADMIN ========== */
-function openAdminPrompt(){
+/* ========= MLM Tree visual (simple) ========= */
+function renderTreeVisual(){
+  // Simple: show root card and two children if present
+  treeCard.style.display = "block";
+  treeCanvasWrap.innerHTML = "";
+  if(!me) return;
+  const root = me.mobile;
+  const rootNode = users[root];
+  const wrapper = document.createElement('div'); wrapper.style.display="flex"; wrapper.style.gap="24px"; wrapper.style.justifyContent="center"; wrapper.style.alignItems="flex-start";
+  const rootCard = createNodeCard(root);
+  wrapper.appendChild(rootCard);
+  const children = (rootNode && rootNode.children) ? rootNode.children : [];
+  const left = children[0];
+  const right = children[1];
+  const box = document.createElement('div'); box.style.display="flex"; box.style.gap="14px"; box.style.justifyContent="center"; box.style.marginTop="20px";
+  if(left) box.appendChild(createNodeCard(left));
+  else box.appendChild(createEmptySlot(root,"left"));
+  if(right) box.appendChild(createNodeCard(right));
+  else box.appendChild(createEmptySlot(root,"right"));
+  treeCanvasWrap.appendChild(wrapper);
+  treeCanvasWrap.appendChild(box);
+}
+function createNodeCard(mobile){
+  const node = document.createElement('div'); node.className='card'; node.style.minWidth='180px'; node.style.textAlign="left";
+  const title = document.createElement('div'); title.style.fontWeight="700"; title.innerText = (users[mobile] && users[mobile].name) ? users[mobile].name : mobile;
+  const row = document.createElement('div'); row.style.marginTop="10px"; row.style.display="flex"; row.style.justifyContent="space-between"; row.style.alignItems="center";
+  const info = document.createElement('div'); info.className='muted'; info.innerText = "ID: " + mobile;
+  const plus = document.createElement('button'); plus.className='plusbtn'; plus.innerText='+';
+  plus.addEventListener('click', ()=> {
+    // Open register screen prefilling joined_mobile
+    drawer.classList.remove('open');
+    registerScreen.style.display = 'flex';
+    mainArea.style.display = 'none';
+    registerJoinedInp.value = mobile;
+    logoPage.classList.add('hidden');
+  });
+  row.appendChild(info); row.appendChild(plus);
+  node.appendChild(title); node.appendChild(row);
+  return node;
+}
+function createEmptySlot(parent, side){
+  const node = document.createElement('div'); node.className='card'; node.style.minWidth='180px'; node.style.textAlign="center";
+  const p = document.createElement('div'); p.className='muted'; p.style.marginBottom='12px'; p.innerText = "Empty slot";
+  const btn = document.createElement('button'); btn.className='primary'; btn.innerText = "Join here";
+  btn.addEventListener('click', ()=> {
+    // prefill register with parent mobile
+    registerScreen.style.display='flex';
+    mainArea.style.display='none';
+    registerJoinedInp.value = parent;
+    logoPage.classList.add('hidden');
+    drawer.classList.remove('open');
+  });
+  node.appendChild(p); node.appendChild(btn);
+  return node;
+}
+
+/* ========= Orders (simulate) ========= */
+menuOrderBtn.addEventListener('click', ()=> {
+  drawer.classList.remove('open');
+  if(!me){ alert("Please login/register"); return; }
+  const confirmOrder = confirm("Simulate an order for ₹500? This will credit commission to your sponsor.");
+  if(!confirmOrder) return;
+  // credit commission to parent
+  const parentMobile = users[me.mobile] && users[me.mobile].parent;
+  if(parentMobile && users[parentMobile]){
+    users[parentMobile].balance = (users[parentMobile].balance||0) + COMMISSION_ON_ORDER;
+    saveAll();
+    alert("Order completed. Commission credited to sponsor: ₹" + COMMISSION_ON_ORDER);
+    updateWalletUI();
+    renderTeamList();
+  } else {
+    alert("Order completed. No sponsor found to credit commission.");
+  }
+});
+
+/* ========= ADMIN PANEL ========= */
+menuAdminBtn.addEventListener('click', ()=> {
+  drawer.classList.remove('open');
   const pwd = prompt("Enter admin password:");
   if(!pwd) return;
-  if(pwd === ADMIN_PASSWORD){
-    toggleSidebar();
-    document.getElementById("adminPanel").classList.remove("hidden");
-    document.getElementById("walletPanel").classList.add("hidden");
-    document.getElementById("teamPanel").classList.add("hidden");
-    renderRequests();
-    alert("Admin access granted");
-  } else {
-    alert("Wrong password");
-  }
-}
-
-function adminApprove(id){
-  if(!confirm("Approve this withdraw request? (Admin must do manual payout)")) return;
-  const arr = loadWithdrawals();
-  const idx = arr.findIndex(x=>x.id===id);
-  if(idx===-1) return alert("Not found");
-  const req = arr[idx];
-  req.status = "Approved";
-  req.adminNote = prompt("Txn ID / Note (optional):","") || "";
-  req.processedAt = nowISO();
-  saveWithdrawals(arr);
-  maybeLogSheet({action:"withdraw_approve", data:req});
-  renderRequests();
-  alert("Marked Approved. कृपया अब बैंक/UPI से पेमेंट करें।");
-}
-
-function adminReject(id){
-  if(!confirm("Reject and refund to user?")) return;
-  const arr = loadWithdrawals();
-  const idx = arr.findIndex(x=>x.id===id);
-  if(idx===-1) return alert("Not found");
-  const req = arr[idx];
-  // refund
-  const u = getUser(req.mobile);
-  u.balance = (u.balance||0) + req.amount;
-  saveUser(u);
-  req.status = "Rejected";
-  req.processedAt = nowISO();
-  saveWithdrawals(arr);
-  maybeLogSheet({action:"withdraw_reject", data:req});
-  renderRequests();
-  alert("Rejected and refunded.");
-}
-
-/* ========== MY TEAM (simple) ========== */
-function renderMyTeamList(){
-  let nodes = loadJSON(KEY_TREE, null);
-  if(!nodes){
-    nodes = [
-      {id:"root", name:"Rajesh parmar", parent:null, gender:"M"},
-      {id:"n1", name:"Maan", parent:"root", gender:"M"},
-      {id:"n2", name:"Bhavna", parent:"root", gender:"F"}
-    ];
-    saveJSON(KEY_TREE, nodes);
-  }
-  const container = document.getElementById("myTeamContainer");
-  let html = "<ul style='list-style:none;padding-left:0;margin:0'>";
-  nodes.filter(n=>n.parent==="root").forEach(ch=>{
-    html += `<li style="margin:8px 0">${ch.gender==='F'?'👩':'👨'} ${ch.name} <button onclick="toggleExpand('${ch.id}')" style="margin-left:8px">[+]</button><div id="children_${ch.id}" style="margin-left:18px"></div></li>`;
-  });
-  html += "</ul>";
-  container.innerHTML = html;
-}
-function toggleExpand(id){
-  const nodes = loadJSON(KEY_TREE, []);
-  const children = nodes.filter(n=>n.parent===id);
-  const target = document.getElementById("children_"+id);
-  if(!target) return;
-  if(target.innerHTML.trim()!==""){ target.innerHTML=""; return; }
-  let html = "<ul style='list-style:none;padding-left:6px'>";
-  children.forEach(c=> html += `<li style="margin:6px 0">${c.gender==='F'?'👩':'👨'} ${c.name}</li>`);
-  html += "</ul>";
-  target.innerHTML = html;
-}
-
-/* ========== LOGGING (optional) ========== */
-async function maybeLogSheet(payload){
-  if(!SHEET_WEBHOOK_URL) return;
-  try{
-    await fetch(SHEET_WEBHOOK_URL, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
-  }catch(e){ console.warn("sheet log failed", e); }
-}
-
-/* ========== BOOTSTRAP / ENTRY ========== */
-function logout(){
-  localStorage.removeItem(KEY_ME);
-  document.getElementById("sidebar").classList.remove("open");
-  menuBtn.style.display='none';
-  showLogin();
-}
-
-function goToMain(){
-  // after pressing Proceed on logo/homeScreen go to main container
-  document.getElementById("logoPanel").classList.add("hidden");
-  document.getElementById("walletPanel").classList.remove("hidden");
-}
-
-function init(){
-  // if user logged in -> show home screen; else if mobile registered -> show login else show register
-  const logged = localStorage.getItem(KEY_ME);
-  const users = loadJSON(KEY_USERS, {});
-  menuBtn.style.display = 'none';
-  if(logged && users[logged]){
-    // user logged in
-    showHome(); renderWallet(); renderRequests();
-  } else {
-    // if any mobile present in users? show login, else show register
-    const allMobiles = Object.keys(users||{});
-    if(allMobiles.length>0){
-      showLogin();
-      document.getElementById("login_mobile").value = allMobiles[0]; // optional prefilling
+  if(pwd !== ADMIN_PASSWORD){ alert("Wrong password"); return; }
+  adminPanel.style.display = 'block';
+  renderWithdrawRequests();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+function renderWithdrawRequests(){
+  withdrawRequests.innerHTML = "";
+  withdraws.forEach(r=>{
+    const li = document.createElement('li'); li.style.listStyle='none'; li.style.marginBottom='10px';
+    const wrapper = document.createElement('div'); wrapper.style.display='flex'; wrapper.style.justifyContent='space-between'; wrapper.style.alignItems='center';
+    const left = document.createElement('div'); left.innerHTML = `<strong>${r.mobile}</strong> requested ₹${r.amount} (fee ₹${r.fee}) — <span class="muted">${r.status}</span>`;
+    const right = document.createElement('div');
+    if(r.status === "pending"){
+      const approve = document.createElement('button'); approve.className='primary'; approve.innerText='Approve';
+      approve.addEventListener('click', ()=> {
+        r.status = 'approved';
+        r.approvedAt = now();
+        saveAll();
+        alert('Request approved (demo). Please transfer externally.');
+        renderWithdrawRequests();
+      });
+      right.appendChild(approve);
     } else {
-      showRegister();
+      right.innerText = "✅ " + r.status;
     }
-  }
+    wrapper.appendChild(left); wrapper.appendChild(right);
+    li.appendChild(wrapper);
+    withdrawRequests.appendChild(li);
+  });
 }
-init();
+
+/* ========= Withdraw requests render for admin initial ========= */
+renderWithdrawRequests();
+
+/* ========= Menu actions ========= */
+menuWalletBtn.addEventListener('click', ()=> { drawer.classList.remove('open'); showSection('wallet'); });
+menuMyTeamBtn.addEventListener('click', ()=> { drawer.classList.remove('open'); showSection('team'); });
+menuTreeBtn.addEventListener('click', ()=> { drawer.classList.remove('open'); showSection('tree'); });
+function showSection(s){
+  walletCard.style.display='none'; myTeamCard.style.display='none'; treeCard.style.display='none'; adminPanel.style.display='none';
+  if(s==='wallet') { walletCard.style.display='block'; updateWalletUI(); }
+  if(s==='team') { myTeamCard.style.display='block'; renderTeamList(); }
+  if(s==='tree') { treeCard.style.display='block'; renderTreeVisual(); }
+}
+
+/* ========= Persist and initial render ========= */
+saveAll();
+if(me) showRegisterIfNeeded();
+
+/* ========= Extras: ensure public demo data for visualization if none ========= */
+if(!me && Object.keys(users).length===0){
+  // create demo users for visualization only
+  users["9990000001"] = {mobile:"9990000001", name:"Rajesh parmar", balance:1500, parent:null, children:["9990000002","9990000003"]};
+  users["9990000002"] = {mobile:"9990000002", name:"Maan", balance:200, parent:"9990000001", children:[]};
+  users["9990000003"] = {mobile:"9990000003", name:"Bhavna", balance:100, parent:"9990000001", children:[]};
+  saveAll();
+}
+
+/* save on unload */
+window.addEventListener('beforeunload', ()=> saveAll());
+
+/* small helpers for debugging in console (optional) */
+window.RP = {users, saveAll, renderTeamList, renderTreeVisual, updateWalletUI, withdraws};
 </script>
+
 </body>
 </html>

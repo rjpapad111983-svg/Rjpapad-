@@ -225,7 +225,14 @@ function persistAll(){ save(KEY_USERS, users); save(KEY_ME, me); save(KEY_WDS, w
 setInterval(persistAll,2000);
 
 /* ========== UI refs ========== */
-const menuToggle = document.getElementById('menuToggle'), drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
+const menuToggle = document.getElementById('menuToggle');
+menuToggle.onclick = () => {
+  drawer.classList.toggle('open');
+  
+  // 👇 नया कोड जोड़े
+  hideAll(); // पहले बाकी सब छिपाओ
+  walletArea.classList.remove('hidden'); // फिर वॉलेट दिखाओ
+};
 menuToggle.onclick = ()=>{ drawer.classList.toggle('open'); overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none'; };
 overlay.onclick = ()=>{ drawer.classList.remove('open'); overlay.style.display='none'; };
 

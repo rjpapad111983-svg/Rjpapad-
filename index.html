@@ -29,6 +29,7 @@ button.ghost{background:#f5f5f5;border:none}
 .logo-top{display:flex;justify-content:center;margin-bottom:12px;}
 .logo-top img{max-width:160px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.15);}
 pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;border-radius:8px;border:1px solid #eee}
+@media(min-width:900px){.logo-top img{max-width:220px}}
 </style>
 </head>
 <body>
@@ -107,7 +108,17 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
       <button id="en" class="langBtn">English</button>
       <button id="gu" class="langBtn">ગુજરાતી</button>
     </div>
-    <div class="banner"><img id="bannerImg" src="" alt="Banner"></div>
+
+    <!-- First banner -->
+    <div class="banner" style="margin-bottom:12px">
+      <img id="bannerImg" src="" alt="Primary banner">
+    </div>
+
+    <!-- Second banner (as requested) -->
+    <div class="banner">
+      <img id="bannerImg2" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Secondary banner">
+    </div>
+
     <h3 id="homeTitle">RJ पापड़ — Welcome</h3>
     <p class="small">Use menu to open Wallet / My Team / MLM Tree.</p>
   </div>
@@ -152,48 +163,139 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
 const ADMIN_PWD = "Rjpapad@2025";
 const BANNER_HI = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
 const BANNER_EN = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
+const SECOND_BANNER_DEFAULT = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 const KEY_USERS="rp_users_v5",KEY_ME="rp_me_v5",KEY_WDS="rp_withdraws_v5",KEY_LANG="rp_lang_v5";
 function load(k,d){try{let v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
 let users=load(KEY_USERS,{}),me=load(KEY_ME,null),withdraws=load(KEY_WDS,[]),lang=localStorage.getItem(KEY_LANG)||"hi";
 function persist(){save(KEY_USERS,users);save(KEY_ME,me);save(KEY_WDS,withdraws);localStorage.setItem(KEY_LANG,lang)}
 setInterval(persist,2000);
+
+/* UI refs */
 const authCard=document.getElementById('authCard'),authTitle=document.getElementById('authTitle'),
 fullRegister=document.getElementById('fullRegisterBlock'),loginOnly=document.getElementById('loginOnlyBlock'),
 regName=document.getElementById('reg_name'),regMobile=document.getElementById('reg_mobile'),regParent=document.getElementById('reg_parent'),
 registerBtn=document.getElementById('registerBtn'),cancelBtn=document.getElementById('registerCancelBtn'),
 loginOnlyBtn=document.getElementById('loginOnlyBtn'),loginMobile=document.getElementById('login_mobile'),
 showRegisterForJoinBtn=document.getElementById('showRegisterForJoinBtn'),authMsg=document.getElementById('authMsg');
-const homeArea=document.getElementById('homeArea'),walletArea=document.getElementById('walletArea'),teamArea=document.getElementById('teamArea'),treeArea=document.getElementById('treeArea'),adminArea=document.getElementById('adminArea');
-const bannerImg=document.getElementById('bannerImg'),homeTitle=document.getElementById('homeTitle');
-function setLang(l){lang=l;localStorage.setItem(KEY_LANG,l);if(l==='hi'){bannerImg.src=BANNER_HI;homeTitle.innerText='RJ पापड़ — आपका स्वागत'}else if(l==='en'){bannerImg.src=BANNER_EN;homeTitle.innerText='RJ Papad — Welcome'}else{bannerImg.src=BANNER_HI;homeTitle.innerText='RJ પાપડ — Welcome'}persist();}
-document.querySelectorAll('.langBtn').forEach(b=>b.onclick=()=>setLang(b.id));
-function showAuth(){authMsg.innerText='';if(Object.keys(users).length===0){fullRegister.classList.remove('hidden');loginOnly.classList.add('hidden');authTitle.innerText='Register (first user)';}else{fullRegister.classList.add('hidden');loginOnly.classList.remove('hidden');authTitle.innerText='Login';}
-if(me){openHome();}}
-registerBtn.onclick=()=>{let n=regName.value.trim(),m=regMobile.value.trim(),p=regParent.value.trim();if(!m)return authMsg.innerText='मोबाइल जरूरी';if(users[m])return authMsg.innerText='Already exists';users[m]={mobile:m,name:n||m,balance:0,parent:null,children:[]};if(p&&users[p]){users[m].parent=p;users[p].children.push(m);}me={mobile:m,name:users[m].name};persist();openHome();}
-cancelBtn.onclick=()=>{showAuth();}
-loginOnlyBtn.onclick=()=>{let m=loginMobile.value.trim();if(!m)return authMsg.innerText='मोबाइल डालें';if(users[m]){me={mobile:m,name:users[m].name};persist();openHome();}else authMsg.innerText='User नहीं मिला';}
-showRegisterForJoinBtn.onclick=()=>{fullRegister.classList.remove('hidden');loginOnly.classList.add('hidden');authTitle.innerText='Register with Parent';}
-function hideAll(){homeArea.classList.add('hidden');walletArea.classList.add('hidden');teamArea.classList.add('hidden');treeArea.classList.add('hidden');adminArea.classList.add('hidden');}
-function openHome(){authCard.classList.add('hidden');hideAll();homeArea.classList.remove('hidden');setLang(lang);updateLoggedAs();}
-document.getElementById('btnWallet').onclick=()=>{hideAll();walletArea.classList.remove('hidden');updateWallet();}
-document.getElementById('btnMyTeam').onclick=()=>{hideAll();teamArea.classList.remove('hidden');renderTeam();}
-document.getElementById('btnTree').onclick=()=>{hideAll();treeArea.classList.remove('hidden');renderTree();}
-document.getElementById('btnOrder').onclick=()=>simulateOrder();
-document.getElementById('btnAdmin').onclick=()=>adminPrompt();
-document.getElementById('btnLogout').onclick=()=>{me=null;save(KEY_ME,null);location.reload();}
-const balSpan=document.getElementById('bal'),addAmt=document.getElementById('addAmt'),addBtn=document.getElementById('addBtn'),withdrawBtn=document.getElementById('withdrawBtn'),walletMsg=document.getElementById('walletMsg');
-addBtn.onclick=()=>{if(!me)return;let v=parseFloat(addAmt.value);if(!v||v<=0)return alert('Invalid');users[me.mobile].balance+=v;addAmt.value='';persist();updateWallet();walletMsg.innerText='Added';}
-withdrawBtn.onclick=()=>{if(!me)return;let u=users[me.mobile];if(u.balance<=0)return alert('No balance');let a=parseFloat(prompt('Withdraw amount'));if(!a||a<=0)return;if(a>u.balance)return alert('Insufficient');let fee=Math.round(a*0.1);u.balance-=a;withdraws.push({id:Date.now(),mobile:me.mobile,amount:a,fee,net:a-fee,status:'pending'});persist();updateWallet();walletMsg.innerText='Request sent';}
-function updateWallet(){if(!me)return;balSpan.innerText=Math.round(users[me.mobile].balance*100)/100;}
-const teamList=document.getElementById('teamList'),treeView=document.getElementById('treeView');
-function renderTeam(){teamList.innerHTML='';if(!me)return;let c=users[me.mobile].children||[];if(!c.length)return teamList.innerHTML='<div class="small">No members</div>';c.forEach(m=>{let d=document.createElement('div');d.className='tree-node';d.innerHTML=`<div>${users[m].name}</div><div><button class='plusbtn'>[+]</button></div>`;teamList.appendChild(d);});}
-function renderTree(){treeView.innerHTML='';if(!me)return;let u=users[me.mobile];let root=document.createElement('div');root.className='card';root.style.textAlign='center';root.innerHTML=`<b>${u.name}</b><div class='small'>${u.mobile}</div>`;treeView.appendChild(root);let kids=u.children||[];if(!kids.length){let e=document.createElement('div');e.className='card';e.style.textAlign='center';e.innerHTML='No downline';treeView.appendChild(e);}}
-function simulateOrder(){if(!me)return;let p=users[me.mobile].parent;if(p&&users[p]){users[p].balance+=50;persist();alert('₹50 commission to sponsor');}}
-function adminPrompt(){let p=prompt('Admin password');if(p===ADMIN_PWD){hideAll();adminArea.classList.remove('hidden');renderRequests();}}
-function renderRequests(){let el=document.getElementById('requests');el.innerHTML='';if(!withdraws.length)return el.innerText='No withdraws';withdraws.forEach(w=>{let d=document.createElement('div');d.className='card';d.innerHTML=`${w.mobile} ₹${w.amount} - ${w.status}`;if(w.status==='pending'){let b=document.createElement('button');b.className='primary';b.innerText='Approve';b.onclick=()=>{w.status='approved';persist();renderRequests();};d.appendChild(b);}el.appendChild(d);});}
-function updateLoggedAs(){document.getElementById('loggedAs').innerText=me?`Logged: ${me.mobile}`:'Not logged';}
-setLang(lang);showAuth();updateLoggedAs();persist();
+
+const homeArea=document.getElementById('homeArea'),bannerImg=document.getElementById('bannerImg'),bannerImg2=document.getElementById('bannerImg2'),homeTitle=document.getElementById('homeTitle');
+const walletArea=document.getElementById('walletArea'),balSpan=document.getElementById('bal'),addAmt=document.getElementById('addAmt'),addBtn=document.getElementById('addBtn'),withdrawBtn=document.getElementById('withdrawBtn'),walletMsg=document.getElementById('walletMsg');
+const teamArea=document.getElementById('teamArea'),teamList=document.getElementById('teamList');
+const treeArea=document.getElementById('treeArea'),treeView=document.getElementById('treeView');
+const adminArea=document.getElementById('adminArea'),requestsDiv=document.getElementById('requests');
+
+document.getElementById('menuToggle').onclick = ()=>{ document.getElementById('drawer').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('drawer').classList.contains('open') ? 'block' : 'none'; };
+document.getElementById('overlay').onclick = ()=>{ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').style.display = 'none'; };
+
+document.getElementById('btnWallet').onclick=()=>{ closeDrawer(); hideAll(); walletArea.classList.remove('hidden'); updateWallet(); };
+document.getElementById('btnMyTeam').onclick=()=>{ closeDrawer(); hideAll(); teamArea.classList.remove('hidden'); renderTeam(); };
+document.getElementById('btnTree').onclick=()=>{ closeDrawer(); hideAll(); treeArea.classList.remove('hidden'); renderTree(); };
+document.getElementById('btnOrder').onclick=()=>{ closeDrawer(); simulateOrder(); };
+document.getElementById('btnAdmin').onclick=()=>{ closeDrawer(); adminPrompt(); };
+document.getElementById('btnLogout').onclick=()=>{ me=null; save(KEY_ME,null); location.reload(); };
+
+/* Export/Import */
+document.getElementById('exportUsersBtn').onclick = ()=> {
+  const data = JSON.stringify(users, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'rp_users_export.json'; a.click();
+  URL.revokeObjectURL(url);
+};
+document.getElementById('importUsersBtn').onclick = ()=> document.getElementById('importFile').click();
+document.getElementById('importFile').addEventListener('change', (ev)=>{
+  const f = ev.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const imported = JSON.parse(e.target.result);
+      if(typeof imported === 'object'){
+        let replaced=0,added=0;
+        for(const k in imported){
+          if(users[k]) { users[k] = {...users[k], ...imported[k]}; replaced++; }
+          else { users[k] = imported[k]; added++; }
+        }
+        persist();
+        alert(`Import done. Added: ${added}, Merged: ${replaced}`);
+        showAuthBasedOnUsers();
+      } else alert('Invalid JSON');
+    } catch(err){ alert('Import failed: '+err.message); }
+  };
+  reader.readAsText(f);
+});
+
+/* Language & banners */
+function setLang(l){
+  lang = l; localStorage.setItem(KEY_LANG, l);
+  if(l==='hi'){ bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ पापड़ — आपका स्वागत'; }
+  else if(l==='en'){ bannerImg.src = BANNER_EN; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ Papad — Welcome'; }
+  else { bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ પાપડ — Welcome'; }
+  persist();
+}
+document.querySelectorAll('.langBtn').forEach(b=>b.addEventListener('click', ()=> setLang(b.id)));
+setLang(lang);
+
+/* Auth UI logic */
+function showAuthBasedOnUsers(){
+  authMsg.innerText = '';
+  if(Object.keys(users).length === 0){
+    fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); authTitle.innerText = 'Register (first user)';
+  } else {
+    fullRegister.classList.add('hidden'); loginOnly.classList.remove('hidden'); authTitle.innerText = 'Login';
+  }
+  if(me){ openHome(); } else { authCard.classList.remove('hidden'); hideAll(); }
+}
+
+registerBtn.onclick = ()=>{
+  const n = regName.value.trim(), m = regMobile.value.trim(), p = regParent.value.trim();
+  if(!m){ authMsg.innerText='मोबाइल जरूरी'; return; }
+  if(users[m]){ authMsg.innerText='User exists'; return; }
+  users[m] = { mobile:m, name:n||m, balance:0, parent:null, children:[] };
+  if(p && users[p]){ users[m].parent = p; users[p].children = users[p].children || []; users[p].children.push(m); }
+  me = { mobile:m, name:users[m].name }; persist(); openHome();
+};
+document.getElementById('registerCancelBtn').onclick = ()=> { regName.value=''; regMobile.value=''; regParent.value=''; showAuthBasedOnUsers(); };
+
+document.getElementById('loginOnlyBtn').onclick = ()=> {
+  const m = document.getElementById('login_mobile').value.trim();
+  if(!m){ authMsg.innerText='मोबाइल डालें'; return; }
+  if(users[m]){ me = { mobile:m, name:users[m].name }; persist(); openHome(); } else authMsg.innerText='User नहीं मिला';
+};
+showRegisterForJoinBtn.onclick = ()=> { fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); authTitle.innerText='Register with Parent'; };
+
+/* Sections */
+function hideAll(){ homeArea.classList.add('hidden'); walletArea.classList.add('hidden'); teamArea.classList.add('hidden'); treeArea.classList.add('hidden'); adminArea.classList.add('hidden'); }
+function openHome(){ authCard.classList.add('hidden'); hideAll(); homeArea.classList.remove('hidden'); updateLoggedAs(); setLang(lang); persist(); }
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').style.display='none'; }
+
+/* Wallet */
+addBtn.onclick = ()=> { if(!me) return alert('Login first'); const v = parseFloat(addAmt.value||0); if(!v||v<=0) return alert('Invalid'); users[me.mobile].balance = (users[me.mobile].balance||0) + v; addAmt.value=''; persist(); updateWallet(); walletMsg.innerText='Added'; };
+withdrawBtn.onclick = ()=> { if(!me) return alert('Login first'); const u = users[me.mobile]; if((u.balance||0) <= 0) return alert('No balance'); const want = parseFloat(prompt('Withdraw amount (₹)')); if(!want||want<=0) return; if(want > u.balance) return alert('Not enough'); const fee = Math.round(want*0.10); u.balance = Math.round((u.balance - want)*100)/100; withdraws.push({ id:Date.now(), mobile:me.mobile, amount:want, fee, net:want-fee, status:'pending' }); persist(); updateWallet(); walletMsg.innerText='Withdraw requested'; };
+function updateWallet(){ if(!me) return; document.getElementById('bal').innerText = Math.round((users[me.mobile].balance||0)*100)/100; }
+
+/* Team & Tree */
+function renderTeam(){ teamList.innerHTML=''; if(!me) return; const kids = users[me.mobile].children||[]; if(!kids.length){ teamList.innerHTML='<div class="small">No members</div>'; return; } kids.forEach(m=>{ const d=document.createElement('div'); d.className='tree-node'; d.innerHTML = `<div>${users[m].name||m}</div><div><button class="plusbtn">[+]</button></div>`; teamList.appendChild(d); d.querySelector('.plusbtn').onclick = ()=>{ const subs = users[m].children||[]; if(!subs.length) return alert('No sub-members'); alert('Downline: '+subs.map(x=>users[x].name||x).join(', ')); }; }); }
+function openRegisterWithParent(parent){ fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); regParent.value = parent; authTitle.innerText = 'Register under '+parent; }
+function renderTree(){ treeView.innerHTML=''; if(!me) return; const root = users[me.mobile]; const rootBox = document.createElement('div'); rootBox.className='card'; rootBox.style.textAlign='center'; rootBox.innerHTML = `<b>${root.name}</b><div class="small">${root.mobile}</div>`; treeView.appendChild(rootBox); const kids = root.children||[]; const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px'; if(!kids.length){ const e = document.createElement('div'); e.className='card'; e.style.minWidth='160px'; e.style.textAlign='center'; e.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>'; row.appendChild(e); treeView.appendChild(row); e.querySelector('#joinHere').onclick = ()=> openRegisterWithParent(me.mobile); return; } kids.forEach(k=>{ const c=document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center'; c.innerHTML = `${users[k].name||k}<div class="small">${k}</div>`; row.appendChild(c); }); treeView.appendChild(row); }
+
+/* Orders & Admin */
+function simulateOrder(){ if(!me) return alert('Login first'); const sponsor = users[me.mobile].parent; if(sponsor && users[sponsor]){ users[sponsor].balance = (users[sponsor].balance||0) + 50; persist(); alert('₹50 commission added to sponsor'); } else alert('No sponsor'); }
+function adminPrompt(){ const p = prompt('Admin password:'); if(!p) return; if(p !== ADMIN_PWD) return alert('Wrong'); hideAll(); adminArea.classList.remove('hidden'); renderRequests(); }
+function renderRequests(){ requestsDiv.innerHTML=''; if(!withdraws.length) { requestsDiv.innerText='No withdraws'; return; } withdraws.forEach(w=>{ const d=document.createElement('div'); d.className='card'; d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div>`; if(w.status==='pending'){ const a = document.createElement('button'); a.className='primary'; a.innerText='Approve'; a.onclick = ()=>{ w.status='approved'; persist(); renderRequests(); alert('Approved (demo)'); }; d.appendChild(a); } requestsDiv.appendChild(d); }); }
+
+/* Utility */
+function updateLoggedAs(){ document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged'; }
+function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').style.display='none'; }
+
+/* Init */
+updateLoggedAs();
+showAuthBasedOnUsers();
+setLang(lang);
+persist();
+window.addEventListener('beforeunload', persist);
+
 </script>
 </body>
 </html>

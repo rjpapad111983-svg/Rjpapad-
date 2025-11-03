@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="hi">
 <head>
@@ -39,7 +40,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
   <div class="brand">RJ Papad</div>
 </header>
 
-<!-- Drawer -->
+<!-- Drawer (Export/Import buttons removed) -->
 <div id="drawer" class="drawer" aria-hidden="true">
   <h3>Menu</h3>
   <div id="loggedAs" class="small" style="margin-bottom:10px">Not logged</div>
@@ -49,10 +50,6 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
   <button id="btnOrder">🛒 Place Order</button>
   <hr style="margin:12px 0" />
   <button id="btnAdmin">🔐 Admin</button>
-  <div style="height:8px"></div>
-  <button id="exportUsersBtn">⬇ Export Users (JSON)</button>
-  <input id="importFile" type="file" accept=".json" style="display:none" />
-  <button id="importUsersBtn">⬆ Import Users (JSON)</button>
   <div style="height:8px"></div>
   <button id="btnLogout">🚪 Logout</button>
 </div>
@@ -114,7 +111,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
       <img id="bannerImg" src="" alt="Primary banner">
     </div>
 
-    <!-- Second banner (as requested) -->
+    <!-- Second banner -->
     <div class="banner">
       <img id="bannerImg2" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Secondary banner">
     </div>
@@ -194,37 +191,6 @@ document.getElementById('btnTree').onclick=()=>{ closeDrawer(); hideAll(); treeA
 document.getElementById('btnOrder').onclick=()=>{ closeDrawer(); simulateOrder(); };
 document.getElementById('btnAdmin').onclick=()=>{ closeDrawer(); adminPrompt(); };
 document.getElementById('btnLogout').onclick=()=>{ me=null; save(KEY_ME,null); location.reload(); };
-
-/* Export/Import */
-document.getElementById('exportUsersBtn').onclick = ()=> {
-  const data = JSON.stringify(users, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'rp_users_export.json'; a.click();
-  URL.revokeObjectURL(url);
-};
-document.getElementById('importUsersBtn').onclick = ()=> document.getElementById('importFile').click();
-document.getElementById('importFile').addEventListener('change', (ev)=>{
-  const f = ev.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try{
-      const imported = JSON.parse(e.target.result);
-      if(typeof imported === 'object'){
-        let replaced=0,added=0;
-        for(const k in imported){
-          if(users[k]) { users[k] = {...users[k], ...imported[k]}; replaced++; }
-          else { users[k] = imported[k]; added++; }
-        }
-        persist();
-        alert(`Import done. Added: ${added}, Merged: ${replaced}`);
-        showAuthBasedOnUsers();
-      } else alert('Invalid JSON');
-    } catch(err){ alert('Import failed: '+err.message); }
-  };
-  reader.readAsText(f);
-});
 
 /* Language & banners */
 function setLang(l){

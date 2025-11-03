@@ -3,281 +3,370 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RJ Papad - MLM Wallet</title>
+<title>RJ Papad — Register / Wallet / Team</title>
 <style>
-:root{
-  --accent:#ffb300;
-  --bg:#fff8dc;
-  --card:#fff;
-  --muted:#666;
-}
+:root{--accent:#ffb300;--bg:#fff8dc;--card:#fff;--muted:#666}
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,Roboto,Arial;background:var(--bg);color:#222;}
-header{background:var(--accent);color:#fff;padding:12px 14px;display:flex;align-items:center;position:sticky;top:0;z-index:5;}
-.menu-btn{font-size:26px;margin-right:10px;cursor:pointer}
-header h1{flex:1;font-size:18px;margin:0;text-align:center}
-main{padding:16px;max-width:900px;margin:auto}
-.card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 14px rgba(0,0,0,0.08);margin-bottom:18px}
-button,input{font-size:15px;padding:10px;border-radius:8px;border:1px solid #ccc}
+body{margin:0;font-family:system-ui,Roboto,Arial;background:var(--bg);color:#222}
+header{background:var(--accent);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:10}
+.menu-btn{font-size:24px;cursor:pointer}
+.brand{flex:1;text-align:center;font-weight:700}
+.container{max-width:920px;margin:16px auto;padding:0 14px}
+.card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.06);margin-bottom:16px}
+input,button,select{font-size:15px;padding:10px;border-radius:8px;border:1px solid #ddd}
 button.primary{background:var(--accent);border:none;color:#fff}
 button.ghost{background:#f5f5f5;border:none}
-.langbar{display:flex;gap:8px;margin-bottom:10px}
-.langbar button{background:#fff;border:1px solid #ddd;border-radius:999px;padding:6px 12px}
+.langbar{display:flex;gap:8px;margin-bottom:12px}
+.langbar button{padding:8px 12px;border-radius:999px;border:1px solid #eee;background:#fff}
 .banner img{width:100%;border-radius:12px;display:block}
-.drawer{position:fixed;top:0;bottom:0;left:0;width:260px;background:#fff;box-shadow:2px 0 14px rgba(0,0,0,0.15);transform:translateX(-120%);transition:.3s;padding:18px;z-index:50}
+.drawer{position:fixed;left:0;top:0;bottom:0;width:260px;background:#fff;box-shadow:2px 0 18px rgba(0,0,0,0.12);transform:translateX(-120%);transition:transform .25s;z-index:50;padding:18px}
 .drawer.open{transform:translateX(0)}
-.drawer button{display:block;width:100%;text-align:left;margin-bottom:10px;padding:10px;border:none;border-radius:8px;background:#fafafa}
-#logo-page{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100}
-#logo-page img{max-width:80%;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.15)}
-#logo-page.hidden{display:none}
-.big-amount{font-size:26px;color:#d2691e;font-weight:bold}
-.muted{color:var(--muted)}
-.tree-node{padding:10px;border-radius:8px;background:#fff;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
-.plusbtn{border:2px solid #4aa3ff;border-radius:50%;width:36px;height:36px;color:#4aa3ff;background:#fff}
-.note{font-size:13px;color:#777;margin-top:8px}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);display:none;z-index:40}
+#logo-overlay{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:80}
+#logo-img{max-width:78%;border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,0.12)}
+.small{color:var(--muted);font-size:13px}
+.tree-node{padding:10px;border-radius:8px;background:#fff;margin:8px 0;display:flex;align-items:center;justify-content:space-between}
+.plusbtn{border-radius:6px;padding:6px 8px;border:1px solid #ddd;background:#fff;cursor:pointer}
+@media(min-width:900px){#logo-img{max-width:420px}}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="menu-btn" id="menuBtn">☰</div>
-  <h1>RJ Papad</h1>
+  <div class="menu-btn" id="menuToggle">☰</div>
+  <div class="brand">RJ Papad</div>
 </header>
 
-<!-- Drawer -->
-<div class="drawer" id="drawer">
+<div id="drawer" class="drawer" aria-hidden="true">
   <h3>Menu</h3>
-  <div id="menuLoggedAs" class="muted" style="margin-bottom:8px"></div>
-  <button id="menuWalletBtn">💰 Wallet</button>
-  <button id="menuMyTeamBtn">🧑‍🤝‍🧑 My Team</button>
-  <button id="menuTreeBtn">🌳 MLM Tree</button>
-  <button id="menuOrderBtn">🛒 Place Order</button>
-  <hr/>
-  <button id="menuAdminBtn">🔐 Admin</button>
-  <button id="menuLogoutBtn">🚪 Logout</button>
+  <div id="loggedAs" class="small" style="margin-bottom:10px">Not logged</div>
+  <button id="btnWallet">💰 Wallet</button>
+  <button id="btnMyTeam">👥 My Team</button>
+  <button id="btnTree">🌳 MLM Tree</button>
+  <button id="btnOrder">🛒 Place Order</button>
+  <hr style="margin:12px 0" />
+  <button id="btnAdmin">🔐 Admin</button>
+  <div style="height:10px"></div>
+  <button id="btnLogout">🚪 Logout</button>
 </div>
+<div id="overlay"></div>
 
-<!-- Logo Page -->
-<div id="logo-page">
-  <img id="logoImg" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="Logo">
+<!-- logo & language overlay (shown after login until Continue) -->
+<div id="logo-overlay" style="display:none">
+  <img id="logo-img" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="Logo">
   <div class="langbar">
-    <button id="lang-hi">हिन्दी</button>
-    <button id="lang-en">English</button>
-    <button id="lang-gu">ગુજરાતી</button>
+    <button data-lang="hi" class="langBtn">हिन्दी</button>
+    <button data-lang="en" class="langBtn">English</button>
+    <button data-lang="gu" class="langBtn">ગુજરાતી</button>
   </div>
-  <button class="primary" id="logoHideBtn">जारी रखें / Continue</button>
+  <div class="small">भाषा चुनें — इससे बैनर और टेक्स्ट बदलेंगे</div>
+  <button id="continueBtn" class="primary">Continue / जारी रखें</button>
 </div>
 
-<!-- Register / Login Overlay -->
-<div id="authOverlay" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200;background:rgba(0,0,0,0.3);">
-  <div style="width:92%;max-width:420px;background:#fff;padding:18px;border-radius:12px;">
-    <h2>रजिस्टर / लॉगिन</h2>
-    <input id="reg_name" placeholder="नाम (वैकल्पिक)" style="width:100%;margin-bottom:8px"/>
-    <input id="reg_mobile" placeholder="मोबाइल नंबर (required)" style="width:100%;margin-bottom:8px"/>
-    <div style="display:flex;gap:8px;">
-      <button id="btnRegister" class="primary" style="flex:1">Register</button>
-      <button id="btnLogin" class="ghost" style="flex:1">Login</button>
+<div class="container">
+
+  <!-- Register/Login Overlay (shows until user registers/logins) -->
+  <div id="authCard" class="card" style="display:block">
+    <h2>Register / Login</h2>
+    <div style="max-width:520px">
+      <label>नाम (optional)</label>
+      <input id="reg_name" placeholder="Name (optional)" class="full" />
+      <div style="height:8px"></div>
+      <label>मोबाइल नंबर (required)</label>
+      <input id="reg_mobile" placeholder="Mobile number" class="full" />
+      <div style="height:8px"></div>
+      <label>Joined by (Refer / Parent mobile) — optional</label>
+      <input id="reg_parent" placeholder="Parent mobile (optional)" class="full" />
+      <div style="height:10px"></div>
+      <div style="display:flex;gap:8px">
+        <button id="registerBtn" class="primary" style="flex:1">Register</button>
+        <button id="loginBtn" class="ghost" style="flex:1">Login</button>
+      </div>
+      <div id="authMsg" class="small" style="margin-top:10px"></div>
     </div>
   </div>
-</div>
 
-<main>
-  <!-- Banners -->
-  <div id="bannersWrap" class="card">
+  <!-- Home / Banners -->
+  <div id="homeArea" class="card" style="display:none">
     <div class="langbar">
-      <button id="hiBtn">हिन्दी</button>
-      <button id="enBtn">English</button>
-      <button id="guBtn">ગુજરાતી</button>
+      <button id="hi" class="langBtn">हिन्दी</button>
+      <button id="en" class="langBtn">English</button>
+      <button id="gu" class="langBtn">ગુજરાતી</button>
     </div>
-    <div class="banner"><img id="bannerImg" src="" alt="banner"></div>
-    <div id="bannerText" class="muted">RJ पापड़ — स्वाद में खास</div>
+    <div class="banner"><img id="bannerImg" src="" alt="Banner"></div>
+    <h3 id="homeTitle">RJ पापड़ — Welcome</h3>
+    <p class="small">Use menu to open Wallet / My Team / MLM Tree.</p>
   </div>
 
   <!-- Wallet -->
-  <div id="walletCard" class="card" style="display:none">
+  <div id="walletArea" class="card" style="display:none">
     <h3>My Wallet</h3>
-    <div id="walletAmount" class="big-amount">₹0</div>
-    <div id="walletBank" class="muted">HDFC Bank • demo@upi</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:24px;font-weight:700;color:#d2691e">₹<span id="bal">0</span></div>
+      <div class="small" id="bankInfo">HDFC • demo@upi</div>
+    </div>
     <div style="height:10px"></div>
-    <input id="addAmountInp" placeholder="Add amount ₹">
-    <button class="primary" id="addAmountBtn">Add</button>
+    <div style="display:flex;gap:8px">
+      <input id="addAmt" placeholder="Amount ₹" />
+      <button id="addBtn" class="primary">Add</button>
+    </div>
     <div style="height:10px"></div>
-    <button class="ghost" id="withdrawBtn">Withdraw (Request)</button>
-    <div class="note">10% fee applies. Admin approves manually.</div>
+    <button id="withdrawBtn" class="ghost">Withdraw (Request)</button>
+    <div id="walletMsg" class="small" style="margin-top:8px"></div>
   </div>
 
   <!-- My Team -->
-  <div id="myTeamCard" class="card" style="display:none">
+  <div id="teamArea" class="card" style="display:none">
     <h3>My Team</h3>
     <div id="teamList"></div>
+    <div class="small" style="margin-top:8px">Click [+] on a slot to open join/register with parent prefilled.</div>
   </div>
 
   <!-- Tree -->
-  <div id="treeCard" class="card" style="display:none">
+  <div id="treeArea" class="card" style="display:none">
     <h3>MLM Tree</h3>
-    <div id="treeCanvasWrap"></div>
+    <div id="treeView"></div>
   </div>
 
   <!-- Admin -->
-  <div id="adminPanel" class="card" style="display:none">
-    <h3>Admin Panel</h3>
-    <ul id="withdrawRequests"></ul>
+  <div id="adminArea" class="card" style="display:none">
+    <h3>Admin — Pending Withdraws</h3>
+    <div id="requests"></div>
   </div>
-</main>
+
+</div>
 
 <script>
-const ADMIN_PASSWORD="Rjpapad@2025";
-const BANNER_HI="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
-const BANNER_EN="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
+/* ====== CONFIG ====== */
+const ADMIN_PWD = "Rjpapad@2025";
+const BANNER_HI = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
+const BANNER_EN = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 
-let users=JSON.parse(localStorage.getItem("rp_users_v1")||"{}");
-let me=JSON.parse(localStorage.getItem("rp_me")||"null");
-let withdraws=JSON.parse(localStorage.getItem("rp_withdraws_v1")||"[]");
-let currentLang=localStorage.getItem("rp_lang_v1")||"hi";
+/* ====== STORAGE KEYS & LOAD ====== */
+const KEY_USERS = "rp_users_v2";
+const KEY_ME = "rp_me_v2";
+const KEY_WDS = "rp_withdraws_v2";
+const KEY_LANG = "rp_lang_v2";
 
-function saveAll(){
-  localStorage.setItem("rp_users_v1",JSON.stringify(users));
-  localStorage.setItem("rp_me",JSON.stringify(me));
-  localStorage.setItem("rp_withdraws_v1",JSON.stringify(withdraws));
-  localStorage.setItem("rp_lang_v1",currentLang);
-}
-setInterval(saveAll,2000);
+function load(key, def){ try{const v = localStorage.getItem(key); return v ? JSON.parse(v) : def;}catch(e){return def;} }
+function save(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
 
-/* Auth overlay */
-const authOverlay=document.getElementById('authOverlay');
-const btnRegister=document.getElementById('btnRegister');
-const btnLogin=document.getElementById('btnLogin');
-function openAuthIfNeeded(){
-  if(!me){authOverlay.style.display='flex';}
-  else{authOverlay.style.display='none';}
-}
-btnRegister.onclick=()=>{
-  const n=document.getElementById('reg_name').value.trim();
-  const m=document.getElementById('reg_mobile').value.trim();
-  if(!m)return alert('मोबाइल नंबर दर्ज करें');
-  if(!users[m]){
-    users[m]={mobile:m,name:n||m,balance:0,children:[]};
-    me={mobile:m};
-    saveAll();authOverlay.style.display='none';updateWallet();showSection('home');
-  }else alert('User already exists');
-}
-btnLogin.onclick=()=>{
-  const m=document.getElementById('reg_mobile').value.trim();
-  if(!m)return alert('मोबाइल नंबर दर्ज करें');
-  if(users[m]){me={mobile:m};saveAll();authOverlay.style.display='none';updateWallet();showSection('home');}
-  else alert('पहले Register करें');
-}
-openAuthIfNeeded();
+let users = load(KEY_USERS, {});   // map mobile -> {mobile,name,balance,parent,children:[]}
+let me = load(KEY_ME, null);       // {mobile,name}
+let withdraws = load(KEY_WDS, []);
+let lang = localStorage.getItem(KEY_LANG) || "hi";
 
-/* Lang change */
-function setLang(lang){
-  currentLang=lang;
-  if(lang==="hi"){bannerImg.src=BANNER_HI;bannerText.innerText="RJ पापड़ — स्वाद में खास";}
-  if(lang==="en"){bannerImg.src=BANNER_EN;bannerText.innerText="RJ Papad — Homemade taste";}
-  if(lang==="gu"){bannerImg.src=BANNER_HI;bannerText.innerText="RJ પાપડ — સ્વાદમાં ખાસ";}
-  saveAll();
-}
-["hi","en","gu"].forEach(l=>{
-  document.getElementById(l+"Btn").onclick=()=>setLang(l);
-  document.getElementById("lang-"+l).onclick=()=>setLang(l);
-});
-setLang(currentLang);
+/* Auto-save periodically */
+function persistAll(){ save(KEY_USERS, users); save(KEY_ME, me); save(KEY_WDS, withdraws); localStorage.setItem(KEY_LANG, lang); }
+setInterval(persistAll, 2000);
 
-/* Menu + sections */
-const drawer=document.getElementById('drawer');
-menuBtn.onclick=()=>drawer.classList.toggle('open');
-menuLogoutBtn.onclick=()=>{me=null;saveAll();location.reload();}
-function showSection(s){
-  bannersWrap.style.display="none";walletCard.style.display="none";myTeamCard.style.display="none";treeCard.style.display="none";adminPanel.style.display="none";
-  if(s==="home")bannersWrap.style.display="block";
-  if(s==="wallet")walletCard.style.display="block";
-  if(s==="team")myTeamCard.style.display="block";
-  if(s==="tree")treeCard.style.display="block";
-  if(s==="admin")adminPanel.style.display="block";
-}
-menuWalletBtn.onclick=()=>{drawer.classList.remove('open');showSection('wallet');updateWallet();}
-menuMyTeamBtn.onclick=()=>{drawer.classList.remove('open');showSection('team');renderTeam();}
-menuTreeBtn.onclick=()=>{drawer.classList.remove('open');showSection('tree');renderTree();}
-menuAdminBtn.onclick=()=>{
-  const p=prompt('Enter admin password:');
-  if(p===ADMIN_PASSWORD){drawer.classList.remove('open');showSection('admin');renderWithdraws();}
-  else alert('Wrong password');
-};
-menuOrderBtn.onclick=()=>{
-  if(!me)return alert('Login first');
-  const sponsor=users[me.mobile]&&users[me.mobile].parent;
-  if(sponsor&&users[sponsor]){
-    users[sponsor].balance=(users[sponsor].balance||0)+50;saveAll();alert('Order placed — ₹50 commission added.');
-  }else alert('Order placed — no sponsor found.');
-}
+/* ====== UI refs ====== */
+const drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
+document.getElementById('menuToggle').onclick = ()=> { drawer.classList.toggle('open'); overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none'; };
+overlay.onclick = ()=> { drawer.classList.remove('open'); overlay.style.display='none'; };
 
-/* Wallet */
-function updateWallet(){
-  if(!me)return;
-  const u=users[me.mobile]||{balance:0};
-  walletAmount.innerText="₹"+(u.balance||0);
-}
-addAmountBtn.onclick=()=>{
-  const amt=parseFloat(addAmountInp.value);
-  if(!amt)return alert('Enter amount');
-  users[me.mobile].balance=(users[me.mobile].balance||0)+amt;
-  addAmountInp.value="";saveAll();updateWallet();
-}
-withdrawBtn.onclick=()=>{
-  const amt=parseFloat(prompt('Withdraw amount?'));
-  if(!amt)return;
-  const u=users[me.mobile];
-  if(amt>u.balance)return alert('Not enough balance');
-  const fee=Math.round(amt*0.1);
-  u.balance-=amt;withdraws.push({id:Date.now(),mobile:me.mobile,amount:amt,fee,after:amt-fee,status:'pending'});
-  saveAll();updateWallet();alert('Withdraw requested (10% fee)');
-}
+/* auth UI */
+const authCard = document.getElementById('authCard'), authMsg = document.getElementById('authMsg');
+const regName = document.getElementById('reg_name'), regMobile = document.getElementById('reg_mobile'), regParent = document.getElementById('reg_parent');
+const registerBtn = document.getElementById('registerBtn'), loginBtn = document.getElementById('loginBtn');
 
-/* Team */
-function renderTeam(){
-  teamList.innerHTML="";
-  if(!me)return;
-  const u=users[me.mobile]||{children:[]};
-  (u.children||[]).forEach(c=>{
-    const d=document.createElement('div');
-    d.className='tree-node';
-    d.innerHTML=`<div>${users[c]?.name||c}</div>`;
-    teamList.appendChild(d);
-  });
-}
+/* main areas */
+const homeArea = document.getElementById('homeArea'), walletArea = document.getElementById('walletArea'), teamArea = document.getElementById('teamArea'), treeArea = document.getElementById('treeArea'), adminArea = document.getElementById('adminArea');
+const bannerImg = document.getElementById('bannerImg'), homeTitle = document.getElementById('homeTitle');
 
-/* Tree */
-function renderTree(){
-  treeCanvasWrap.innerHTML="";
-  if(!me)return;
-  const root=users[me.mobile];
-  const box=document.createElement('div');
-  box.innerHTML=`<div class='card'>${root.name||root.mobile}</div>`;
-  const kids=root.children||[];
-  const row=document.createElement('div');
-  row.style.display='flex';row.style.gap='10px';row.style.justifyContent='center';row.style.marginTop='10px';
-  kids.forEach(k=>{
-    const c=document.createElement('div');c.className='card';c.innerText=users[k]?.name||k;row.appendChild(c);
-  });
-  treeCanvasWrap.appendChild(box);treeCanvasWrap.appendChild(row);
-}
+/* wallet refs */
+const balSpan = document.getElementById('bal'), addAmt = document.getElementById('addAmt'), addBtn = document.getElementById('addBtn'), withdrawBtn = document.getElementById('withdrawBtn'), walletMsg = document.getElementById('walletMsg');
 
-/* Admin */
-function renderWithdraws(){
-  withdrawRequests.innerHTML='';
-  withdraws.forEach(w=>{
-    const li=document.createElement('li');
-    li.innerHTML=`${w.mobile} → ₹${w.amount} (${w.status})`;
-    if(w.status==='pending'){
-      const b=document.createElement('button');b.textContent='Approve';
-      b.onclick=()=>{w.status='approved';saveAll();renderWithdraws();alert('Approved (demo)');};
-      li.appendChild(b);
+/* team refs */
+const teamList = document.getElementById('teamList'), treeView = document.getElementById('treeView');
+
+/* logo overlay */
+const logoOverlay = document.getElementById('logo-overlay'), continueBtn = document.getElementById('continueBtn');
+document.querySelectorAll('.langBtn').forEach(b=>b.addEventListener('click',()=>{ setLang(b.dataset ? b.dataset.lang : b.getAttribute('data-lang')); }));
+
+/* menu buttons */
+document.getElementById('btnWallet').onclick = ()=> { closeDrawer(); openSection('wallet'); };
+document.getElementById('btnMyTeam').onclick = ()=> { closeDrawer(); openSection('team'); };
+document.getElementById('btnTree').onclick = ()=> { closeDrawer(); openSection('tree'); };
+document.getElementById('btnOrder').onclick = ()=> { closeDrawer(); simulateOrder(); };
+document.getElementById('btnAdmin').onclick = ()=> { closeDrawer(); adminPrompt(); };
+document.getElementById('btnLogout').onclick = ()=> { logout(); };
+
+/* ====== Helper functions ====== */
+function closeDrawer(){ drawer.classList.remove('open'); overlay.style.display='none'; }
+function updateLoggedAs(){ const el = document.getElementById('loggedAs'); el.innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged'; }
+function setLang(l){ lang = l; localStorage.setItem(KEY_LANG, l); if(l==='hi'){ bannerImg.src = BANNER_HI; homeTitle.innerText = 'RJ पापड़ — आपका स्वागत'; } else if(l==='en'){ bannerImg.src = BANNER_EN; homeTitle.innerText = 'RJ Papad — Welcome'; } else { bannerImg.src = BANNER_HI; homeTitle.innerText = 'RJ પાપડ — Welcome'; } persistAll(); }
+
+/* ====== Auth logic ====== */
+function showAuth(){ authCard.style.display = 'block'; homeArea.style.display='none'; walletArea.style.display='none'; teamArea.style.display='none'; treeArea.style.display='none'; adminArea.style.display='none'; logoOverlay.style.display='none'; updateLoggedAs(); }
+function enterApp(){ authCard.style.display='none'; homeArea.style.display='block'; logoOverlay.style.display='block'; updateLoggedAs(); setLang(lang); renderHome(); }
+
+registerBtn.onclick = ()=>{
+  const name = regName.value.trim(); const mobile = regMobile.value.trim(); const parent = regParent.value.trim();
+  if(!mobile){ authMsg.innerText = 'मोबाइल नंबर आवश्यक है'; return; }
+  if(!users[mobile]){
+    users[mobile] = { mobile, name: name || mobile, balance: 0, parent: null, children: [] };
+    if(parent && users[parent]){
+      users[mobile].parent = parent;
+      users[parent].children = users[parent].children || [];
+      users[parent].children.push(mobile);
     }
-    withdrawRequests.appendChild(li);
+    me = { mobile, name: users[mobile].name };
+    persistAll();
+    authMsg.innerText = 'Registered & logged in';
+    setTimeout(()=> enterApp(), 600);
+  } else {
+    authMsg.innerText = 'User exists — use Login';
+  }
+};
+
+loginBtn.onclick = ()=>{
+  const mobile = regMobile.value.trim();
+  if(!mobile){ authMsg.innerText = 'मोबाइल दर्ज करें'; return; }
+  if(users[mobile]){ me = { mobile, name: users[mobile].name }; persistAll(); authMsg.innerText = 'Login successful'; setTimeout(()=> enterApp(), 400); }
+  else { authMsg.innerText = 'User नहीं मिला — पहले Register करें'; }
+};
+
+/* Continue after logo */
+continueBtn.onclick = ()=> { logoOverlay.style.display='none'; openSectionHome(); };
+
+/* ====== Sections control ====== */
+function hideAllSections(){ homeArea.style.display='none'; walletArea.style.display='none'; teamArea.style.display='none'; treeArea.style.display='none'; adminArea.style.display='none'; }
+function renderHome(){ setLang(lang); }
+function openSection(name){
+  if(!me){ alert('कृपया पहले Register/Login करें'); return; }
+  hideAllSections();
+  if(name==='wallet'){ walletArea.style.display='block'; updateWallet(); }
+  if(name==='team'){ teamArea.style.display='block'; renderTeam(); }
+  if(name==='tree'){ treeArea.style.display='block'; renderTree(); }
+  if(name==='home'){ homeArea.style.display='block'; }
+}
+function openSectionHome(){ hideAllSections(); homeArea.style.display='block'; }
+
+/* ====== Wallet ====== */
+function updateWallet(){ if(!me) return; const u = users[me.mobile]; balSpan = document.getElementById('bal'); balSpan.innerText = Math.round((u.balance||0)*100)/100; }
+addBtn.onclick = ()=> {
+  if(!me) return alert('Login first');
+  const v = parseFloat(addAmt.value||0);
+  if(!v || v<=0) return alert('Enter valid amount');
+  users[me.mobile].balance = (users[me.mobile].balance||0) + v;
+  addAmt.value = '';
+  persistAll(); updateWallet(); walletMsg.innerText = 'Amount added (demo).';
+};
+withdrawBtn.onclick = ()=> {
+  if(!me) return alert('Login first');
+  const u = users[me.mobile];
+  if((u.balance||0) <= 0) return alert('No balance');
+  const want = parseFloat(prompt('Enter withdraw amount (₹)'));
+  if(!want || want <= 0) return;
+  if(want > u.balance) return alert('Not enough balance');
+  const fee = Math.round(want * 0.10);
+  const net = want - fee;
+  u.balance = Math.round((u.balance - want)*100)/100;
+  withdraws.push({ id: Date.now(), mobile: me.mobile, amount: want, fee, net, status:'pending', ts: new Date().toISOString() });
+  persistAll(); updateWallet(); walletMsg.innerText = 'Withdraw requested. Admin will approve.';
+};
+
+/* ====== Team & Tree ====== */
+function renderTeam(){
+  teamList.innerHTML = '';
+  const u = users[me.mobile];
+  const children = (u.children||[]);
+  if(children.length === 0){ teamList.innerHTML = '<div class="small">No team members yet</div>'; return; }
+  children.forEach(m=>{
+    const div = document.createElement('div'); div.className='tree-node';
+    div.innerHTML = `<div>${users[m].name || m}</div><div><button class="plusbtn" data-m="${m}">[+]</button></div>`;
+    teamList.appendChild(div);
+    div.querySelector('.plusbtn').onclick = ()=> { const kids = users[m].children || []; if(kids.length===0) return alert('No sub-members'); alert('Downline: ' + kids.map(x=>users[x].name||x).join(', ')); };
   });
 }
 
-/* initial */
-updateWallet();showSection('home');
+function renderTree(){
+  treeView.innerHTML = '';
+  const root = users[me.mobile];
+  const rootBox = document.createElement('div'); rootBox.className='card'; rootBox.style.textAlign='center'; rootBox.innerHTML = `<b>${root.name}</b><div class="small">(${root.mobile})</div>`;
+  treeView.appendChild(rootBox);
+  const kids = root.children || [];
+  const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px';
+  if(kids.length===0) {
+    const empty = document.createElement('div'); empty.className='card'; empty.style.minWidth='160px'; empty.style.textAlign='center'; empty.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>';
+    empty.querySelector('#joinHere').onclick = ()=> { openRegisterWithParent(me.mobile); };
+    row.appendChild(empty);
+  } else {
+    kids.forEach(k=>{
+      const c = document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center';
+      c.innerHTML = `${users[k].name || k}<div class="small">${k}</div>`;
+      row.appendChild(c);
+    });
+  }
+  treeView.appendChild(row);
+}
+
+/* helper: open register prefilled with parent */
+function openRegisterWithParent(parentMobile){
+  document.getElementById('reg_parent').value = parentMobile;
+  authCard.style.display='block';
+  homeArea.style.display='none';
+  walletArea.style.display='none';
+  teamArea.style.display='none';
+  treeArea.style.display='none';
+}
+
+/* ====== Orders (simulate commission) ====== */
+function simulateOrder(){
+  if(!me) return alert('Login first');
+  const sponsor = users[me.mobile].parent;
+  if(sponsor && users[sponsor]){ users[sponsor].balance = (users[sponsor].balance||0) + 50; persistAll(); alert('Order simulated: ₹50 commission given to sponsor.'); updateWallet(); }
+  else alert('Order simulated: no sponsor to credit');
+}
+
+/* ====== Admin ====== */
+function adminPrompt(){
+  const p = prompt('Enter admin password:');
+  if(!p) return;
+  if(p !== ADMIN_PWD) return alert('Wrong password');
+  // show admin area
+  hideAllAndShow('admin');
+  renderRequests();
+}
+function renderRequests(){
+  const el = document.getElementById('requests'); el.innerHTML = '';
+  if(withdraws.length === 0) { el.innerHTML = '<div class="small">No withdraws</div>'; return; }
+  withdraws.forEach((w, idx)=>{
+    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px';
+    d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div>`;
+    if(w.status === 'pending'){
+      const ok = document.createElement('button'); ok.className='primary'; ok.textContent='Approve';
+      ok.onclick = ()=> { w.status='approved'; persistAll(); renderRequests(); alert('Approved (demo). Please send payment externally.'); };
+      d.appendChild(ok);
+    }
+    el.appendChild(d);
+  });
+}
+
+/* ====== Utilities ====== */
+function hideAllAndShow(section){
+  homeArea.style.display='none'; walletArea.style.display='none'; teamArea.style.display='none'; treeArea.style.display='none'; adminArea.style.display='none';
+  if(section==='home') homeArea.style.display='block';
+  if(section==='wallet') walletArea.style.display='block';
+  if(section==='team') teamArea.style.display='block';
+  if(section==='tree') treeArea.style.display='block';
+  if(section==='admin') adminArea.style.display='block';
+}
+function openSection(name){ if(!me) return alert('Please register/login first'); hideAllAndShow(name); if(name==='wallet') updateWallet(); if(name==='team') renderTeam(); if(name==='tree') renderTree(); }
+
+/* ====== Logout ====== */
+function logout(){ me = null; save(KEY_ME, null); updateLoggedAs(); location.reload(); }
+
+/* ====== Init: if no users exist, keep empty (no demo auto-login) ====== */
+if(!users) users = {};
+// keep me as-is if already logged in (from previous sessions)
+if(me){ enterApp(); } else { showAuth(); }
+
+/* persist and UI init */
+updateLoggedAs();
+setLang(lang); // load banner
+persistAll();
 </script>
 </body>
 </html>

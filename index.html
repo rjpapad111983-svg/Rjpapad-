@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="hi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>RJ Papad — Register / Wallet / Team</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RJ Papad — Wallet / Team</title>
 <style>
 :root{--accent:#ffb300;--bg:#fff8dc;--card:#fff;--muted:#666}
 *{box-sizing:border-box}
@@ -13,22 +13,24 @@ header{background:var(--accent);color:#fff;padding:12px 14px;display:flex;align-
 .brand{flex:1;text-align:center;font-weight:700}
 .container{max-width:920px;margin:16px auto;padding:0 14px}
 .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.06);margin-bottom:16px}
-input,button,select{font-size:15px;padding:10px;border-radius:8px;border:1px solid #ddd}
+input,button,select,textarea{font-size:15px;padding:10px;border-radius:8px;border:1px solid #ddd}
 button.primary{background:var(--accent);border:none;color:#fff}
 button.ghost{background:#f5f5f5;border:none}
 .langbar{display:flex;gap:8px;margin-bottom:12px}
 .langbar button{padding:8px 12px;border-radius:999px;border:1px solid #eee;background:#fff}
 .banner img{width:100%;border-radius:12px;display:block}
-.drawer{position:fixed;left:0;top:0;bottom:0;width:260px;background:#fff;box-shadow:2px 0 18px rgba(0,0,0,0.12);transform:translateX(-120%);transition:transform .25s;z-index:50;padding:18px}
+.drawer{position:fixed;left:0;top:0;bottom:0;width:300px;background:#fff;box-shadow:2px 0 18px rgba(0,0,0,0.12);transform:translateX(-120%);transition:transform .25s;z-index:50;padding:18px}
 .drawer.open{transform:translateX(0)}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);display:none;z-index:40}
-#logo-overlay{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:80}
-#logo-img{max-width:78%;border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,0.12)}
 .small{color:var(--muted);font-size:13px}
 .tree-node{padding:10px;border-radius:8px;background:#fff;margin:8px 0;display:flex;align-items:center;justify-content:space-between}
 .plusbtn{border-radius:6px;padding:6px 8px;border:1px solid #ddd;background:#fff;cursor:pointer}
 .hidden{display:none}
-@media(min-width:900px){#logo-img{max-width:420px}}
+.logo-top{display:flex;justify-content:center;margin-bottom:12px;}
+.logo-top img{max-width:160px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.15);}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border:1px solid #eee;padding:8px;text-align:left}
+@media(min-width:900px){.logo-top img{max-width:220px}}
 </style>
 </head>
 <body>
@@ -38,58 +40,52 @@ button.ghost{background:#f5f5f5;border:none}
   <div class="brand">RJ Papad</div>
 </header>
 
+<!-- Drawer -->
 <div id="drawer" class="drawer" aria-hidden="true">
   <h3>Menu</h3>
   <div id="loggedAs" class="small" style="margin-bottom:10px">Not logged</div>
   <button id="btnWallet">💰 Wallet</button>
   <button id="btnMyTeam">👥 My Team</button>
-  <button id="btnTree">🌳 MLM Tree</button>
+  <button id="btnTree">🌳 My Tree</button>
   <button id="btnOrder">🛒 Place Order</button>
   <hr style="margin:12px 0" />
   <button id="btnAdmin">🔐 Admin</button>
-  <div style="height:10px"></div>
+  <div style="height:8px"></div>
   <button id="btnLogout">🚪 Logout</button>
 </div>
 <div id="overlay"></div>
 
-<!-- logo overlay (after login, before continue) -->
-<div id="logo-overlay" class="hidden">
-  <img id="logo-img" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="Logo">
-  <div class="langbar">
-    <button data-lang="hi" class="langBtn">हिन्दी</button>
-    <button data-lang="en" class="langBtn">English</button>
-    <button data-lang="gu" class="langBtn">ગુજરાતી</button>
-  </div>
-  <div class="small">भाषा चुनें — इससे बैनर और टेक्स्ट बदलेंगे</div>
-  <button id="continueBtn" class="primary">Continue / जारी रखें</button>
-</div>
-
 <div class="container">
 
-  <!-- AUTH overlay (behaves differently based on whether users exist) -->
+  <!-- AUTH area (logo displayed on auth) -->
   <div id="authCard" class="card">
+    <div class="logo-top">
+      <img id="logoImg" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="Logo">
+    </div>
     <h2 id="authTitle">Register / Login</h2>
 
-    <!-- If no users exist: show full register + login -->
-    <div id="fullRegisterBlock">
+    <!-- Register (full) -->
+    <div id="fullRegisterBlock" class="">
       <label>नाम (optional)</label>
       <input id="reg_name" placeholder="Name (optional)" />
       <div style="height:8px"></div>
+
       <label>मोबाइल नंबर (required)</label>
       <input id="reg_mobile" placeholder="Mobile number" />
       <div style="height:8px"></div>
-      <label>Joined by (Parent mobile — optional)</label>
+
+      <label>Parent / Joined by (optional)</label>
       <input id="reg_parent" placeholder="Parent mobile (optional)" />
-      <div style="height:10px"></div>
+      <div style="height:8px"></div>
+
       <div style="display:flex;gap:8px">
         <button id="registerBtn" class="primary" style="flex:1">Register</button>
-        <button id="loginBtn" class="ghost" style="flex:1">Login</button>
+        <button id="registerCancelBtn" class="ghost" style="flex:1">Cancel</button>
       </div>
-      <div id="authNote" class="small" style="margin-top:8px">पहली बार पेज खोलने पर Register दिखेगा। एक बार Register होने पर आगे केवल Login दिखेगा।</div>
     </div>
 
-    <!-- If users exist: show login-only block (hidden when users empty) -->
-    <div id="loginOnlyBlock" class="hidden" style="margin-top:6px">
+    <!-- Login-only block -->
+    <div id="loginOnlyBlock" class="hidden">
       <label>मोबाइल नंबर (Login)</label>
       <input id="login_mobile" placeholder="Enter mobile to login" />
       <div style="height:8px"></div>
@@ -97,20 +93,30 @@ button.ghost{background:#f5f5f5;border:none}
         <button id="loginOnlyBtn" class="primary" style="flex:1">Login</button>
         <button id="showRegisterForJoinBtn" class="ghost" style="flex:1">Register with Parent</button>
       </div>
-      <div class="small" style="margin-top:8px">Site पर पहले से registered user होने पर नया Register केवल \"Join here\" या \"Register with Parent\" से होगा।</div>
     </div>
 
     <div id="authMsg" class="small" style="margin-top:8px;color:#b00"></div>
+    <div id="authInfo" class="small" style="margin-top:8px;color:#333">
+      पहली बार साइट पर पहले user को Register करना होगा। एक बार कम से कम एक user बन जाने पर आगे से Login ही दिखाई देगा।
+    </div>
   </div>
 
-  <!-- Home / Banners -->
+  <!-- HOME -->
   <div id="homeArea" class="card hidden">
     <div class="langbar">
       <button id="hi" class="langBtn">हिन्दी</button>
       <button id="en" class="langBtn">English</button>
       <button id="gu" class="langBtn">ગુજરાતી</button>
     </div>
-    <div class="banner"><img id="bannerImg" src="" alt="Banner"></div>
+
+    <!-- Banners -->
+    <div class="banner" style="margin-bottom:12px">
+      <img id="bannerImg" src="" alt="Primary banner">
+    </div>
+    <div class="banner">
+      <img id="bannerImg2" src="" alt="Secondary banner">
+    </div>
+
     <h3 id="homeTitle">RJ पापड़ — Welcome</h3>
     <p class="small">Use menu to open Wallet / My Team / MLM Tree.</p>
   </div>
@@ -118,21 +124,56 @@ button.ghost{background:#f5f5f5;border:none}
   <!-- Wallet -->
   <div id="walletArea" class="card hidden">
     <h3>My Wallet</h3>
+
     <div style="display:flex;align-items:center;gap:12px">
       <div style="font-size:24px;font-weight:700;color:#d2691e">₹<span id="bal">0</span></div>
-      <div class="small" id="bankInfo">HDFC • demo@upi</div>
+      <div class="small" id="bankInfoSmall"></div>
     </div>
     <div style="height:10px"></div>
-    <div style="display:flex;gap:8px">
+
+    <!-- Add money (demo) -->
+    <div style="display:flex;gap:8px;margin-bottom:8px">
       <input id="addAmt" placeholder="Amount ₹" />
       <button id="addBtn" class="primary">Add</button>
     </div>
-    <div style="height:10px"></div>
-    <button id="withdrawBtn" class="ghost">Withdraw (Request)</button>
-    <div id="walletMsg" class="small" style="margin-top:8px"></div>
+
+    <!-- Transfer by mobile -->
+    <div style="margin-top:12px;padding:10px;border-radius:8px;border:1px solid #eee;background:#fafafa">
+      <h4 style="margin:0 0 8px 0">Transfer to another customer</h4>
+      <input id="t_mobile" placeholder="Recipient mobile number" style="margin-bottom:8px;width:100%"/>
+      <input id="t_amount" placeholder="Amount ₹" style="margin-bottom:8px;width:100%"/>
+      <div style="display:flex;gap:8px">
+        <button id="transferBtn" class="primary" style="flex:1">Transfer</button>
+        <button id="transferCancelBtn" class="ghost" style="flex:1">Clear</button>
+      </div>
+      <div id="transferMsg" class="small" style="margin-top:8px"></div>
+    </div>
+
+    <div style="height:12px"></div>
+
+    <!-- Withdraw request -->
+    <div>
+      <button id="withdrawBtn" class="ghost">Withdraw (Request)</button>
+      <div id="withdrawNote" class="small" style="margin-top:8px;color:#333">
+        Withdrawals can be requested only on the <strong>1st day of each month</strong> and after <strong>20:00 (8:00 PM)</strong> local time. Admin must approve. 10% fee applies.
+      </div>
+      <div id="walletMsg" class="small" style="margin-top:8px;color:#b00"></div>
+    </div>
+
+    <hr style="margin:16px 0"/>
+
+    <!-- Show downline customers -->
+    <h4>Direct Team / Joined Customers</h4>
+    <div id="downlineWrap" style="max-height:300px;overflow:auto;margin-top:8px">
+      <table id="downlineTable" class="table" style="width:100%;display:none">
+        <thead><tr><th>नाम</th><th>मोबाइल</th></tr></thead>
+        <tbody id="downlineBody"></tbody>
+      </table>
+      <div id="noDownlineMsg" class="small">No direct members yet.</div>
+    </div>
   </div>
 
-  <!-- My Team -->
+  <!-- Team -->
   <div id="teamArea" class="card hidden">
     <h3>My Team</h3>
     <div id="teamList"></div>
@@ -149,285 +190,305 @@ button.ghost{background:#f5f5f5;border:none}
   <div id="adminArea" class="card hidden">
     <h3>Admin — Pending Withdraws</h3>
     <div id="requests"></div>
+    <div style="height:12px"></div>
+    <div>
+      <button id="unlockRegisterBtn" class="primary">Unlock Registration</button>
+      <button id="closeAdminBtn" class="ghost">Close Panel</button>
+      <div style="height:8px"></div>
+      <div class="small">Registration locked after first user by design — Admin can unlock.</div>
+    </div>
   </div>
+
 </div>
 
 <script>
-/* ====== CONFIG & LINKS ====== */
-const ADMIN_PWD = "Rjpapad@2025";
+/* ========== CONFIG ========== */
 const BANNER_HI = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
 const BANNER_EN = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
+const SECOND_BANNER_DEFAULT = BANNER_EN;
 
-/* ====== STORAGE KEYS & HELPERS ====== */
-const KEY_USERS = "rp_users_v3";
-const KEY_ME = "rp_me_v3";
-const KEY_WDS = "rp_withdraws_v3";
-const KEY_LANG = "rp_lang_v3";
+/* ========== STORAGE KEYS & HELPERS ========== */
+const KEY_USERS="rp_users_v_final", KEY_ME="rp_me_v_final", KEY_WDS="rp_withdraws_v_final", KEY_LANG="rp_lang_v_final", KEY_ADMIN_PWD="rp_admin_pwd_v_final", KEY_REGLOCK="rp_reglock_v_final";
+function load(k,d){ try{ const s = localStorage.getItem(k); return s ? JSON.parse(s) : d; } catch(e){ return d; } }
+function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 
-function load(key, def){ try{const s = localStorage.getItem(key); return s ? JSON.parse(s) : def;}catch(e){return def;} }
-function save(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
-
-let users = load(KEY_USERS, {}) || {};    // map mobile -> {mobile,name,balance,parent,children:[]}
-let me = load(KEY_ME, null);               // current logged user {mobile,name}
+/* ========== APP STATE ========== */
+let users = load(KEY_USERS, {}) || {};   // mobile -> {mobile,name,balance,parent,children, bank?}
+let me = load(KEY_ME, null);             // {mobile,name}
 let withdraws = load(KEY_WDS, []) || [];
 let lang = localStorage.getItem(KEY_LANG) || "hi";
+let adminPwd = localStorage.getItem(KEY_ADMIN_PWD) || null; // plain string in localStorage
+let regLocked = load(KEY_REGLOCK, false);
 
-/* auto-save */
-function persistAll(){ save(KEY_USERS, users); save(KEY_ME, me); save(KEY_WDS, withdraws); localStorage.setItem(KEY_LANG, lang); }
-setInterval(persistAll, 2000);
+/* autosave */
+function persistAll(){ save(KEY_USERS, users); save(KEY_ME, me); save(KEY_WDS, withdraws); localStorage.setItem(KEY_LANG, lang); localStorage.setItem(KEY_ADMIN_PWD, adminPwd || ''); save(KEY_REGLOCK, regLocked); }
+setInterval(persistAll,2000);
 
-/* ====== UI refs ====== */
+/* ========== UI refs ========== */
 const menuToggle = document.getElementById('menuToggle'), drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
 menuToggle.onclick = ()=>{ drawer.classList.toggle('open'); overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none'; };
 overlay.onclick = ()=>{ drawer.classList.remove('open'); overlay.style.display='none'; };
 
 const authCard = document.getElementById('authCard'), authTitle = document.getElementById('authTitle'), authMsg = document.getElementById('authMsg');
-const fullRegisterBlock = document.getElementById('fullRegisterBlock'), loginOnlyBlock = document.getElementById('loginOnlyBlock');
+const fullRegister = document.getElementById('fullRegisterBlock'), loginOnly = document.getElementById('loginOnlyBlock');
 const regName = document.getElementById('reg_name'), regMobile = document.getElementById('reg_mobile'), regParent = document.getElementById('reg_parent');
-const registerBtn = document.getElementById('registerBtn'), loginBtn = document.getElementById('loginBtn');
-const loginOnlyBtn = document.getElementById('loginOnlyBtn'), loginMobileInp = document.getElementById('login_mobile'), showRegisterForJoinBtn = document.getElementById('showRegisterForJoinBtn');
+const registerBtn = document.getElementById('registerBtn'), registerCancelBtn = document.getElementById('registerCancelBtn');
+const loginOnlyBtn = document.getElementById('loginOnlyBtn'), loginMobile = document.getElementById('login_mobile'), showRegisterForJoinBtn = document.getElementById('showRegisterForJoinBtn');
 
-const logoOverlay = document.getElementById('logo-overlay'), continueBtn = document.getElementById('continueBtn');
-const langBtns = document.querySelectorAll('.langBtn');
+const homeArea = document.getElementById('homeArea'), bannerImg = document.getElementById('bannerImg'), bannerImg2 = document.getElementById('bannerImg2'), homeTitle = document.getElementById('homeTitle');
+const walletArea = document.getElementById('walletArea'), balSpan = document.getElementById('bal'), addAmt = document.getElementById('addAmt'), addBtn = document.getElementById('addBtn'), withdrawBtn = document.getElementById('withdrawBtn'), walletMsg = document.getElementById('walletMsg'), withdrawNote = document.getElementById('withdrawNote'), bankInfoSmall = document.getElementById('bankInfoSmall');
 
-const homeArea = document.getElementById('homeArea'), bannerImg = document.getElementById('bannerImg'), homeTitle = document.getElementById('homeTitle');
-const walletArea = document.getElementById('walletArea'), balSpan = document.getElementById('bal'), addAmt = document.getElementById('addAmt'), addBtn = document.getElementById('addBtn'), withdrawBtn = document.getElementById('withdrawBtn'), walletMsg = document.getElementById('walletMsg');
+const t_mobile = document.getElementById('t_mobile'), t_amount = document.getElementById('t_amount'), transferBtn = document.getElementById('transferBtn'), transferCancelBtn = document.getElementById('transferCancelBtn'), transferMsg = document.getElementById('transferMsg');
+
 const teamArea = document.getElementById('teamArea'), teamList = document.getElementById('teamList');
 const treeArea = document.getElementById('treeArea'), treeView = document.getElementById('treeView');
 const adminArea = document.getElementById('adminArea'), requestsDiv = document.getElementById('requests');
+
+const downlineTable = document.getElementById('downlineTable'), downlineBody = document.getElementById('downlineBody'), noDownlineMsg = document.getElementById('noDownlineMsg');
 
 document.getElementById('btnWallet').onclick = ()=> { closeDrawer(); openSection('wallet'); };
 document.getElementById('btnMyTeam').onclick = ()=> { closeDrawer(); openSection('team'); };
 document.getElementById('btnTree').onclick = ()=> { closeDrawer(); openSection('tree'); };
 document.getElementById('btnOrder').onclick = ()=> { closeDrawer(); simulateOrder(); };
 document.getElementById('btnAdmin').onclick = ()=> { closeDrawer(); adminPrompt(); };
-document.getElementById('btnLogout').onclick = ()=> { logout(); };
+document.getElementById('btnLogout').onclick = ()=> { me = null; save(KEY_ME, null); location.reload(); };
 
-/* ====== Init UI state based on users/me ====== */
-function updateLoggedAs(){ document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged'; }
-function setLang(l){ lang = l; localStorage.setItem(KEY_LANG, l); if(l==='hi'){ bannerImg.src = BANNER_HI; homeTitle.innerText = 'RJ पापड़ — आपका स्वागत'; } else if(l==='en'){ bannerImg.src = BANNER_EN; homeTitle.innerText = 'RJ Papad — Welcome'; } else { bannerImg.src = BANNER_HI; homeTitle.innerText = 'RJ પાપડ — Welcome'; } persistAll(); }
-langBtns.forEach(b => b.addEventListener('click', ()=> setLang(b.getAttribute('data-lang'))));
+/* language */
+function setLang(l){ lang = l; localStorage.setItem(KEY_LANG, l); if(l==='hi'){ bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ पापड़ — आपका स्वागत'; } else if(l==='en'){ bannerImg.src = BANNER_EN; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ Papad — Welcome'; } else { bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ પાપડ — Welcome'; } persistAll(); }
+document.querySelectorAll('.langBtn').forEach(b => b.addEventListener('click', ()=> setLang(b.id)));
+setLang(lang);
 
+/* ========== AUTH behavior ========== */
 function showAuthBasedOnUsers(){
   authMsg.innerText = '';
-  // if no users -> show full register block (first-time)
+  // if no users -> force show register (first user)
   if(Object.keys(users).length === 0){
-    fullRegisterBlock.classList.remove('hidden');
-    loginOnlyBlock.classList.add('hidden');
-    authTitle.innerText = 'Register (first user) or Login';
+    fullRegister.classList.remove('hidden');
+    loginOnly.classList.add('hidden');
+    authTitle.innerText = 'Register (first user)';
+    regLocked = false; // ensure registration open for first user
+    persistAll();
   } else {
-    // users exist -> show login-only (by default)
-    fullRegisterBlock.classList.add('hidden');
-    loginOnlyBlock.classList.remove('hidden');
-    authTitle.innerText = 'Login';
+    // if registration locked -> show only login by default
+    if(regLocked){
+      fullRegister.classList.add('hidden');
+      loginOnly.classList.remove('hidden');
+      authTitle.innerText = 'Login';
+    } else {
+      // registration is allowed (admin unlocked)
+      fullRegister.classList.remove('hidden');
+      loginOnly.classList.add('hidden');
+      authTitle.innerText = 'Register / Login';
+    }
   }
-  // if already logged in, skip auth and show app
   if(me){
     enterApp();
   } else {
-    // show auth card
     authCard.classList.remove('hidden');
-    homeArea.classList.add('hidden'); walletArea.classList.add('hidden'); teamArea.classList.add('hidden'); treeArea.classList.add('hidden'); adminArea.classList.add('hidden');
-    document.getElementById('logo-overlay').classList.add('hidden');
+    hideAll();
   }
 }
 
-/* ====== Register & Login behavior ====== */
-/* Register button: only works for first-time full registration OR when shown explicitly via Join-with-parent */
+/* Register (stores only name & parent; bank moved to wallet later if needed) */
 registerBtn.onclick = ()=>{
-  const name = regName.value.trim(); const mobile = regMobile.value.trim(); const parent = regParent.value.trim();
-  if(!mobile){ authMsg.innerText = 'मोबाइल नंबर आवश्यक है'; return; }
-  if(users[mobile]){ authMsg.innerText = 'User already exists — use Login'; return; }
-  // create user
-  users[mobile] = { mobile, name: name || mobile, balance: 0, parent: null, children: [] };
-  // if parent provided and exists -> attach
-  if(parent && users[parent]){
-    users[mobile].parent = parent;
-    users[parent].children = users[parent].children || [];
-    users[parent].children.push(mobile);
-  }
-  // set me and enter app
-  me = { mobile, name: users[mobile].name };
+  const n = regName.value.trim(), m = regMobile.value.trim(), p = regParent.value.trim();
+  if(!m){ authMsg.innerText = 'मोबाइल नंबर आवश्यक है'; return; }
+  if(users[m]){ authMsg.innerText = 'User already exists — please login'; return; }
+  users[m] = { mobile: m, name: n || m, balance: 0, parent: null, children: [] };
+  if(p && users[p]){ users[m].parent = p; users[p].children = users[p].children || []; users[p].children.push(m); }
+  // auto-lock registration after first create OR when admin chooses to lock
+  regLocked = true;
+  me = { mobile: m, name: users[m].name };
   persistAll();
   enterApp();
 };
 
-/* Login button (in full block) */
-loginBtn.onclick = ()=>{
-  const mobile = regMobile.value.trim();
-  if(!mobile){ authMsg.innerText = 'मोबाइल दर्ज करें'; return; }
-  if(users[mobile]){ me = { mobile, name: users[mobile].name }; persistAll(); enterApp(); }
-  else { authMsg.innerText = 'User नहीं मिला — पहले Register करें'; }
+/* cancel register */
+registerCancelBtn.onclick = ()=>{
+  regName.value = ''; regMobile.value=''; regParent.value='';
+  showAuthBasedOnUsers();
 };
 
-/* Login-only block actions */
+/* Login */
 loginOnlyBtn.onclick = ()=>{
-  const mobile = loginMobileInp.value.trim();
-  if(!mobile){ authMsg.innerText = 'मोबाइल डालें'; return; }
-  if(users[mobile]){ me = { mobile, name: users[mobile].name }; persistAll(); enterApp(); }
-  else { authMsg.innerText = 'User नहीं मिला — यदि आप नया जोड़ना चाहते हैं, \"Register with Parent\" से जुड़ें'; }
+  const m = loginMobile.value.trim();
+  if(!m){ authMsg.innerText = 'मोबाइल डालें'; return; }
+  if(users[m]){ me = { mobile: m, name: users[m].name }; persistAll(); enterApp(); } else authMsg.innerText = 'User नहीं मिला — Register with Parent देखें';
 };
-/* Show registration form prefilled (used when joining under a parent) */
 showRegisterForJoinBtn.onclick = ()=>{
-  // reveal full register block but keep parent prefilled
-  fullRegisterBlock.classList.remove('hidden');
-  loginOnlyBlock.classList.add('hidden');
-  // prefill parent from loginMobileInp (if any)
-  const p = loginMobileInp.value.trim();
-  if(p) regParent.value = p;
-  authTitle.innerText = 'Register new user (with parent)';
+  if(regLocked){
+    alert('Registration currently locked by admin');
+    return;
+  }
+  fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); authTitle.innerText = 'Register with Parent';
 };
 
-/* ====== App entry after login ====== */
+/* ========== APP entry ========== */
 function enterApp(){
   authCard.classList.add('hidden');
-  // show logo overlay first (user sees logo then continue)
-  document.getElementById('logo-overlay').classList.remove('hidden');
   updateLoggedAs();
   setLang(lang);
-  persistAll();
+  // per request: open WALLET immediately after login/register
+  openSection('wallet');
 }
 
-/* Continue after logo */
-continueBtn.onclick = ()=> { document.getElementById('logo-overlay').classList.add('hidden'); openSection('home'); };
-
-/* ====== Sections control ====== */
-function hideAllSections(){ homeArea.classList.add('hidden'); walletArea.classList.add('hidden'); teamArea.classList.add('hidden'); treeArea.classList.add('hidden'); adminArea.classList.add('hidden'); }
+/* ========== Sections control ========== */
+function hideAll(){ homeArea.classList.add('hidden'); walletArea.classList.add('hidden'); teamArea.classList.add('hidden'); treeArea.classList.add('hidden'); adminArea.classList.add('hidden'); }
 function openSection(name){
   if(!me){ alert('कृपया पहले Register / Login करें'); return; }
-  hideAllSections();
-  if(name === 'home'){ homeArea.classList.remove('hidden'); }
-  if(name === 'wallet'){ walletArea.classList.remove('hidden'); updateWallet(); }
-  if(name === 'team'){ teamArea.classList.remove('hidden'); renderTeam(); }
-  if(name === 'tree'){ treeArea.classList.remove('hidden'); renderTree(); }
-  if(name === 'admin'){ adminArea.classList.remove('hidden'); renderRequests(); }
+  hideAll();
+  if(name==='home'){ homeArea.classList.remove('hidden'); }
+  if(name==='wallet'){ walletArea.classList.remove('hidden'); updateWallet(); renderDownline(); }
+  if(name==='team'){ teamArea.classList.remove('hidden'); renderTeam(); }
+  if(name==='tree'){ treeArea.classList.remove('hidden'); renderTree(); }
+  if(name==='admin'){ adminArea.classList.remove('hidden'); renderRequests(); }
 }
 
-/* ====== Wallet ====== */
-function updateWallet(){ if(!me) return; const u = users[me.mobile] || {balance:0}; document.getElementById('bal').innerText = Math.round((u.balance||0)*100)/100; }
+/* ========== Wallet: add, transfer, withdraw ========= */
+
+/* helper: check withdrawal window — only 1st of month AND hour >= 20 (8pm) */
+function canRequestWithdraw(){
+  const now = new Date();
+  const day = now.getDate(); // 1..31
+  const hour = now.getHours(); // 0..23 local time
+  return (day === 1 && hour >= 20);
+}
+
 addBtn.onclick = ()=>{
   if(!me) return alert('Login first');
   const v = parseFloat(addAmt.value||0);
-  if(!v || v<=0) return alert('Enter valid amount');
-  users[me.mobile].balance = (users[me.mobile].balance||0) + v;
-  addAmt.value = ''; persistAll(); updateWallet(); walletMsg.innerText='Amount added (demo)';
+  if(!v || v <= 0) return alert('Enter valid amount');
+  users[me.mobile].balance = Math.round(((users[me.mobile].balance||0) + v) * 100) / 100;
+  addAmt.value = '';
+  persistAll();
+  updateWallet();
+  walletMsg.innerText = 'Amount added (demo).';
 };
+
+/* TRANSFER by mobile */
+transferBtn.onclick = ()=>{
+  if(!me) return alert('Login first');
+  const to = (t_mobile.value||'').trim();
+  const amt = parseFloat(t_amount.value||0);
+  transferMsg.innerText = '';
+  transferMsg.style.color = '';
+  if(!to) return transferMsg.innerText = 'Recipient mobile चाहिए';
+  if(!amt || amt <= 0) return transferMsg.innerText = 'Valid amount डालें';
+  if(!users[to]) return transferMsg.innerText = 'Recipient user not found';
+  if((users[me.mobile].balance||0) < amt) return transferMsg.innerText = 'आपके पास पर्याप्त बैलेंस नहीं है';
+  // perform transfer
+  users[me.mobile].balance = Math.round(((users[me.mobile].balance||0) - amt) * 100) / 100;
+  users[to].balance = Math.round(((users[to].balance||0) + amt) * 100) / 100;
+  persistAll();
+  updateWallet();
+  transferMsg.style.color = 'green';
+  transferMsg.innerText = `₹${amt} सफलतापूर्वक ${to} को भेज दिए गए।`;
+  setTimeout(()=>{ t_mobile.value=''; t_amount.value=''; transferMsg.style.color=''; transferMsg.innerText=''; }, 1600);
+};
+
+/* clear transfer */
+transferCancelBtn.onclick = ()=>{ t_mobile.value=''; t_amount.value=''; transferMsg.innerText=''; };
+
+/* WITHDRAW (only allowed when canRequestWithdraw() true) */
 withdrawBtn.onclick = ()=>{
   if(!me) return alert('Login first');
   const u = users[me.mobile];
-  if((u.balance||0) <= 0) return alert('No balance');
+  if(!u || (u.balance||0) <= 0) return alert('No balance');
+  if(!canRequestWithdraw()){
+    walletMsg.style.color = '#b00';
+    walletMsg.innerText = `Withdraw केवल हर महीने की 1 तारीख रात 8 बजे (local time) के बाद ही किया जा सकता है।`;
+    return;
+  }
   const want = parseFloat(prompt('Enter withdraw amount (₹)'));
   if(!want || want <= 0) return;
   if(want > u.balance) return alert('Not enough balance');
   const fee = Math.round(want * 0.10);
   const net = want - fee;
-  u.balance = Math.round((u.balance - want)*100)/100;
+  u.balance = Math.round((u.balance - want) * 100) / 100;
   withdraws.push({ id: Date.now(), mobile: me.mobile, amount: want, fee, net, status: 'pending', ts: new Date().toISOString() });
-  persistAll(); updateWallet(); walletMsg.innerText = 'Withdraw requested. Admin will approve.';
+  persistAll();
+  updateWallet();
+  walletMsg.style.color = 'green';
+  walletMsg.innerText = `Withdraw request submitted (₹${want}). 10% fee लगेगा। Admin approval आवश्यक।`;
 };
 
-/* ====== Team & Tree ====== */
-function renderTeam(){
-  teamList.innerHTML = '';
+/* ========== Render downline ========== */
+function renderDownline(){
+  downlineBody.innerHTML = '';
   if(!me) return;
-  const u = users[me.mobile];
-  const children = (u.children || []);
-  if(children.length === 0){ teamList.innerHTML = '<div class="small">No team members yet</div>'; return; }
-  children.forEach(m => {
-    const div = document.createElement('div'); div.className = 'tree-node';
-    div.innerHTML = `<div>${users[m].name || m}</div><div><button class="plusbtn" data-m="${m}">[+]</button></div>`;
-    teamList.appendChild(div);
-    div.querySelector('.plusbtn').onclick = ()=> {
-      const kids = users[m].children || [];
-      if(kids.length === 0) return alert('No sub-members');
-      alert('Direct downline of ' + (users[m].name||m) + ': ' + kids.map(x=>users[x].name||x).join(', '));
-    };
+  const kids = users[me.mobile].children || [];
+  if(!kids.length){ downlineTable.style.display='none'; noDownlineMsg.style.display='block'; return; }
+  noDownlineMsg.style.display='none';
+  downlineTable.style.display='table';
+  kids.forEach(m=>{
+    const u = users[m];
+    const tr = document.createElement('tr');
+    const name = `<td>${u.name||''}</td>`;
+    const mobile = `<td>${u.mobile||''}</td>`;
+    tr.innerHTML = name + mobile;
+    downlineBody.appendChild(tr);
   });
 }
 
-/* Create quick join flow: called by tree empty slots */
-function openRegisterWithParent(parentMobile){
-  // show auth card with full register visible even if users exist
-  authCard.classList.remove('hidden');
-  fullRegisterBlock.classList.remove('hidden');
-  loginOnlyBlock.classList.add('hidden');
-  regParent.value = parentMobile;
-  authTitle.innerText = 'Register under ' + parentMobile;
-}
+/* ========== Team & Tree ========== */
+function renderTeam(){ teamList.innerHTML = ''; if(!me) return; const children = users[me.mobile].children || []; if(children.length === 0){ teamList.innerHTML = '<div class="small">No team members yet</div>'; return; } children.forEach(m=>{ const d=document.createElement('div'); d.className='tree-node'; d.innerHTML = `<div>${users[m].name || m}</div><div><button class="plusbtn" data-m="${m}">[+]</button></div>`; teamList.appendChild(d); d.querySelector('.plusbtn').onclick = ()=>{ const subs = users[m].children || []; if(!subs.length) return alert('No sub-members'); alert('Downline of ' + (users[m].name || m) + ': ' + subs.map(x=>users[x].name || x).join(', ')); }; }); }
 
-/* render tree simple visual */
-function renderTree(){
-  treeView.innerHTML = '';
-  if(!me) return;
-  const root = users[me.mobile];
-  const rootBox = document.createElement('div'); rootBox.className='card'; rootBox.style.textAlign='center';
-  rootBox.innerHTML = `<b>${root.name}</b><div class="small">${root.mobile}</div>`;
-  treeView.appendChild(rootBox);
-  const kids = root.children || [];
-  const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px';
-  if(kids.length === 0){
-    const empty = document.createElement('div'); empty.className='card'; empty.style.minWidth='160px'; empty.style.textAlign='center';
-    empty.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>';
-    row.appendChild(empty);
-    treeView.appendChild(row);
-    empty.querySelector('#joinHere').onclick = ()=> { openRegisterWithParent(me.mobile); };
-    return;
-  }
-  kids.forEach(k => {
-    const c = document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center';
-    c.innerHTML = `${users[k].name || k}<div class="small">${k}</div>`;
-    row.appendChild(c);
-  });
-  treeView.appendChild(row);
-}
+function openRegisterWithParent(parent){ authCard.classList.remove('hidden'); fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); regParent.value = parent; authTitle.innerText = 'Register under ' + parent; }
 
-/* ====== Orders (simulate commission) ====== */
-function simulateOrder(){
-  if(!me) return alert('Login first');
-  const sponsor = users[me.mobile].parent;
-  if(sponsor && users[sponsor]){
-    users[sponsor].balance = (users[sponsor].balance||0) + 50; persistAll();
-    alert('Order simulated: ₹50 commission added to sponsor: ' + (users[sponsor].name||sponsor));
-  } else alert('Order simulated: no sponsor to credit.');
-}
+function renderTree(){ treeView.innerHTML = ''; if(!me) return; const root = users[me.mobile]; const rootBox = document.createElement('div'); rootBox.className = 'card'; rootBox.style.textAlign = 'center'; rootBox.innerHTML = `<b>${root.name}</b><div class="small">${root.mobile}</div>`; treeView.appendChild(rootBox); const kids = root.children || []; const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px'; if(kids.length === 0){ const empty = document.createElement('div'); empty.className = 'card'; empty.style.minWidth='160px'; empty.style.textAlign='center'; empty.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>'; row.appendChild(empty); treeView.appendChild(row); empty.querySelector('#joinHere').onclick = ()=> openRegisterWithParent(me.mobile); return; } kids.forEach(k=>{ const c = document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center'; c.innerHTML = `${users[k].name || k}<div class="small">${k}</div>`; row.appendChild(c); }); treeView.appendChild(row); }
 
-/* ====== Admin ====== */
+/* ========== Orders & Admin ========== */
+function simulateOrder(){ if(!me) return alert('Login first'); const sponsor = users[me.mobile].parent; if(sponsor && users[sponsor]){ users[sponsor].balance = Math.round(((users[sponsor].balance||0) + 50) * 100) / 100; persistAll(); alert('Order simulated: ₹50 commission added to sponsor: ' + (users[sponsor].name||sponsor)); } else alert('Order simulated: no sponsor to credit'); }
+
+/* Admin prompt — supports setting admin password first time */
 function adminPrompt(){
+  if(!adminPwd){
+    const p = prompt('No admin password set. Set a new admin password now:');
+    if(!p){ alert('Admin password not set'); return; }
+    adminPwd = p;
+    localStorage.setItem(KEY_ADMIN_PWD, adminPwd);
+    alert('Admin password saved locally. Use it to login to admin panel.');
+  }
   const p = prompt('Enter admin password:');
   if(!p) return;
-  if(p !== ADMIN_PWD) return alert('Wrong password');
+  if(p !== adminPwd) return alert('Wrong password');
   openSection('admin'); renderRequests();
 }
-function renderRequests(){
-  requestsDiv.innerHTML = '';
-  if(withdraws.length === 0){ requestsDiv.innerHTML = '<div class="small">No withdraws</div>'; return; }
-  withdraws.forEach((w, idx) => {
-    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px';
-    d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div>`;
-    if(w.status === 'pending'){
-      const ok = document.createElement('button'); ok.className='primary'; ok.textContent='Approve';
-      ok.onclick = ()=> { w.status = 'approved'; persistAll(); renderRequests(); alert('Approved (demo). Please transfer externally.'); };
-      d.appendChild(ok);
-    }
-    requestsDiv.appendChild(d);
-  });
-}
 
-/* ====== Logout ====== */
-function logout(){ me = null; save(KEY_ME, null); updateLoggedAs(); location.reload(); }
+/* render pending withdraws for admin */
+function renderRequests(){ requestsDiv.innerHTML = ''; if(withdraws.length === 0){ requestsDiv.innerHTML = '<div class="small">No withdraws</div>'; return; } withdraws.forEach(w=>{ const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div><div class="small">Requested at ${new Date(w.ts).toLocaleString()}</div>`; if(w.status==='pending'){ const a=document.createElement('button'); a.className='primary'; a.textContent='Approve'; a.onclick = ()=>{ w.status='approved'; persistAll(); renderRequests(); alert('Approved. Transfer externally.'); }; d.appendChild(a); } requestsDiv.appendChild(d); }); }
 
-/* ====== Helper ====== */
-function updateLoggedAs(){ document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged'; }
+/* Admin unlock registration button */
+document.getElementById('unlockRegisterBtn').onclick = ()=>{
+  const p = prompt('Enter admin password to unlock registration:');
+  if(!p) return;
+  if(p !== adminPwd) return alert('Wrong password');
+  if(!confirm('Unlock registration so new users can register?')) return;
+  regLocked = false;
+  persistAll();
+  alert('Registration unlocked.');
+};
 
-/* ====== Initialize app ====== */
-/* Important: do NOT create demo users automatically — we want register-first behavior */
+/* close admin panel */
+document.getElementById('closeAdminBtn').onclick = ()=>{
+  openSection('home');
+};
+
+/* ========== Utilities ========== */
+function updateLoggedAs(){ document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged'; if(me && users[me.mobile] && users[me.mobile].bank){ const b = users[me.mobile].bank; bankInfoSmall.innerText = `Bank: ${b.name}${b.upi ? ' • UPI: ' + b.upi : ''}`; } else bankInfoSmall.innerText = ''; }
+
+function closeDrawer(){ drawer.classList.remove('open'); overlay.style.display = 'none'; }
+
+/* update wallet display */
+function updateWallet(){ if(!me) return; balSpan.innerText = (users[me.mobile].balance||0).toFixed(2); renderDownline(); updateLoggedAs(); }
+
+/* ========== INIT ========== */
 if(!users) users = {};
 updateLoggedAs();
 showAuthBasedOnUsers();
-setLang(lang); // load banner
-
-/* persist on unload */
-window.addEventListener('beforeunload', ()=> persistAll());
+setLang(lang);
+persistAll();
+window.addEventListener('beforeunload', persistAll);
 
 </script>
 </body>

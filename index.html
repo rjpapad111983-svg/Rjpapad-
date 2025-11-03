@@ -129,5 +129,50 @@ function enterApp(){
   walletArea.classList.remove('hidden');
 }
 </script>
+  // ========== REGISTER & CANCEL BUTTONS FUNCTIONALITY ==========
+
+// REGISTER BUTTON
+const registerBtn = document.getElementById('registerBtn');
+const registerCancelBtn = document.getElementById('registerCancelBtn');
+const regName = document.getElementById('reg_name');
+const regMobile = document.getElementById('reg_mobile');
+const regParent = document.getElementById('reg_parent');
+const authMsg = document.getElementById('authMsg');
+
+if (registerBtn) {
+  registerBtn.addEventListener('click', () => {
+    const name = regName.value.trim();
+    const mobile = regMobile.value.trim();
+    const parent = regParent.value.trim();
+
+    // Validation
+    if (mobile.length !== 10 || isNaN(mobile)) {
+      authMsg.textContent = "कृपया 10 अंकों का मोबाइल नंबर डालें";
+      authMsg.style.color = "red";
+      return;
+    }
+
+    // Save data (localStorage में)
+    localStorage.setItem('userName', name);
+    localStorage.setItem('userMobile', mobile);
+    localStorage.setItem('userParent', parent);
+
+    // Show success message
+    authMsg.textContent = "रजिस्टर सफल ✅";
+    authMsg.style.color = "green";
+
+    // Open Wallet
+    enterApp();
+  });
+}
+
+// CANCEL BUTTON
+if (registerCancelBtn) {
+  registerCancelBtn.addEventListener('click', () => {
+    document.getElementById('fullRegisterBlock').classList.add('hidden');
+    document.getElementById('loginOnlyBlock').classList.remove('hidden');
+    authMsg.textContent = "";
+  });
+}
 </body>
 </html>

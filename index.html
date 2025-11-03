@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>RJ Papad — Register / Wallet / Team</title>
+<title>RJ Papad — Wallet / Team</title>
 <style>
 :root{--accent:#ffb300;--bg:#fff8dc;--card:#fff;--muted:#666}
 *{box-sizing:border-box}
@@ -28,7 +28,8 @@ button.ghost{background:#f5f5f5;border:none}
 .hidden{display:none}
 .logo-top{display:flex;justify-content:center;margin-bottom:12px;}
 .logo-top img{max-width:160px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.15);}
-.pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;border-radius:8px;border:1px solid #eee}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border:1px solid #eee;padding:8px;text-align:left}
 @media(min-width:900px){.logo-top img{max-width:220px}}
 </style>
 </head>
@@ -63,7 +64,7 @@ button.ghost{background:#f5f5f5;border:none}
     </div>
     <h2 id="authTitle">Register / Login</h2>
 
-    <!-- Register (shown first-time or when explicitly needed) -->
+    <!-- Register -->
     <div id="fullRegisterBlock" class="hidden">
       <label>नाम (optional)</label>
       <input id="reg_name" placeholder="Name (optional)" />
@@ -110,21 +111,19 @@ button.ghost{background:#f5f5f5;border:none}
     </div>
   </div>
 
-  <!-- Home -->
+  <!-- HOME (kept but user asked to open wallet first on login) -->
   <div id="homeArea" class="card hidden">
     <div class="langbar">
       <button id="hi" class="langBtn">हिन्दी</button>
       <button id="en" class="langBtn">English</button>
-      <button id="gu" class="langBtn">ગુજરાતી</button>
+      <button id="gu" class="langBtn">ગુજરાતी</button>
     </div>
 
-    <!-- First banner -->
+    <!-- Banners -->
     <div class="banner" style="margin-bottom:12px">
       <img id="bannerImg" src="" alt="Primary banner">
     </div>
-
-    <!-- Second banner (below first) -->
-    <div class="banner" style="margin-bottom:12px">
+    <div class="banner">
       <img id="bannerImg2" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Secondary banner">
     </div>
 
@@ -170,6 +169,19 @@ button.ghost{background:#f5f5f5;border:none}
       </div>
       <div id="walletMsg" class="small" style="margin-top:8px;color:#b00"></div>
     </div>
+
+    <hr style="margin:16px 0"/>
+
+    <!-- Show downline customers with bank details -->
+    <h4>Direct Team / Joined Customers (Bank details)</h4>
+    <div id="downlineWrap" style="max-height:300px;overflow:auto;margin-top:8px">
+      <!-- table filled by JS -->
+      <table id="downlineTable" class="table" style="width:100%;display:none">
+        <thead><tr><th>नाम</th><th>मोबाइल</th><th>Bank</th><th>Account</th><th>IFSC</th><th>UPI</th></tr></thead>
+        <tbody id="downlineBody"></tbody>
+      </table>
+      <div id="noDownlineMsg" class="small">No direct members yet.</div>
+    </div>
   </div>
 
   <!-- Team -->
@@ -201,18 +213,18 @@ const BANNER_EN = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/
 const SECOND_BANNER_DEFAULT = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 
 /* ========== STORAGE KEYS & HELPERS ========== */
-const KEY_USERS="rp_users_wallet_v1", KEY_ME="rp_me_wallet_v1", KEY_WDS="rp_withdraws_wallet_v1", KEY_LANG="rp_lang_wallet_v1";
+const KEY_USERS="rp_users_v6", KEY_ME="rp_me_v6", KEY_WDS="rp_withdraws_v6", KEY_LANG="rp_lang_v6";
 function load(k,d){ try{ const s = localStorage.getItem(k); return s ? JSON.parse(s) : d; } catch(e){ return d; } }
 function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 
-let users = load(KEY_USERS, {}) || {};   // mobile -> {mobile,name,balance,parent,children, bank:{name,acc,ifsc,upi}}
+let users = load(KEY_USERS, {}) || {};   // mobile -> {mobile,name,balance,parent,children, bank:{name,account,ifsc,upi}}
 let me = load(KEY_ME, null);             // {mobile,name}
 let withdraws = load(KEY_WDS, []) || [];
 let lang = localStorage.getItem(KEY_LANG) || "hi";
 
 /* autosave */
 function persist(){ save(KEY_USERS, users); save(KEY_ME, me); save(KEY_WDS, withdraws); localStorage.setItem(KEY_LANG, lang); }
-setInterval(persist, 2000);
+setInterval(persist,2000);
 
 /* ========== UI refs ========== */
 const menuToggle = document.getElementById('menuToggle'), drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
@@ -234,6 +246,8 @@ const t_mobile = document.getElementById('t_mobile'), t_amount = document.getEle
 const teamArea = document.getElementById('teamArea'), teamList = document.getElementById('teamList');
 const treeArea = document.getElementById('treeArea'), treeView = document.getElementById('treeView');
 const adminArea = document.getElementById('adminArea'), requestsDiv = document.getElementById('requests');
+
+const downlineTable = document.getElementById('downlineTable'), downlineBody = document.getElementById('downlineBody'), noDownlineMsg = document.getElementById('noDownlineMsg');
 
 /* menu actions */
 document.getElementById('btnWallet').onclick = ()=> { closeDrawer(); openSection('wallet'); };
@@ -273,7 +287,7 @@ registerBtn.onclick = ()=>{
   const n = regName.value.trim(), m = regMobile.value.trim(), p = regParent.value.trim();
   const bn = bankName.value.trim(), ba = bankAcc.value.trim(), bi = bankIFSC.value.trim(), bu = bankUPI.value.trim();
   if(!m){ authMsg.innerText = 'मोबाइल नंबर आवश्यक है'; return; }
-  if(!bn || !ba || !bi){ authMsg.innerText = 'Bank name, account number और IFSC भरना आवश्यक है (Withdraw के लिए)'; return; }
+  if(!bn || !ba || !bi){ authMsg.innerText = 'Bank name, account number और IFSC भरना आवश्यक है'; return; }
   if(users[m]){ authMsg.innerText = 'User already exists — please login'; return; }
   users[m] = { mobile: m, name: n || m, balance: 0, parent: null, children: [], bank: { name: bn, account: ba, ifsc: bi, upi: bu } };
   if(p && users[p]){ users[m].parent = p; users[p].children = users[p].children || []; users[p].children.push(m); }
@@ -284,7 +298,7 @@ registerBtn.onclick = ()=>{
 
 /* cancel register */
 registerCancelBtn.onclick = ()=>{
-  regName.value = ''; regMobile.value = ''; regParent.value=''; bankName.value=''; bankAcc.value=''; bankIFSC.value=''; bankUPI.value='';
+  regName.value = ''; regMobile.value=''; regParent.value=''; bankName.value=''; bankAcc.value=''; bankIFSC.value=''; bankUPI.value='';
   showAuthBasedOnUsers();
 };
 
@@ -303,7 +317,8 @@ function enterApp(){
   authCard.classList.add('hidden');
   updateLoggedAs();
   setLang(lang);
-  openSection('home');
+  // IMPORTANT: per your request, open WALLET immediately after login/register (first page)
+  openSection('wallet');
 }
 
 /* ========== Sections control ========== */
@@ -312,7 +327,7 @@ function openSection(name){
   if(!me){ alert('कृपया पहले Register / Login करें'); return; }
   hideAll();
   if(name==='home'){ homeArea.classList.remove('hidden'); }
-  if(name==='wallet'){ walletArea.classList.remove('hidden'); updateWallet(); }
+  if(name==='wallet'){ walletArea.classList.remove('hidden'); updateWallet(); renderDownline(); }
   if(name==='team'){ teamArea.classList.remove('hidden'); renderTeam(); }
   if(name==='tree'){ treeArea.classList.remove('hidden'); renderTree(); }
   if(name==='admin'){ adminArea.classList.remove('hidden'); renderRequests(); }
@@ -332,7 +347,7 @@ addBtn.onclick = ()=>{
   if(!me) return alert('Login first');
   const v = parseFloat(addAmt.value||0);
   if(!v || v <= 0) return alert('Enter valid amount');
-  users[me.mobile].balance = (users[me.mobile].balance||0) + v;
+  users[me.mobile].balance = Math.round(((users[me.mobile].balance||0) + v) * 100) / 100;
   addAmt.value = '';
   persist();
   updateWallet();
@@ -345,20 +360,19 @@ transferBtn.onclick = ()=>{
   const to = (t_mobile.value||'').trim();
   const amt = parseFloat(t_amount.value||0);
   transferMsg.innerText = '';
+  transferMsg.style.color = '';
   if(!to) return transferMsg.innerText = 'Recipient mobile चाहिए';
   if(!amt || amt <= 0) return transferMsg.innerText = 'Valid amount डालें';
   if(!users[to]) return transferMsg.innerText = 'Recipient user not found';
-  if(users[me.mobile].balance < amt) return transferMsg.innerText = 'आपके पास पर्याप्त बैलेंस नहीं है';
+  if((users[me.mobile].balance||0) < amt) return transferMsg.innerText = 'आपके पास पर्याप्त बैलेंस नहीं है';
   // perform transfer
-  users[me.mobile].balance = Math.round((users[me.mobile].balance - amt) * 100) / 100;
-  users[to].balance = Math.round((users[to].balance || 0 + amt) * 100) / 100;
-  // log simple note (we can push to withdraws as transactions, but keep simple)
+  users[me.mobile].balance = Math.round(((users[me.mobile].balance||0) - amt) * 100) / 100;
+  users[to].balance = Math.round(((users[to].balance||0) + amt) * 100) / 100;
   persist();
   updateWallet();
   transferMsg.style.color = 'green';
   transferMsg.innerText = `₹${amt} सफलतापूर्वक ${to} को भेज दिए गए।`;
-  // clear inputs after short delay
-  setTimeout(()=>{ t_mobile.value=''; t_amount.value=''; transferMsg.style.color=''; }, 1500);
+  setTimeout(()=>{ t_mobile.value=''; t_amount.value=''; transferMsg.style.color=''; transferMsg.innerText=''; }, 1600);
 };
 
 /* clear transfer */
@@ -369,23 +383,12 @@ withdrawBtn.onclick = ()=>{
   if(!me) return alert('Login first');
   const u = users[me.mobile];
   if(!u || (u.balance||0) <= 0) return alert('No balance');
-  // check bank details present
   if(!u.bank || !u.bank.name || !u.bank.account || !u.bank.ifsc){
-    return alert('Withdraw के लिए आपके बैंक की जानकारी जरूरी है — Profile में बैंक विवरण जोड़ें।');
+    return alert('Withdraw के लिए आपके बैंक की जानकारी जरूरी है — Register करके बैंक विवरण जोड़ें।');
   }
   if(!canRequestWithdraw()){
-    // show friendly message with next allowed time info
-    const now = new Date();
-    // calculate next 1st at 20:00
-    let next = new Date(now.getFullYear(), now.getMonth(), 1, 20, 0, 0, 0);
-    if(now.getDate() > 1 || (now.getDate()===1 && now.getHours()>=20)===false){
-      // if today is past 1st or it's 1st before 8pm then next is next month's 1st at 20:00
-      if(now.getDate() > 1 || (now.getDate()===1 && now.getHours()>=20)===false){
-        next = new Date(now.getFullYear(), now.getMonth()+1, 1, 20, 0, 0, 0);
-      }
-    }
     walletMsg.style.color = '#b00';
-    walletMsg.innerText = `Withdraw केवल हर महीने की 1 तारीख रात 8 बजे (local time) के बाद ही अनरोल किया जा सकता है।`;
+    walletMsg.innerText = `Withdraw केवल हर महीने की 1 तारीख रात 8 बजे (local time) के बाद ही किया जा सकता है।`;
     return;
   }
   const want = parseFloat(prompt('Enter withdraw amount (₹)'));
@@ -401,111 +404,48 @@ withdrawBtn.onclick = ()=>{
   walletMsg.innerText = `Withdraw request submitted (₹${want}). 10% fee लगेगा। Admin approval आवश्यक।`;
 };
 
+/* ========== Render downline bank table ========== */
+function renderDownline(){
+  downlineBody.innerHTML = '';
+  if(!me) return;
+  const kids = users[me.mobile].children || [];
+  if(!kids.length){ downlineTable.style.display='none'; noDownlineMsg.style.display='block'; return; }
+  noDownlineMsg.style.display='none';
+  downlineTable.style.display='table';
+  kids.forEach(m=>{
+    const u = users[m];
+    const tr = document.createElement('tr');
+    const name = `<td>${u.name||''}</td>`;
+    const mobile = `<td>${u.mobile||''}</td>`;
+    const bank = `<td>${u.bank?.name || ''}</td>`;
+    const acc = `<td>${u.bank?.account || ''}</td>`;
+    const ifsc = `<td>${u.bank?.ifsc || ''}</td>`;
+    const upi = `<td>${u.bank?.upi || ''}</td>`;
+    tr.innerHTML = name + mobile + bank + acc + ifsc + upi;
+    downlineBody.appendChild(tr);
+  });
+}
+
 /* ========== Team & Tree ========== */
-function renderTeam(){
-  teamList.innerHTML = '';
-  if(!me) return;
-  const children = users[me.mobile].children || [];
-  if(children.length === 0){ teamList.innerHTML = '<div class="small">No team members yet</div>'; return; }
-  children.forEach(m=>{
-    const d = document.createElement('div'); d.className = 'tree-node';
-    d.innerHTML = `<div>${users[m].name || m}</div><div><button class="plusbtn" data-m="${m}">[+]</button></div>`;
-    teamList.appendChild(d);
-    d.querySelector('.plusbtn').onclick = ()=>{
-      const subs = users[m].children || [];
-      if(!subs.length) return alert('No sub-members');
-      alert('Downline of ' + (users[m].name || m) + ': ' + subs.map(x=>users[x].name || x).join(', '));
-    };
-  });
-}
+function renderTeam(){ teamList.innerHTML = ''; if(!me) return; const children = users[me.mobile].children || []; if(children.length === 0){ teamList.innerHTML = '<div class="small">No team members yet</div>'; return; } children.forEach(m=>{ const d=document.createElement('div'); d.className='tree-node'; d.innerHTML = `<div>${users[m].name || m}</div><div><button class="plusbtn" data-m="${m}">[+]</button></div>`; teamList.appendChild(d); d.querySelector('.plusbtn').onclick = ()=>{ const subs = users[m].children || []; if(!subs.length) return alert('No sub-members'); alert('Downline of ' + (users[m].name || m) + ': ' + subs.map(x=>users[x].name || x).join(', ')); }; }); }
 
-function openRegisterWithParent(parent){
-  authCard.classList.remove('hidden');
-  fullRegister.classList.remove('hidden');
-  loginOnly.classList.add('hidden');
-  regParent.value = parent;
-  authTitle.innerText = 'Register under ' + parent;
-}
+function openRegisterWithParent(parent){ authCard.classList.remove('hidden'); fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); regParent.value = parent; authTitle.innerText = 'Register under ' + parent; }
 
-function renderTree(){
-  treeView.innerHTML = '';
-  if(!me) return;
-  const root = users[me.mobile];
-  const rootBox = document.createElement('div'); rootBox.className = 'card'; rootBox.style.textAlign = 'center';
-  rootBox.innerHTML = `<b>${root.name}</b><div class="small">${root.mobile}</div>`;
-  treeView.appendChild(rootBox);
-  const kids = root.children || [];
-  const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px';
-  if(kids.length === 0){
-    const empty = document.createElement('div'); empty.className = 'card'; empty.style.minWidth='160px'; empty.style.textAlign='center';
-    empty.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>';
-    row.appendChild(empty); treeView.appendChild(row);
-    empty.querySelector('#joinHere').onclick = ()=> openRegisterWithParent(me.mobile);
-    return;
-  }
-  kids.forEach(k=>{
-    const c = document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center';
-    c.innerHTML = `${users[k].name || k}<div class="small">${k}</div>`;
-    row.appendChild(c);
-  });
-  treeView.appendChild(row);
-}
+function renderTree(){ treeView.innerHTML = ''; if(!me) return; const root = users[me.mobile]; const rootBox = document.createElement('div'); rootBox.className = 'card'; rootBox.style.textAlign = 'center'; rootBox.innerHTML = `<b>${root.name}</b><div class="small">${root.mobile}</div>`; treeView.appendChild(rootBox); const kids = root.children || []; const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px'; if(kids.length === 0){ const empty = document.createElement('div'); empty.className = 'card'; empty.style.minWidth='160px'; empty.style.textAlign='center'; empty.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>'; row.appendChild(empty); treeView.appendChild(row); empty.querySelector('#joinHere').onclick = ()=> openRegisterWithParent(me.mobile); return; } kids.forEach(k=>{ const c = document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center'; c.innerHTML = `${users[k].name || k}<div class="small">${k}</div>`; row.appendChild(c); }); treeView.appendChild(row); }
 
-/* ========== Orders and Admin ========== */
-function simulateOrder(){
-  if(!me) return alert('Login first');
-  const sponsor = users[me.mobile].parent;
-  if(sponsor && users[sponsor]){
-    users[sponsor].balance = (users[sponsor].balance || 0) + 50;
-    persist();
-    alert('Order simulated: ₹50 commission added to sponsor: ' + (users[sponsor].name || sponsor));
-  } else alert('Order simulated: no sponsor to credit');
-}
+/* ========== Orders & Admin ========== */
+function simulateOrder(){ if(!me) return alert('Login first'); const sponsor = users[me.mobile].parent; if(sponsor && users[sponsor]){ users[sponsor].balance = Math.round(((users[sponsor].balance||0) + 50) * 100) / 100; persist(); alert('Order simulated: ₹50 commission added to sponsor: ' + (users[sponsor].name||sponsor)); } else alert('Order simulated: no sponsor to credit'); }
 
-function adminPrompt(){
-  const p = prompt('Enter admin password:');
-  if(!p) return;
-  if(p !== ADMIN_PWD) return alert('Wrong password');
-  openSection('admin');
-  renderRequests();
-}
+function adminPrompt(){ const p = prompt('Enter admin password:'); if(!p) return; if(p !== ADMIN_PWD) return alert('Wrong password'); openSection('admin'); renderRequests(); }
 
-function renderRequests(){
-  requestsDiv.innerHTML = '';
-  if(withdraws.length === 0){
-    requestsDiv.innerHTML = '<div class="small">No withdraws</div>'; return;
-  }
-  withdraws.forEach(w=>{
-    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px';
-    d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div>
-                   <div class="small">Bank: ${w.bank?.name || ''} • ${w.bank?.account || ''} • IFSC: ${w.bank?.ifsc || ''}</div>`;
-    if(w.status === 'pending'){
-      const a = document.createElement('button'); a.className='primary'; a.textContent='Approve';
-      a.onclick = ()=>{
-        w.status = 'approved';
-        persist();
-        renderRequests();
-        alert('Approved. Please transfer payment externally to user bank/UPI.');
-      };
-      d.appendChild(a);
-    }
-    requestsDiv.appendChild(d);
-  });
-}
+function renderRequests(){ requestsDiv.innerHTML = ''; if(withdraws.length === 0){ requestsDiv.innerHTML = '<div class="small">No withdraws</div>'; return; } withdraws.forEach(w=>{ const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px'; d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div><div class="small">Bank: ${w.bank?.name || ''} • ${w.bank?.account || ''} • IFSC: ${w.bank?.ifsc || ''}</div>`; if(w.status==='pending'){ const a=document.createElement('button'); a.className='primary'; a.textContent='Approve'; a.onclick = ()=>{ w.status='approved'; persist(); renderRequests(); alert('Approved. Transfer externally.'); }; d.appendChild(a); } requestsDiv.appendChild(d); }); }
 
 /* ========== Utilities ========== */
-function updateLoggedAs(){
-  document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged';
-  if(me && users[me.mobile] && users[me.mobile].bank){
-    const b = users[me.mobile].bank;
-    bankInfoSmall.innerText = `Bank: ${b.name} • ${b.account}${b.upi ? ' • UPI: ' + b.upi : ''}`;
-  } else bankInfoSmall.innerText = '';
-}
+function updateLoggedAs(){ document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged'; if(me && users[me.mobile] && users[me.mobile].bank){ const b = users[me.mobile].bank; bankInfoSmall.innerText = `Bank: ${b.name} • ${b.account}${b.upi ? ' • UPI: ' + b.upi : ''}`; } else bankInfoSmall.innerText = ''; }
 
 function closeDrawer(){ drawer.classList.remove('open'); overlay.style.display = 'none'; }
 
 /* ========== Init ========== */
-/* do not auto-create demo users — first user must register */
 if(!users) users = {};
 updateLoggedAs();
 showAuthBasedOnUsers();

@@ -112,150 +112,233 @@ button.ghost{background:#f5f5f5;border:none}
 </main>
 
 <script>
+/* ================== CONFIG ================== */
 const ADMIN_PASSWORD="Rjpapad@2025";
+/* Banners: Hindi and English (user provided english link used here) */
 const BANNER_HI="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
 const BANNER_EN="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 const LOGO_IMG="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png";
+/* ================== STORAGE KEYS ================== */
+const KEY_USERS = "rp_users_v1";
+const KEY_WITHDRAWS = "rp_withdraws_v1";
+const KEY_ME = "rp_me";
+const KEY_LANG = "rp_lang";
 
-let users=JSON.parse(localStorage.getItem("rp_users")||"{}");
-let me=JSON.parse(localStorage.getItem("rp_me")||"null");
-let withdraws=JSON.parse(localStorage.getItem("rp_withdraws")||"[]");
-let currentLang=localStorage.getItem("rp_lang")||"hi";
+/* load/save helpers */
+function load(key, def){ try{return JSON.parse(localStorage.getItem(key)||"null")||def;}catch(e){return def} }
+function save(key,obj){ localStorage.setItem(key, JSON.stringify(obj)); }
 
-function saveAll(){
-  localStorage.setItem("rp_users",JSON.stringify(users));
-  localStorage.setItem("rp_me",JSON.stringify(me));
-  localStorage.setItem("rp_withdraws",JSON.stringify(withdraws));
-  localStorage.setItem("rp_lang",currentLang);
-}
+/* data */
+let users = load(KEY_USERS, {});
+let withdraws = load(KEY_WITHDRAWS, []);
+let me = load(KEY_ME, null);
+let currentLang = localStorage.getItem(KEY_LANG) || "hi";
 
-/* UI Elements */
-const drawer=document.getElementById("drawer");
-menuBtn.onclick=()=>drawer.classList.toggle("open");
-menuLogoutBtn.onclick=()=>{me=null;saveAll();location.reload();}
-logoImg.src=LOGO_IMG;
-logoHideBtn.onclick=()=>document.getElementById("logo-page").classList.add("hidden");
+/* Auto save every 2s */
+function saveAll(){ save(KEY_USERS, users); save(KEY_WITHDRAWS, withdraws); save(KEY_ME, me); localStorage.setItem(KEY_LANG, currentLang); }
+setInterval(saveAll,2000);
 
-/* Language change */
+/* UI refs */
+const menuBtn = document.getElementById("menuBtn");
+const drawer = document.getElementById("drawer");
+const menuWalletBtn = document.getElementById("menuWalletBtn");
+const menuMyTeamBtn = document.getElementById("menuMyTeamBtn");
+const menuTreeBtn = document.getElementById("menuTreeBtn");
+const menuOrderBtn = document.getElementById("menuOrderBtn");
+const menuAdminBtn = document.getElementById("menuAdminBtn");
+const menuLogoutBtn = document.getElementById("menuLogoutBtn");
+const logoImg = document.getElementById("logoImg");
+const logoHideBtn = document.getElementById("logoHideBtn");
+
+const bannersWrap = document.getElementById("bannersWrap");
+const bannerImg = document.getElementById("bannerImg");
+const bannerText = document.getElementById("bannerText");
+
+const walletCard = document.getElementById("walletCard");
+const walletAmount = document.getElementById("walletAmount");
+const addAmountInp = document.getElementById("addAmountInp");
+const addAmountBtn = document.getElementById("addAmountBtn");
+const withdrawBtn = document.getElementById("withdrawBtn");
+
+const myTeamCard = document.getElementById("myTeamCard");
+const teamList = document.getElementById("teamList");
+
+const treeCard = document.getElementById("treeCard");
+const treeCanvasWrap = document.getElementById("treeCanvasWrap");
+
+const adminPanel = document.getElementById("adminPanel");
+const withdrawRequests = document.getElementById("withdrawRequests");
+
+/* init UI */
+menuBtn.onclick = ()=> drawer.classList.toggle("open");
+menuLogoutBtn.onclick = ()=>{ me=null; saveAll(); location.reload(); };
+logoImg.src = LOGO_IMG;
+logoHideBtn.onclick = ()=> document.getElementById("logo-page").classList.add("hidden");
+
+/* language */
 function setLang(lang){
-  currentLang=lang;
-  if(lang==="hi"){bannerImg.src=BANNER_HI;bannerText.innerText="RJ पापड़ — स्वाद में खास";}
-  if(lang==="en"){bannerImg.src=BANNER_EN;bannerText.innerText="RJ Papad — Homemade taste";}
-  if(lang==="gu"){bannerImg.src=BANNER_HI;bannerText.innerText="RJ પાપડ — સ્વાદમાં ખાસ";}
+  currentLang = lang;
+  if(lang === "hi"){ bannerImg.src = BANNER_HI; bannerText.innerText = "RJ पापड़ — स्वाद में खास"; }
+  else if(lang === "en"){ bannerImg.src = BANNER_EN; bannerText.innerText = "RJ Papad — Homemade taste"; }
+  else { bannerImg.src = BANNER_HI; bannerText.innerText = "RJ પાપડ — સ્વાદમાં ખાસ"; }
   saveAll();
 }
-["hi","en","gu"].forEach(l=>{
-  document.getElementById(l+"Btn").onclick=()=>setLang(l);
-  document.getElementById("lang-"+l).onclick=()=>setLang(l);
-});
+document.getElementById("hiBtn").onclick = ()=> setLang("hi");
+document.getElementById("enBtn").onclick = ()=> setLang("en");
+document.getElementById("guBtn").onclick = ()=> setLang("gu");
+document.getElementById("lang-hi").onclick = ()=> setLang("hi");
+document.getElementById("lang-en").onclick = ()=> setLang("en");
+document.getElementById("lang-gu").onclick = ()=> setLang("gu");
 setLang(currentLang);
 
-/* Menu show/hide */
+/* show/hide sections */
 function showSection(s){
-  bannersWrap.style.display="none";
-  walletCard.style.display="none";
-  myTeamCard.style.display="none";
-  treeCard.style.display="none";
-  adminPanel.style.display="none";
-  if(s==="wallet")walletCard.style.display="block";
-  if(s==="team")myTeamCard.style.display="block";
-  if(s==="tree")treeCard.style.display="block";
-  if(s==="admin")adminPanel.style.display="block";
-  if(s==="home")bannersWrap.style.display="block";
+  bannersWrap.style.display = "none";
+  walletCard.style.display = "none";
+  myTeamCard.style.display = "none";
+  treeCard.style.display = "none";
+  adminPanel.style.display = "none";
+  if(s==="wallet") walletCard.style.display = "block";
+  if(s==="team") myTeamCard.style.display = "block";
+  if(s==="tree") treeCard.style.display = "block";
+  if(s==="admin") adminPanel.style.display = "block";
+  if(s==="home") bannersWrap.style.display = "block";
 }
-menuWalletBtn.onclick=()=>{drawer.classList.remove("open");showSection("wallet");updateWallet();}
-menuMyTeamBtn.onclick=()=>{drawer.classList.remove("open");showSection("team");renderTeam();}
-menuTreeBtn.onclick=()=>{drawer.classList.remove("open");showSection("tree");renderTree();}
-menuAdminBtn.onclick=()=>{
-  const pwd=prompt("Enter admin password:");
-  if(pwd===ADMIN_PASSWORD){drawer.classList.remove("open");showSection("admin");renderWithdraws();}
+
+/* Menu handlers */
+menuWalletBtn.onclick = ()=>{ drawer.classList.remove("open"); if(!me) return alert("Please login first"); showSection("wallet"); updateWallet(); }
+menuMyTeamBtn.onclick = ()=>{ drawer.classList.remove("open"); if(!me) return alert("Please login first"); showSection("team"); renderTeam(); }
+menuTreeBtn.onclick = ()=>{ drawer.classList.remove("open"); if(!me) return alert("Please login first"); showSection("tree"); renderTree(); }
+menuAdminBtn.onclick = ()=>{
+  const pwd = prompt("Enter admin password:");
+  if(pwd === ADMIN_PASSWORD){ drawer.classList.remove("open"); showSection("admin"); renderWithdraws(); }
   else alert("Wrong password");
 };
-menuOrderBtn.onclick=()=>{
+menuOrderBtn.onclick = ()=>{
   drawer.classList.remove("open");
-  if(!me)return alert("Login first");
-  const p=users[me.mobile]?.parent;
-  if(p&&users[p]){users[p].balance=(users[p].balance||0)+50;saveAll();alert("Order done. ₹50 commission added.");}
-  else alert("No sponsor found");
-};
-
-/* Wallet */
-function updateWallet(){
-  if(!me)return;
-  const u=users[me.mobile]||{balance:0};
-  walletAmount.innerText="₹"+(u.balance||0);
+  if(!me) return alert("Login first");
+  // simulate placing order: give commission to sponsor (parent)
+  const sponsor = users[me.mobile] && users[me.mobile].parent;
+  if(sponsor && users[sponsor]){
+    users[sponsor].balance = (users[sponsor].balance||0) + 50; // fixed commission demo
+    saveAll();
+    alert("Order placed — ₹50 commission added to sponsor.");
+  } else alert("Order placed — no sponsor found to credit.");
 }
-addAmountBtn.onclick=()=>{
-  const amt=parseFloat(addAmountInp.value);
-  if(!amt)return alert("Enter amount");
-  users[me.mobile].balance=(users[me.mobile].balance||0)+amt;
-  saveAll();updateWallet();addAmountInp.value="";
+
+/* Wallet functions */
+function updateWallet(){
+  if(!me) return;
+  const u = users[me.mobile] || {balance:0};
+  walletAmount.innerText = "₹" + (u.balance || 0);
+}
+addAmountBtn.onclick = ()=>{
+  if(!me) return alert("Login first");
+  const amt = parseFloat(addAmountInp.value);
+  if(!amt || amt <= 0) return alert("Enter valid amount");
+  users[me.mobile].balance = (users[me.mobile].balance||0) + amt;
+  addAmountInp.value = "";
+  saveAll(); updateWallet();
 };
-withdrawBtn.onclick=()=>{
-  const amt=prompt("Withdraw amount?");
-  const a=parseFloat(amt);
-  if(!a)return;
-  const u=users[me.mobile];
-  if(a>u.balance)return alert("Not enough balance");
-  const fee=Math.round(a*0.1);
-  u.balance-=a;
-  withdraws.push({id:Date.now(),mobile:me.mobile,amount:a,fee,after:a-fee,status:"pending"});
-  saveAll();updateWallet();alert("Withdraw requested.");
+withdrawBtn.onclick = ()=>{
+  if(!me) return alert("Login first");
+  const amt = parseFloat(prompt("Withdraw amount?"));
+  if(!amt || amt <= 0) return;
+  const u = users[me.mobile];
+  if(amt > (u.balance||0)) return alert("Not enough balance");
+  const fee = Math.round(amt * 0.10);
+  u.balance = (u.balance||0) - amt;
+  withdraws.push({ id: Date.now(), mobile: me.mobile, amount: amt, fee, after: amt - fee, status: "pending" });
+  saveAll(); updateWallet(); alert("Withdraw requested (10% fee applied). Admin will approve.");
 };
 
-/* My Team */
+/* Team / Tree rendering */
 function renderTeam(){
-  teamList.innerHTML="";
-  const meU=users[me.mobile];
-  (meU.children||[]).forEach(c=>{
-    const d=document.createElement("div");
-    d.className="tree-node";
-    d.innerHTML=`<div>${users[c].name||c}</div><button class='plusbtn'>+</button>`;
-    teamList.appendChild(d);
+  teamList.innerHTML = "";
+  if(!me) return;
+  const u = users[me.mobile] || {children:[]};
+  (u.children||[]).forEach(childMobile=>{
+    const div = document.createElement("div");
+    div.className = "tree-node";
+    const name = users[childMobile] ? (users[childMobile].name || childMobile) : childMobile;
+    div.innerHTML = `<div> ${getEmojiForUser(childMobile)} ${name}</div><button class='plusbtn'>[+]</button>`;
+    div.querySelector(".plusbtn").onclick = ()=> {
+      // when plus clicked, show child's children (simple expand demo)
+      const c = users[childMobile] && users[childMobile].children || [];
+      if(!c.length) return alert("No sub-team");
+      const popup = document.createElement("div"); popup.style.position="fixed"; popup.style.left="20%"; popup.style.top="20%"; popup.style.padding="16px"; popup.style.background="#fff"; popup.style.boxShadow="0 8px 20px rgba(0,0,0,0.2)"; popup.innerHTML = `<b>Team of ${users[childMobile].name||childMobile}</b><br><div>${c.map(x=>getEmojiForUser(x)+" "+(users[x].name||x)).join("<br>")}</div><div style="margin-top:8px"><button id="closePop">Close</button></div>`;
+      document.body.appendChild(popup);
+      document.getElementById("closePop").onclick = ()=> popup.remove();
+    };
+    teamList.appendChild(div);
   });
 }
 
-/* Tree */
 function renderTree(){
-  treeCanvasWrap.innerHTML="";
-  const meU=users[me.mobile];
-  const ch=meU.children||[];
-  const wrap=document.createElement("div");
-  wrap.style.display="flex";wrap.style.gap="10px";wrap.style.justifyContent="center";
-  wrap.innerHTML=`<div class='card'>${meU.name||me.mobile}</div>`;
-  const down=document.createElement("div");
-  down.style.display="flex";down.style.gap="10px";down.style.justifyContent="center";down.style.marginTop="10px";
-  ch.forEach(c=>down.innerHTML+=`<div class='card'>${users[c].name||c}</div>`);
-  treeCanvasWrap.appendChild(wrap);treeCanvasWrap.appendChild(down);
+  treeCanvasWrap.innerHTML = "";
+  if(!me) return;
+  const root = users[me.mobile];
+  if(!root) return;
+  const container = document.createElement("div");
+  container.style.textAlign="center";
+  const rootCard = document.createElement("div");
+  rootCard.className="card";
+  rootCard.innerText = (root.name||me.mobile);
+  container.appendChild(rootCard);
+  const line = document.createElement("div");
+  line.style.display="flex"; line.style.justifyContent="center"; line.style.gap="10px"; line.style.marginTop="12px";
+  (root.children||[]).forEach(m=>{
+    const ccard = document.createElement("div");
+    ccard.className="card";
+    ccard.innerText = users[m] ? (users[m].name || m) : m;
+    line.appendChild(ccard);
+  });
+  container.appendChild(line);
+  treeCanvasWrap.appendChild(container);
 }
 
-/* Admin */
+/* Admin withdraws */
 function renderWithdraws(){
   withdrawRequests.innerHTML="";
   withdraws.forEach(w=>{
-    const li=document.createElement("li");
-    li.innerHTML=`${w.mobile} → ₹${w.amount} (${w.status})`;
-    if(w.status==="pending"){
-      const b=document.createElement("button");b.textContent="Approve";
-      b.onclick=()=>{w.status="approved";saveAll();renderWithdraws();}
-      li.appendChild(b);
+    const li = document.createElement("li");
+    li.innerHTML = `${w.mobile} → ₹${w.amount} (fee ₹${w.fee}) — ${w.status} `;
+    if(w.status === "pending"){
+      const a = document.createElement("button"); a.textContent = "Approve";
+      a.onclick = ()=>{ w.status="approved"; saveAll(); renderWithdraws(); alert("Approved. Please send payment manually to user: check their bank/upi details."); }
+      li.appendChild(a);
     }
     withdrawRequests.appendChild(li);
   });
 }
 
-/* Demo user auto-create */
-if(!Object.keys(users).length){
-  users["9990000001"]={mobile:"9990000001",name:"Rajesh Parmar",balance:1500,children:["9990000002","9990000003"]};
-  users["9990000002"]={mobile:"9990000002",name:"Maan",balance:200,parent:"9990000001"};
-  users["9990000003"]={mobile:"9990000003",name:"Bhavna",balance:100,parent:"9990000001"};
-  me={mobile:"9990000001"};
+/* small helper */
+function getEmojiForUser(mobile){
+  const u = users[mobile];
+  if(!u || !u.gender) return "👤";
+  return (u.gender==="female") ? "👩" : "👨";
+}
+
+/* Demo data (only if empty) */
+if(Object.keys(users).length === 0){
+  users["9990000001"] = { mobile:"9990000001", name:"Rajesh Parmar", balance:1500, children:["9990000002","9990000003"] };
+  users["9990000002"] = { mobile:"9990000002", name:"Maan", balance:200, parent:"9990000001", gender:"male" };
+  users["9990000003"] = { mobile:"9990000003", name:"Bhavna", balance:100, parent:"9990000001", gender:"female" };
+  me = { mobile:"9990000001" };
   saveAll();
 }
 
+/* initial UI state */
 updateWallet();
 showSection("home");
-setInterval(saveAll,2000);
+document.getElementById("menuLoggedAs").innerText = me ? ("Logged as: " + (users[me.mobile] ? (users[me.mobile].name || me.mobile) : me.mobile)) : "Not logged";
+
+/* expose for debugging (optional) */
+window._rp = { users, me, withdraws, saveAll };
+
+/* initial banner load (ensures banner shows immediately) */
+setLang(currentLang);
+
 </script>
 </body>
 </html>

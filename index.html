@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="hi">
 <head>
@@ -29,7 +28,7 @@ button.ghost{background:#f5f5f5;border:none}
 .hidden{display:none}
 .logo-top{display:flex;justify-content:center;margin-bottom:12px;}
 .logo-top img{max-width:160px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.15);}
-pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;border-radius:8px;border:1px solid #eee}
+.pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;border-radius:8px;border:1px solid #eee}
 @media(min-width:900px){.logo-top img{max-width:220px}}
 </style>
 </head>
@@ -40,7 +39,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
   <div class="brand">RJ Papad</div>
 </header>
 
-<!-- Drawer (Export/Import buttons removed) -->
+<!-- Drawer -->
 <div id="drawer" class="drawer" aria-hidden="true">
   <h3>Menu</h3>
   <div id="loggedAs" class="small" style="margin-bottom:10px">Not logged</div>
@@ -57,24 +56,37 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
 
 <div class="container">
 
-  <!-- AUTH area -->
+  <!-- AUTH area (logo displayed on auth) -->
   <div id="authCard" class="card">
     <div class="logo-top">
       <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" alt="Logo">
     </div>
     <h2 id="authTitle">Register / Login</h2>
 
-    <!-- Register -->
+    <!-- Register (shown first-time or when explicitly needed) -->
     <div id="fullRegisterBlock" class="hidden">
       <label>नाम (optional)</label>
       <input id="reg_name" placeholder="Name (optional)" />
       <div style="height:8px"></div>
+
       <label>मोबाइल नंबर (required)</label>
       <input id="reg_mobile" placeholder="Mobile number" />
       <div style="height:8px"></div>
-      <label>Joined by (Parent mobile — optional)</label>
+
+      <label>Parent / Joined by (optional)</label>
       <input id="reg_parent" placeholder="Parent mobile (optional)" />
+      <div style="height:8px"></div>
+
+      <h4 style="margin:8px 0 6px 0">Bank details (required for withdrawals)</h4>
+      <input id="bank_name" placeholder="Bank name (e.g. HDFC)" />
+      <div style="height:8px"></div>
+      <input id="bank_acc" placeholder="Account number" />
+      <div style="height:8px"></div>
+      <input id="bank_ifsc" placeholder="IFSC code" />
+      <div style="height:8px"></div>
+      <input id="bank_upi" placeholder="UPI ID (optional)" />
       <div style="height:10px"></div>
+
       <div style="display:flex;gap:8px">
         <button id="registerBtn" class="primary" style="flex:1">Register</button>
         <button id="registerCancelBtn" class="ghost" style="flex:1">Cancel</button>
@@ -111,8 +123,8 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
       <img id="bannerImg" src="" alt="Primary banner">
     </div>
 
-    <!-- Second banner -->
-    <div class="banner">
+    <!-- Second banner (below first) -->
+    <div class="banner" style="margin-bottom:12px">
       <img id="bannerImg2" src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png" alt="Secondary banner">
     </div>
 
@@ -123,23 +135,48 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
   <!-- Wallet -->
   <div id="walletArea" class="card hidden">
     <h3>My Wallet</h3>
+
     <div style="display:flex;align-items:center;gap:12px">
       <div style="font-size:24px;font-weight:700;color:#d2691e">₹<span id="bal">0</span></div>
+      <div class="small" id="bankInfoSmall"></div>
     </div>
     <div style="height:10px"></div>
-    <div style="display:flex;gap:8px">
+
+    <!-- Add money (demo) -->
+    <div style="display:flex;gap:8px;margin-bottom:8px">
       <input id="addAmt" placeholder="Amount ₹" />
       <button id="addBtn" class="primary">Add</button>
     </div>
-    <div style="height:10px"></div>
-    <button id="withdrawBtn" class="ghost">Withdraw (Request)</button>
-    <div id="walletMsg" class="small" style="margin-top:8px"></div>
+
+    <!-- Transfer by mobile -->
+    <div style="margin-top:12px;padding:10px;border-radius:8px;border:1px solid #eee;background:#fafafa">
+      <h4 style="margin:0 0 8px 0">Transfer to another customer</h4>
+      <input id="t_mobile" placeholder="Recipient mobile number" style="margin-bottom:8px;width:100%"/>
+      <input id="t_amount" placeholder="Amount ₹" style="margin-bottom:8px;width:100%"/>
+      <div style="display:flex;gap:8px">
+        <button id="transferBtn" class="primary" style="flex:1">Transfer</button>
+        <button id="transferCancelBtn" class="ghost" style="flex:1">Clear</button>
+      </div>
+      <div id="transferMsg" class="small" style="margin-top:8px"></div>
+    </div>
+
+    <div style="height:12px"></div>
+
+    <!-- Withdraw request -->
+    <div>
+      <button id="withdrawBtn" class="ghost">Withdraw (Request)</button>
+      <div id="withdrawNote" class="small" style="margin-top:8px;color:#333">
+        Withdrawals can be requested only on the <strong>1st day of each month</strong> and after <strong>20:00 (8:00 PM)</strong> local time. Admin must approve. 10% fee applies.
+      </div>
+      <div id="walletMsg" class="small" style="margin-top:8px;color:#b00"></div>
+    </div>
   </div>
 
   <!-- Team -->
   <div id="teamArea" class="card hidden">
     <h3>My Team</h3>
     <div id="teamList"></div>
+    <div class="small" style="margin-top:8px">Click [+] on a slot to open join/register with parent prefilled.</div>
   </div>
 
   <!-- Tree -->
@@ -157,105 +194,319 @@ pre{white-space:pre-wrap;word-break:break-word;background:#f9f9f9;padding:10px;b
 </div>
 
 <script>
+/* ========== CONFIG ========== */
 const ADMIN_PWD = "Rjpapad@2025";
 const BANNER_HI = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
 const BANNER_EN = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 const SECOND_BANNER_DEFAULT = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
-const KEY_USERS="rp_users_v5",KEY_ME="rp_me_v5",KEY_WDS="rp_withdraws_v5",KEY_LANG="rp_lang_v5";
-function load(k,d){try{let v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
-function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
-let users=load(KEY_USERS,{}),me=load(KEY_ME,null),withdraws=load(KEY_WDS,[]),lang=localStorage.getItem(KEY_LANG)||"hi";
-function persist(){save(KEY_USERS,users);save(KEY_ME,me);save(KEY_WDS,withdraws);localStorage.setItem(KEY_LANG,lang)}
-setInterval(persist,2000);
 
-/* UI refs */
-const authCard=document.getElementById('authCard'),authTitle=document.getElementById('authTitle'),
-fullRegister=document.getElementById('fullRegisterBlock'),loginOnly=document.getElementById('loginOnlyBlock'),
-regName=document.getElementById('reg_name'),regMobile=document.getElementById('reg_mobile'),regParent=document.getElementById('reg_parent'),
-registerBtn=document.getElementById('registerBtn'),cancelBtn=document.getElementById('registerCancelBtn'),
-loginOnlyBtn=document.getElementById('loginOnlyBtn'),loginMobile=document.getElementById('login_mobile'),
-showRegisterForJoinBtn=document.getElementById('showRegisterForJoinBtn'),authMsg=document.getElementById('authMsg');
+/* ========== STORAGE KEYS & HELPERS ========== */
+const KEY_USERS="rp_users_wallet_v1", KEY_ME="rp_me_wallet_v1", KEY_WDS="rp_withdraws_wallet_v1", KEY_LANG="rp_lang_wallet_v1";
+function load(k,d){ try{ const s = localStorage.getItem(k); return s ? JSON.parse(s) : d; } catch(e){ return d; } }
+function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
 
-const homeArea=document.getElementById('homeArea'),bannerImg=document.getElementById('bannerImg'),bannerImg2=document.getElementById('bannerImg2'),homeTitle=document.getElementById('homeTitle');
-const walletArea=document.getElementById('walletArea'),balSpan=document.getElementById('bal'),addAmt=document.getElementById('addAmt'),addBtn=document.getElementById('addBtn'),withdrawBtn=document.getElementById('withdrawBtn'),walletMsg=document.getElementById('walletMsg');
-const teamArea=document.getElementById('teamArea'),teamList=document.getElementById('teamList');
-const treeArea=document.getElementById('treeArea'),treeView=document.getElementById('treeView');
-const adminArea=document.getElementById('adminArea'),requestsDiv=document.getElementById('requests');
+let users = load(KEY_USERS, {}) || {};   // mobile -> {mobile,name,balance,parent,children, bank:{name,acc,ifsc,upi}}
+let me = load(KEY_ME, null);             // {mobile,name}
+let withdraws = load(KEY_WDS, []) || [];
+let lang = localStorage.getItem(KEY_LANG) || "hi";
 
-document.getElementById('menuToggle').onclick = ()=>{ document.getElementById('drawer').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('drawer').classList.contains('open') ? 'block' : 'none'; };
-document.getElementById('overlay').onclick = ()=>{ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').style.display = 'none'; };
+/* autosave */
+function persist(){ save(KEY_USERS, users); save(KEY_ME, me); save(KEY_WDS, withdraws); localStorage.setItem(KEY_LANG, lang); }
+setInterval(persist, 2000);
 
-document.getElementById('btnWallet').onclick=()=>{ closeDrawer(); hideAll(); walletArea.classList.remove('hidden'); updateWallet(); };
-document.getElementById('btnMyTeam').onclick=()=>{ closeDrawer(); hideAll(); teamArea.classList.remove('hidden'); renderTeam(); };
-document.getElementById('btnTree').onclick=()=>{ closeDrawer(); hideAll(); treeArea.classList.remove('hidden'); renderTree(); };
-document.getElementById('btnOrder').onclick=()=>{ closeDrawer(); simulateOrder(); };
-document.getElementById('btnAdmin').onclick=()=>{ closeDrawer(); adminPrompt(); };
-document.getElementById('btnLogout').onclick=()=>{ me=null; save(KEY_ME,null); location.reload(); };
+/* ========== UI refs ========== */
+const menuToggle = document.getElementById('menuToggle'), drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
+menuToggle.onclick = ()=>{ drawer.classList.toggle('open'); overlay.style.display = drawer.classList.contains('open') ? 'block' : 'none'; };
+overlay.onclick = ()=>{ drawer.classList.remove('open'); overlay.style.display='none'; };
 
-/* Language & banners */
-function setLang(l){
-  lang = l; localStorage.setItem(KEY_LANG, l);
-  if(l==='hi'){ bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ पापड़ — आपका स्वागत'; }
-  else if(l==='en'){ bannerImg.src = BANNER_EN; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ Papad — Welcome'; }
-  else { bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ પાપડ — Welcome'; }
-  persist();
-}
-document.querySelectorAll('.langBtn').forEach(b=>b.addEventListener('click', ()=> setLang(b.id)));
+const authCard = document.getElementById('authCard'), authTitle = document.getElementById('authTitle'), authMsg = document.getElementById('authMsg');
+const fullRegister = document.getElementById('fullRegisterBlock'), loginOnly = document.getElementById('loginOnlyBlock');
+const regName = document.getElementById('reg_name'), regMobile = document.getElementById('reg_mobile'), regParent = document.getElementById('reg_parent');
+const bankName = document.getElementById('bank_name'), bankAcc = document.getElementById('bank_acc'), bankIFSC = document.getElementById('bank_ifsc'), bankUPI = document.getElementById('bank_upi');
+const registerBtn = document.getElementById('registerBtn'), registerCancelBtn = document.getElementById('registerCancelBtn');
+const loginOnlyBtn = document.getElementById('loginOnlyBtn'), loginMobile = document.getElementById('login_mobile'), showRegisterForJoinBtn = document.getElementById('showRegisterForJoinBtn');
+
+const homeArea = document.getElementById('homeArea'), bannerImg = document.getElementById('bannerImg'), bannerImg2 = document.getElementById('bannerImg2'), homeTitle = document.getElementById('homeTitle');
+const walletArea = document.getElementById('walletArea'), balSpan = document.getElementById('bal'), addAmt = document.getElementById('addAmt'), addBtn = document.getElementById('addBtn'), withdrawBtn = document.getElementById('withdrawBtn'), walletMsg = document.getElementById('walletMsg'), withdrawNote = document.getElementById('withdrawNote'), bankInfoSmall = document.getElementById('bankInfoSmall');
+
+const t_mobile = document.getElementById('t_mobile'), t_amount = document.getElementById('t_amount'), transferBtn = document.getElementById('transferBtn'), transferCancelBtn = document.getElementById('transferCancelBtn'), transferMsg = document.getElementById('transferMsg');
+
+const teamArea = document.getElementById('teamArea'), teamList = document.getElementById('teamList');
+const treeArea = document.getElementById('treeArea'), treeView = document.getElementById('treeView');
+const adminArea = document.getElementById('adminArea'), requestsDiv = document.getElementById('requests');
+
+/* menu actions */
+document.getElementById('btnWallet').onclick = ()=> { closeDrawer(); openSection('wallet'); };
+document.getElementById('btnMyTeam').onclick = ()=> { closeDrawer(); openSection('team'); };
+document.getElementById('btnTree').onclick = ()=> { closeDrawer(); openSection('tree'); };
+document.getElementById('btnOrder').onclick = ()=> { closeDrawer(); simulateOrder(); };
+document.getElementById('btnAdmin').onclick = ()=> { closeDrawer(); adminPrompt(); };
+document.getElementById('btnLogout').onclick = ()=> { me = null; save(KEY_ME, null); location.reload(); };
+
+/* language */
+function setLang(l){ lang = l; localStorage.setItem(KEY_LANG, l); if(l==='hi'){ bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ पापड़ — आपका स्वागत'; } else if(l==='en'){ bannerImg.src = BANNER_EN; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ Papad — Welcome'; } else { bannerImg.src = BANNER_HI; bannerImg2.src = SECOND_BANNER_DEFAULT; homeTitle.innerText = 'RJ પાપડ — Welcome'; } persist(); }
+document.querySelectorAll('.langBtn').forEach(b => b.addEventListener('click', ()=> setLang(b.id)));
 setLang(lang);
 
-/* Auth UI logic */
+/* ========== AUTH behavior ========== */
 function showAuthBasedOnUsers(){
   authMsg.innerText = '';
   if(Object.keys(users).length === 0){
-    fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); authTitle.innerText = 'Register (first user)';
+    fullRegister.classList.remove('hidden');
+    loginOnly.classList.add('hidden');
+    authTitle.innerText = 'Register (first user)';
   } else {
-    fullRegister.classList.add('hidden'); loginOnly.classList.remove('hidden'); authTitle.innerText = 'Login';
+    fullRegister.classList.add('hidden');
+    loginOnly.classList.remove('hidden');
+    authTitle.innerText = 'Login';
   }
-  if(me){ openHome(); } else { authCard.classList.remove('hidden'); hideAll(); }
+  if(me){
+    enterApp();
+  } else {
+    authCard.classList.remove('hidden');
+    hideAll();
+  }
 }
 
+/* Register (stores bank details) */
 registerBtn.onclick = ()=>{
   const n = regName.value.trim(), m = regMobile.value.trim(), p = regParent.value.trim();
-  if(!m){ authMsg.innerText='मोबाइल जरूरी'; return; }
-  if(users[m]){ authMsg.innerText='User exists'; return; }
-  users[m] = { mobile:m, name:n||m, balance:0, parent:null, children:[] };
+  const bn = bankName.value.trim(), ba = bankAcc.value.trim(), bi = bankIFSC.value.trim(), bu = bankUPI.value.trim();
+  if(!m){ authMsg.innerText = 'मोबाइल नंबर आवश्यक है'; return; }
+  if(!bn || !ba || !bi){ authMsg.innerText = 'Bank name, account number और IFSC भरना आवश्यक है (Withdraw के लिए)'; return; }
+  if(users[m]){ authMsg.innerText = 'User already exists — please login'; return; }
+  users[m] = { mobile: m, name: n || m, balance: 0, parent: null, children: [], bank: { name: bn, account: ba, ifsc: bi, upi: bu } };
   if(p && users[p]){ users[m].parent = p; users[p].children = users[p].children || []; users[p].children.push(m); }
-  me = { mobile:m, name:users[m].name }; persist(); openHome();
+  me = { mobile: m, name: users[m].name };
+  persist();
+  enterApp();
 };
-document.getElementById('registerCancelBtn').onclick = ()=> { regName.value=''; regMobile.value=''; regParent.value=''; showAuthBasedOnUsers(); };
 
-document.getElementById('loginOnlyBtn').onclick = ()=> {
-  const m = document.getElementById('login_mobile').value.trim();
-  if(!m){ authMsg.innerText='मोबाइल डालें'; return; }
-  if(users[m]){ me = { mobile:m, name:users[m].name }; persist(); openHome(); } else authMsg.innerText='User नहीं मिला';
+/* cancel register */
+registerCancelBtn.onclick = ()=>{
+  regName.value = ''; regMobile.value = ''; regParent.value=''; bankName.value=''; bankAcc.value=''; bankIFSC.value=''; bankUPI.value='';
+  showAuthBasedOnUsers();
 };
-showRegisterForJoinBtn.onclick = ()=> { fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); authTitle.innerText='Register with Parent'; };
 
-/* Sections */
+/* Login-only block */
+loginOnlyBtn.onclick = ()=>{
+  const m = loginMobile.value.trim();
+  if(!m){ authMsg.innerText = 'मोबाइल डालें'; return; }
+  if(users[m]){ me = { mobile: m, name: users[m].name }; persist(); enterApp(); } else authMsg.innerText = 'User नहीं मिला — Register with Parent देखें';
+};
+showRegisterForJoinBtn.onclick = ()=>{
+  fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); authTitle.innerText = 'Register with Parent';
+};
+
+/* ========== APP entry ========== */
+function enterApp(){
+  authCard.classList.add('hidden');
+  updateLoggedAs();
+  setLang(lang);
+  openSection('home');
+}
+
+/* ========== Sections control ========== */
 function hideAll(){ homeArea.classList.add('hidden'); walletArea.classList.add('hidden'); teamArea.classList.add('hidden'); treeArea.classList.add('hidden'); adminArea.classList.add('hidden'); }
-function openHome(){ authCard.classList.add('hidden'); hideAll(); homeArea.classList.remove('hidden'); updateLoggedAs(); setLang(lang); persist(); }
-function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').style.display='none'; }
+function openSection(name){
+  if(!me){ alert('कृपया पहले Register / Login करें'); return; }
+  hideAll();
+  if(name==='home'){ homeArea.classList.remove('hidden'); }
+  if(name==='wallet'){ walletArea.classList.remove('hidden'); updateWallet(); }
+  if(name==='team'){ teamArea.classList.remove('hidden'); renderTeam(); }
+  if(name==='tree'){ treeArea.classList.remove('hidden'); renderTree(); }
+  if(name==='admin'){ adminArea.classList.remove('hidden'); renderRequests(); }
+}
 
-/* Wallet */
-addBtn.onclick = ()=> { if(!me) return alert('Login first'); const v = parseFloat(addAmt.value||0); if(!v||v<=0) return alert('Invalid'); users[me.mobile].balance = (users[me.mobile].balance||0) + v; addAmt.value=''; persist(); updateWallet(); walletMsg.innerText='Added'; };
-withdrawBtn.onclick = ()=> { if(!me) return alert('Login first'); const u = users[me.mobile]; if((u.balance||0) <= 0) return alert('No balance'); const want = parseFloat(prompt('Withdraw amount (₹)')); if(!want||want<=0) return; if(want > u.balance) return alert('Not enough'); const fee = Math.round(want*0.10); u.balance = Math.round((u.balance - want)*100)/100; withdraws.push({ id:Date.now(), mobile:me.mobile, amount:want, fee, net:want-fee, status:'pending' }); persist(); updateWallet(); walletMsg.innerText='Withdraw requested'; };
-function updateWallet(){ if(!me) return; document.getElementById('bal').innerText = Math.round((users[me.mobile].balance||0)*100)/100; }
+/* ========== Wallet: add, transfer, withdraw ========= */
 
-/* Team & Tree */
-function renderTeam(){ teamList.innerHTML=''; if(!me) return; const kids = users[me.mobile].children||[]; if(!kids.length){ teamList.innerHTML='<div class="small">No members</div>'; return; } kids.forEach(m=>{ const d=document.createElement('div'); d.className='tree-node'; d.innerHTML = `<div>${users[m].name||m}</div><div><button class="plusbtn">[+]</button></div>`; teamList.appendChild(d); d.querySelector('.plusbtn').onclick = ()=>{ const subs = users[m].children||[]; if(!subs.length) return alert('No sub-members'); alert('Downline: '+subs.map(x=>users[x].name||x).join(', ')); }; }); }
-function openRegisterWithParent(parent){ fullRegister.classList.remove('hidden'); loginOnly.classList.add('hidden'); regParent.value = parent; authTitle.innerText = 'Register under '+parent; }
-function renderTree(){ treeView.innerHTML=''; if(!me) return; const root = users[me.mobile]; const rootBox = document.createElement('div'); rootBox.className='card'; rootBox.style.textAlign='center'; rootBox.innerHTML = `<b>${root.name}</b><div class="small">${root.mobile}</div>`; treeView.appendChild(rootBox); const kids = root.children||[]; const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px'; if(!kids.length){ const e = document.createElement('div'); e.className='card'; e.style.minWidth='160px'; e.style.textAlign='center'; e.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>'; row.appendChild(e); treeView.appendChild(row); e.querySelector('#joinHere').onclick = ()=> openRegisterWithParent(me.mobile); return; } kids.forEach(k=>{ const c=document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center'; c.innerHTML = `${users[k].name||k}<div class="small">${k}</div>`; row.appendChild(c); }); treeView.appendChild(row); }
+/* helper: check withdrawal window — only 1st of month AND hour >= 20 (8pm) */
+function canRequestWithdraw(){
+  const now = new Date();
+  const day = now.getDate(); // 1..31
+  const hour = now.getHours(); // 0..23 local time
+  return (day === 1 && hour >= 20);
+}
 
-/* Orders & Admin */
-function simulateOrder(){ if(!me) return alert('Login first'); const sponsor = users[me.mobile].parent; if(sponsor && users[sponsor]){ users[sponsor].balance = (users[sponsor].balance||0) + 50; persist(); alert('₹50 commission added to sponsor'); } else alert('No sponsor'); }
-function adminPrompt(){ const p = prompt('Admin password:'); if(!p) return; if(p !== ADMIN_PWD) return alert('Wrong'); hideAll(); adminArea.classList.remove('hidden'); renderRequests(); }
-function renderRequests(){ requestsDiv.innerHTML=''; if(!withdraws.length) { requestsDiv.innerText='No withdraws'; return; } withdraws.forEach(w=>{ const d=document.createElement('div'); d.className='card'; d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div>`; if(w.status==='pending'){ const a = document.createElement('button'); a.className='primary'; a.innerText='Approve'; a.onclick = ()=>{ w.status='approved'; persist(); renderRequests(); alert('Approved (demo)'); }; d.appendChild(a); } requestsDiv.appendChild(d); }); }
+addBtn.onclick = ()=>{
+  if(!me) return alert('Login first');
+  const v = parseFloat(addAmt.value||0);
+  if(!v || v <= 0) return alert('Enter valid amount');
+  users[me.mobile].balance = (users[me.mobile].balance||0) + v;
+  addAmt.value = '';
+  persist();
+  updateWallet();
+  walletMsg.innerText = 'Amount added (demo).';
+};
 
-/* Utility */
-function updateLoggedAs(){ document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged'; }
-function closeDrawer(){ document.getElementById('drawer').classList.remove('open'); document.getElementById('overlay').style.display='none'; }
+/* TRANSFER by mobile */
+transferBtn.onclick = ()=>{
+  if(!me) return alert('Login first');
+  const to = (t_mobile.value||'').trim();
+  const amt = parseFloat(t_amount.value||0);
+  transferMsg.innerText = '';
+  if(!to) return transferMsg.innerText = 'Recipient mobile चाहिए';
+  if(!amt || amt <= 0) return transferMsg.innerText = 'Valid amount डालें';
+  if(!users[to]) return transferMsg.innerText = 'Recipient user not found';
+  if(users[me.mobile].balance < amt) return transferMsg.innerText = 'आपके पास पर्याप्त बैलेंस नहीं है';
+  // perform transfer
+  users[me.mobile].balance = Math.round((users[me.mobile].balance - amt) * 100) / 100;
+  users[to].balance = Math.round((users[to].balance || 0 + amt) * 100) / 100;
+  // log simple note (we can push to withdraws as transactions, but keep simple)
+  persist();
+  updateWallet();
+  transferMsg.style.color = 'green';
+  transferMsg.innerText = `₹${amt} सफलतापूर्वक ${to} को भेज दिए गए।`;
+  // clear inputs after short delay
+  setTimeout(()=>{ t_mobile.value=''; t_amount.value=''; transferMsg.style.color=''; }, 1500);
+};
 
-/* Init */
+/* clear transfer */
+transferCancelBtn.onclick = ()=>{ t_mobile.value=''; t_amount.value=''; transferMsg.innerText=''; };
+
+/* WITHDRAW (only allowed when canRequestWithdraw() true) */
+withdrawBtn.onclick = ()=>{
+  if(!me) return alert('Login first');
+  const u = users[me.mobile];
+  if(!u || (u.balance||0) <= 0) return alert('No balance');
+  // check bank details present
+  if(!u.bank || !u.bank.name || !u.bank.account || !u.bank.ifsc){
+    return alert('Withdraw के लिए आपके बैंक की जानकारी जरूरी है — Profile में बैंक विवरण जोड़ें।');
+  }
+  if(!canRequestWithdraw()){
+    // show friendly message with next allowed time info
+    const now = new Date();
+    // calculate next 1st at 20:00
+    let next = new Date(now.getFullYear(), now.getMonth(), 1, 20, 0, 0, 0);
+    if(now.getDate() > 1 || (now.getDate()===1 && now.getHours()>=20)===false){
+      // if today is past 1st or it's 1st before 8pm then next is next month's 1st at 20:00
+      if(now.getDate() > 1 || (now.getDate()===1 && now.getHours()>=20)===false){
+        next = new Date(now.getFullYear(), now.getMonth()+1, 1, 20, 0, 0, 0);
+      }
+    }
+    walletMsg.style.color = '#b00';
+    walletMsg.innerText = `Withdraw केवल हर महीने की 1 तारीख रात 8 बजे (local time) के बाद ही अनरोल किया जा सकता है।`;
+    return;
+  }
+  const want = parseFloat(prompt('Enter withdraw amount (₹)'));
+  if(!want || want <= 0) return;
+  if(want > u.balance) return alert('Not enough balance');
+  const fee = Math.round(want * 0.10);
+  const net = want - fee;
+  u.balance = Math.round((u.balance - want) * 100) / 100;
+  withdraws.push({ id: Date.now(), mobile: me.mobile, amount: want, fee, net, status: 'pending', ts: new Date().toISOString(), bank: u.bank });
+  persist();
+  updateWallet();
+  walletMsg.style.color = 'green';
+  walletMsg.innerText = `Withdraw request submitted (₹${want}). 10% fee लगेगा। Admin approval आवश्यक।`;
+};
+
+/* ========== Team & Tree ========== */
+function renderTeam(){
+  teamList.innerHTML = '';
+  if(!me) return;
+  const children = users[me.mobile].children || [];
+  if(children.length === 0){ teamList.innerHTML = '<div class="small">No team members yet</div>'; return; }
+  children.forEach(m=>{
+    const d = document.createElement('div'); d.className = 'tree-node';
+    d.innerHTML = `<div>${users[m].name || m}</div><div><button class="plusbtn" data-m="${m}">[+]</button></div>`;
+    teamList.appendChild(d);
+    d.querySelector('.plusbtn').onclick = ()=>{
+      const subs = users[m].children || [];
+      if(!subs.length) return alert('No sub-members');
+      alert('Downline of ' + (users[m].name || m) + ': ' + subs.map(x=>users[x].name || x).join(', '));
+    };
+  });
+}
+
+function openRegisterWithParent(parent){
+  authCard.classList.remove('hidden');
+  fullRegister.classList.remove('hidden');
+  loginOnly.classList.add('hidden');
+  regParent.value = parent;
+  authTitle.innerText = 'Register under ' + parent;
+}
+
+function renderTree(){
+  treeView.innerHTML = '';
+  if(!me) return;
+  const root = users[me.mobile];
+  const rootBox = document.createElement('div'); rootBox.className = 'card'; rootBox.style.textAlign = 'center';
+  rootBox.innerHTML = `<b>${root.name}</b><div class="small">${root.mobile}</div>`;
+  treeView.appendChild(rootBox);
+  const kids = root.children || [];
+  const row = document.createElement('div'); row.style.display='flex'; row.style.gap='12px'; row.style.justifyContent='center'; row.style.marginTop='12px';
+  if(kids.length === 0){
+    const empty = document.createElement('div'); empty.className = 'card'; empty.style.minWidth='160px'; empty.style.textAlign='center';
+    empty.innerHTML = 'No downline<br/><button class="primary" id="joinHere">Join here</button>';
+    row.appendChild(empty); treeView.appendChild(row);
+    empty.querySelector('#joinHere').onclick = ()=> openRegisterWithParent(me.mobile);
+    return;
+  }
+  kids.forEach(k=>{
+    const c = document.createElement('div'); c.className='card'; c.style.minWidth='160px'; c.style.textAlign='center';
+    c.innerHTML = `${users[k].name || k}<div class="small">${k}</div>`;
+    row.appendChild(c);
+  });
+  treeView.appendChild(row);
+}
+
+/* ========== Orders and Admin ========== */
+function simulateOrder(){
+  if(!me) return alert('Login first');
+  const sponsor = users[me.mobile].parent;
+  if(sponsor && users[sponsor]){
+    users[sponsor].balance = (users[sponsor].balance || 0) + 50;
+    persist();
+    alert('Order simulated: ₹50 commission added to sponsor: ' + (users[sponsor].name || sponsor));
+  } else alert('Order simulated: no sponsor to credit');
+}
+
+function adminPrompt(){
+  const p = prompt('Enter admin password:');
+  if(!p) return;
+  if(p !== ADMIN_PWD) return alert('Wrong password');
+  openSection('admin');
+  renderRequests();
+}
+
+function renderRequests(){
+  requestsDiv.innerHTML = '';
+  if(withdraws.length === 0){
+    requestsDiv.innerHTML = '<div class="small">No withdraws</div>'; return;
+  }
+  withdraws.forEach(w=>{
+    const d = document.createElement('div'); d.className='card'; d.style.marginBottom='8px';
+    d.innerHTML = `<div><strong>${w.mobile}</strong> — ₹${w.amount} (fee ₹${w.fee}) — ${w.status}</div>
+                   <div class="small">Bank: ${w.bank?.name || ''} • ${w.bank?.account || ''} • IFSC: ${w.bank?.ifsc || ''}</div>`;
+    if(w.status === 'pending'){
+      const a = document.createElement('button'); a.className='primary'; a.textContent='Approve';
+      a.onclick = ()=>{
+        w.status = 'approved';
+        persist();
+        renderRequests();
+        alert('Approved. Please transfer payment externally to user bank/UPI.');
+      };
+      d.appendChild(a);
+    }
+    requestsDiv.appendChild(d);
+  });
+}
+
+/* ========== Utilities ========== */
+function updateLoggedAs(){
+  document.getElementById('loggedAs').innerText = me ? `Logged as: ${users[me.mobile]?.name || me.mobile}` : 'Not logged';
+  if(me && users[me.mobile] && users[me.mobile].bank){
+    const b = users[me.mobile].bank;
+    bankInfoSmall.innerText = `Bank: ${b.name} • ${b.account}${b.upi ? ' • UPI: ' + b.upi : ''}`;
+  } else bankInfoSmall.innerText = '';
+}
+
+function closeDrawer(){ drawer.classList.remove('open'); overlay.style.display = 'none'; }
+
+/* ========== Init ========== */
+/* do not auto-create demo users — first user must register */
+if(!users) users = {};
 updateLoggedAs();
 showAuthBasedOnUsers();
 setLang(lang);

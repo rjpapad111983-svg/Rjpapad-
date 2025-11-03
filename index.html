@@ -177,19 +177,16 @@ let isAdmin = false;
 
 /* ========= UI Logic ========= */
 
-/* Show register vs login depending on users and regLocked */
-function showAuthBasedOnUsers(){
-  authMsg.innerText = '';
-  // if no users -> must show register (unless regLocked true which would lock out, so ensure false)
-  if(Object.keys(users).length === 0){
-    fullRegister.classList.remove('hidden');
-    loginOnly.classList.add('hidden');
-    return;
+// 🔒 Register/Login page permanently locked
+authCard.classList.add('hidden'); // hide register/login card always
+
+// अगर कोई user login है तो सीधे अंदर ले जाओ
+if(me){ 
+  enterApp();
+} else {
+  // अगर कोई login नहीं है तो भी wallet section खोले
+  enterApp();
   }
-  // if registration locked OR at least one user exists -> show login only
-  fullRegister.classList.add('hidden');
-  loginOnly.classList.remove('hidden');
-}
 
 /* Register handler: create user, set regLocked flag true (auto-lock), login as that user */
 registerBtn.onclick = ()=>{

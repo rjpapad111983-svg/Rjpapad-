@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="hi">
 <head>
@@ -13,7 +14,7 @@
     --success:#2c7a2c;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",Helvetica,Arial;"line-height":1.4;background:var(--bg);color:#222}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",Helvetica,Arial;line-height:1.4;background:var(--bg);color:#222}
   header{background:var(--accent);padding:12px 14px;color:#fff;position:sticky;top:0;display:flex;align-items:center;z-index:5}
   .menu-btn{font-size:26px;margin-right:12px;cursor:pointer}
   header h1{font-size:18px;margin:0;text-align:center;flex:1}
@@ -34,7 +35,7 @@
   .drawer{position:fixed;left:0;top:0;bottom:0;width:260px;background:#fff;box-shadow:2px 0 14px rgba(0,0,0,0.12);transform:translateX(-120%);transition:transform .25s;z-index:20;padding:18px}
   .drawer.open{transform:translateX(0)}
   .drawer h3{margin:0 0 12px 0}
-  .drawer button{display:block;width:100%;text-align:left;margin-bottom:8px}
+  .drawer button{display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px;border-radius:8px;border:none;background:#fafafa}
   /* login screen */
   #screen-register{min-height:80vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:30px}
   #logo-page{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10}
@@ -156,7 +157,7 @@
     </div>
 
     <!-- Admin Panel (only visible to admin after password) -->
-    <div id="adminPanel" class="card" style="max-width:640px">
+    <div id="adminPanel" class="card" style="max-width:640px;display:none">
       <h3>Admin Panel — Pending Withdrawals</h3>
       <div class="small muted">Approve withdraws to mark as completed (demo).</div>
       <ul id="withdrawRequests"></ul>
@@ -167,43 +168,32 @@
 </main>
 
 <script>
-/*
-  RJ Papad single-file demo app
-  - Data stored in localStorage keys
-  - ADMIN password: Rjpapad@2025
-  - Banners: use provided raw GitHub URLs
-*/
-
-/* ========= CONFIG =========== */
+/* CONFIG */
 const ADMIN_PASSWORD = "Rjpapad@2025";
 const BANNER_HI = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000de7861faafb1b8052e9bd122%20(1).png";
 const BANNER_EN = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_00000000aac061fdacd52dbbf8a83410.png";
 const LOGO_IMG = "https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png";
-const COMMISSION_ON_ORDER = 50; // ₹ to credit to sponsor when order completed (demo)
+const COMMISSION_ON_ORDER = 50; // demo
 const STORAGE_USERS = "rp_users_v1";
 const STORAGE_ME = "rp_me";
 const STORAGE_TREE = "rp_tree_v1";
 const STORAGE_WITHDRAWS = "rp_withdraws_v1";
 const STORAGE_LANG = "rp_lang_v1";
 
-/* ========= UTIL =========== */
+/* UTIL */
 function loadJSON(key, def){ try{ const s = localStorage.getItem(key); return s ? JSON.parse(s) : def;}catch(e){return def}}
 function saveJSON(key,obj){ localStorage.setItem(key, JSON.stringify(obj)) }
 function now(){ return (new Date()).toISOString() }
 
-/* ========= DATA HELPERS =========== */
-let users = loadJSON(STORAGE_USERS, {}); // map mobile -> {mobile,name,balance,parent,children:[]}
-let tree = loadJSON(STORAGE_TREE, {}); // same as users structure for quick tree
-let me = loadJSON(STORAGE_ME, null); // {mobile,name}
+/* DATA */
+let users = loadJSON(STORAGE_USERS, {});
+let tree = loadJSON(STORAGE_TREE, {});
+let me = loadJSON(STORAGE_ME, null);
 let withdraws = loadJSON(STORAGE_WITHDRAWS, []);
 let currentLang = loadJSON(STORAGE_LANG, "hi");
+if(!users) users = {}; if(!tree) tree = {}; if(!withdraws) withdraws=[];
 
-/* ensure keys exist */
-if(!users) users = {};
-if(!tree) tree = {};
-if(!withdraws) withdraws = [];
-
-/* ========= UI refs =========== */
+/* UI refs */
 const drawer = document.getElementById('drawer');
 const menuBtn = document.getElementById('menuBtn');
 const menuWalletBtn = document.getElementById('menuWalletBtn');
@@ -254,15 +244,8 @@ const langHi = document.getElementById('lang-hi');
 const langEn = document.getElementById('lang-en');
 const langGu = document.getElementById('lang-gu');
 
-/* ======= Startup display logic ======== */
-function saveAll(){
-  saveJSON(STORAGE_USERS, users);
-  saveJSON(STORAGE_TREE, tree);
-  saveJSON(STORAGE_ME, me);
-  saveJSON(STORAGE_WITHDRAWS, withdraws);
-  saveJSON(STORAGE_LANG, currentLang);
-}
-
+/* STARTUP */
+function saveAll(){ saveJSON(STORAGE_USERS, users); saveJSON(STORAGE_TREE, tree); saveJSON(STORAGE_ME, me); saveJSON(STORAGE_WITHDRAWS, withdraws); saveJSON(STORAGE_LANG, currentLang); }
 function showRegisterIfNeeded(){
   if(!me){
     registerScreen.style.display = "flex";
@@ -272,7 +255,6 @@ function showRegisterIfNeeded(){
     registerScreen.style.display = "none";
     mainArea.style.display = "block";
     menuLoggedAs.innerText = "Logged as: " + (me.name ? me.name + " • " + me.mobile : me.mobile);
-    // show logo page first (per flow)
     logoPage.classList.remove('hidden');
     updateWalletUI();
     renderTeamList();
@@ -282,33 +264,23 @@ function showRegisterIfNeeded(){
 }
 showRegisterIfNeeded();
 
-/* ========= Drawer toggle ========== */
+/* Drawer toggle */
 menuBtn.addEventListener('click', ()=> drawer.classList.toggle('open'));
-document.getElementById('menuLogoutBtn').addEventListener('click', ()=> {
-  // logout -> clear me and reload to register page
-  me = null;
-  saveAll();
-  showRegisterIfNeeded();
-  drawer.classList.remove('open');
+menuLogoutBtn.addEventListener('click', ()=> {
+  me = null; saveAll(); showRegisterIfNeeded(); drawer.classList.remove('open');
 });
 
-/* ========= Logo page behavior ========= */
+/* Logo page */
 logoImg.src = LOGO_IMG;
-document.getElementById('logoHideBtn').addEventListener('click', ()=> {
-  logoPage.classList.add('hidden'); // hide logo page -> user sees banners/wallet etc
-});
-logoImg.addEventListener('click', ()=> {
-  // also hide on clicking image
-  logoPage.classList.add('hidden');
-});
+logoHideBtn.addEventListener('click', ()=> logoPage.classList.add('hidden') );
+logoImg.addEventListener('click', ()=> logoPage.classList.add('hidden') );
 
-/* ========= Language buttons ========= */
+/* Lang */
 function applyLanguage(lang){
   currentLang = lang;
-  // banner and text
   if(lang==="hi"){ bannerImg.src = BANNER_HI; bannerText.innerText = "RJ पापड़ — स्वाद में खास"; }
   if(lang==="en"){ bannerImg.src = BANNER_EN; bannerText.innerText = "RJ Papad — Homemade taste"; }
-  if(lang==="gu"){ bannerImg.src = BANNER_HI; bannerText.innerText = "RJ પાપડ — સ્વાદમાં ખાસ"; } // used same banner if not available
+  if(lang==="gu"){ bannerImg.src = BANNER_HI; bannerText.innerText = "RJ પાપડ — સ્વાદમાં ખાસ"; }
   saveAll();
 }
 hiBtn.addEventListener('click', ()=> applyLanguage('hi'));
@@ -319,44 +291,34 @@ langEn.addEventListener('click', ()=> applyLanguage('en'));
 langGu.addEventListener('click', ()=> applyLanguage('gu'));
 applyLanguage(currentLang);
 
-/* ========= Registration / Login logic ========= */
+/* Register/Login */
 registerBtn.addEventListener('click', async ()=> {
   const name = registerNameInp.value.trim();
   const mobile = registerMobileInp.value.trim();
   const joined = registerJoinedInp.value.trim();
   if(!mobile){ regMsg.innerText = "कृपया मोबाइल नंबर दर्ज करें!"; return; }
-  // if user exists -> login
   if(users[mobile]){
     me = { mobile: mobile, name: users[mobile].name || "" };
-    saveAll();
-    regMsg.innerText = "Login successful.";
-    showRegisterIfNeeded();
-    return;
+    saveAll(); regMsg.innerText = "Login successful."; showRegisterIfNeeded(); return;
   }
-  // create user
   users[mobile] = { mobile, name: name || "", balance: 0, parent: null, children: [] };
-  // if joined provided and parent exists -> insert into binary slot
   if(joined && users[joined]){
     let parent = users[joined];
-    // push to children; simple binary fill: left (index 0) then right (1). If >2 then appended to children list.
     if(!parent.children) parent.children = [];
     parent.children.push(mobile);
     users[mobile].parent = joined;
   }
-  // save and set me
   me = { mobile, name: name || "" };
-  saveAll();
-  regMsg.innerText = "Registered. Welcome!";
-  showRegisterIfNeeded();
+  saveAll(); regMsg.innerText = "Registered. Welcome!"; showRegisterIfNeeded();
 });
 
-/* ========= Wallet UI & actions ========= */
+/* Wallet UI */
 function updateWalletUI(){
   if(!me) return;
   const u = users[me.mobile] || {balance:0,name:me.name||""};
   walletAmount.innerText = "₹" + (u.balance || 0);
   walletBank.innerText = (u.bank || "HDFC Bank") + " • " + (u.upi || "demo@upi");
-  walletCard.style.display = "block";
+  // show wallet card only when wallet section is active (control done below)
 }
 addAmountBtn.addEventListener('click', ()=> {
   if(!me){ alert("Please login/register"); return; }
@@ -374,74 +336,63 @@ withdrawBtn.addEventListener('click', ()=> {
   const amount = parseFloat(want);
   if(!amount || amount<=0){ alert("Invalid"); return; }
   if(amount > u.balance){ alert("Not enough balance"); return; }
-  // deduct immediately? We'll mark as pending and deduct hold
   const fee = Math.round(amount * 0.10);
   const afterFee = amount - fee;
-  // Reduce user's available balance now
   u.balance = Math.round((u.balance - amount) * 100)/100;
-  // create withdraw request
   const req = { id: "wd_"+Date.now(), mobile: me.mobile, amount, fee, afterFee, status:"pending", created: now() };
   withdraws.push(req);
   saveAll(); updateWalletUI(); renderWithdrawRequests();
   alert("Withdraw requested. Admin will approve.");
 });
 
-/* ========= My Team (list) ========= */
+/* Team list */
 function renderTeamList(){
   if(!me) return;
   myTeamCard.style.display = "block";
   teamList.innerHTML = "";
   const root = me.mobile;
-  // We'll render only downline of me (one level + expandable via saveExpanded)
   const nodes = loadTreeNodes(root);
   nodes.forEach((m)=> {
     const el = document.createElement('div');
     el.className = "tree-node";
     const left = document.createElement('div'); left.className = "node-left";
-    const emoji = document.createElement('div'); emoji.className="emoji"; emoji.innerText = (users[m] && users[m].name && users[m].name.toLowerCase().includes("a")? "👩":"👨");
+    const emoji = document.createElement('div'); emoji.className="emoji";
+    // crude gender hint: name containing typical female letter? you can change later
+    emoji.innerText = (users[m] && users[m].name && users[m].name.toLowerCase().includes("a"))? "👩":"👨";
     const nm = document.createElement('div'); nm.innerText = (users[m] && users[m].name) ? users[m].name : m;
     left.appendChild(emoji); left.appendChild(nm);
     const right = document.createElement('div');
-    const plus = document.createElement('button'); plus.className="plusbtn"; plus.innerText="+";
-    plus.addEventListener('click', ()=> { // expand this node's children in-place
-      toggleNodeExpand(m, el);
-    });
+    const plus = document.createElement('button'); plus.className="small-ghost"; plus.innerText="[+]";
+    plus.addEventListener('click', ()=> { toggleNodeExpand(m, el); });
     right.appendChild(plus);
     el.appendChild(left); el.appendChild(right);
     teamList.appendChild(el);
   });
 }
 function loadTreeNodes(root){
-  // return immediate children of root (for demo show two nodes)
   const u = users[root];
   if(!u) return [];
   return (u.children && u.children.slice(0)) || [];
 }
 function toggleNodeExpand(mobileId, containerEl){
-  // If already expanded, collapse; else expand and show that user's children
   const expanded = containerEl._expanded;
   if(expanded){
-    // remove children nodes
-    const childs = containerEl.querySelectorAll('.child-node');
-    childs.forEach(n=>n.remove());
-    containerEl._expanded = false;
+    const childs = containerEl.querySelectorAll('.child-node'); childs.forEach(n=>n.remove()); containerEl._expanded=false;
   } else {
     const kids = users[mobileId] && users[mobileId].children ? users[mobileId].children : [];
     kids.forEach(k=>{
       const c = document.createElement('div'); c.className='child-node'; c.style.padding="8px 12px"; c.style.marginTop="6px";
-      c.style.background="#fafafa"; c.style.borderRadius="8px";
-      c.innerText = (users[k] && users[k].name) ? users[k].name : k;
+      c.style.background="#fafafa"; c.style.borderRadius="8px"; c.innerText = (users[k] && users[k].name) ? users[k].name : k;
       containerEl.appendChild(c);
     });
-    containerEl._expanded = true;
+    containerEl._expanded=true;
   }
 }
 
-/* ========= MLM Tree visual (simple) ========= */
+/* Tree visual */
 function renderTreeVisual(){
-  // Simple: show root card and two children if present
-  treeCard.style.display = "block";
-  treeCanvasWrap.innerHTML = "";
+  treeCard.style.display='block';
+  treeCanvasWrap.innerHTML='';
   if(!me) return;
   const root = me.mobile;
   const rootNode = users[root];
@@ -449,15 +400,11 @@ function renderTreeVisual(){
   const rootCard = createNodeCard(root);
   wrapper.appendChild(rootCard);
   const children = (rootNode && rootNode.children) ? rootNode.children : [];
-  const left = children[0];
-  const right = children[1];
   const box = document.createElement('div'); box.style.display="flex"; box.style.gap="14px"; box.style.justifyContent="center"; box.style.marginTop="20px";
-  if(left) box.appendChild(createNodeCard(left));
-  else box.appendChild(createEmptySlot(root,"left"));
-  if(right) box.appendChild(createNodeCard(right));
-  else box.appendChild(createEmptySlot(root,"right"));
-  treeCanvasWrap.appendChild(wrapper);
-  treeCanvasWrap.appendChild(box);
+  const left = children[0]; const right = children[1];
+  if(left) box.appendChild(createNodeCard(left)); else box.appendChild(createEmptySlot(root,"left"));
+  if(right) box.appendChild(createNodeCard(right)); else box.appendChild(createEmptySlot(root,"right"));
+  treeCanvasWrap.appendChild(wrapper); treeCanvasWrap.appendChild(box);
 }
 function createNodeCard(mobile){
   const node = document.createElement('div'); node.className='card'; node.style.minWidth='180px'; node.style.textAlign="left";
@@ -466,53 +413,43 @@ function createNodeCard(mobile){
   const info = document.createElement('div'); info.className='muted'; info.innerText = "ID: " + mobile;
   const plus = document.createElement('button'); plus.className='plusbtn'; plus.innerText='+';
   plus.addEventListener('click', ()=> {
-    // Open register screen prefilling joined_mobile
     drawer.classList.remove('open');
     registerScreen.style.display = 'flex';
     mainArea.style.display = 'none';
     registerJoinedInp.value = mobile;
     logoPage.classList.add('hidden');
   });
-  row.appendChild(info); row.appendChild(plus);
-  node.appendChild(title); node.appendChild(row);
-  return node;
+  row.appendChild(info); row.appendChild(plus); node.appendChild(title); node.appendChild(row); return node;
 }
 function createEmptySlot(parent, side){
   const node = document.createElement('div'); node.className='card'; node.style.minWidth='180px'; node.style.textAlign="center";
   const p = document.createElement('div'); p.className='muted'; p.style.marginBottom='12px'; p.innerText = "Empty slot";
   const btn = document.createElement('button'); btn.className='primary'; btn.innerText = "Join here";
   btn.addEventListener('click', ()=> {
-    // prefill register with parent mobile
-    registerScreen.style.display='flex';
-    mainArea.style.display='none';
-    registerJoinedInp.value = parent;
-    logoPage.classList.add('hidden');
-    drawer.classList.remove('open');
+    registerScreen.style.display='flex'; mainArea.style.display='none'; registerJoinedInp.value = parent; logoPage.classList.add('hidden'); drawer.classList.remove('open');
   });
-  node.appendChild(p); node.appendChild(btn);
-  return node;
+  node.appendChild(p); node.appendChild(btn); return node;
 }
 
-/* ========= Orders (simulate) ========= */
+/* Orders */
 menuOrderBtn.addEventListener('click', ()=> {
   drawer.classList.remove('open');
   if(!me){ alert("Please login/register"); return; }
   const confirmOrder = confirm("Simulate an order for ₹500? This will credit commission to your sponsor.");
   if(!confirmOrder) return;
-  // credit commission to parent
   const parentMobile = users[me.mobile] && users[me.mobile].parent;
   if(parentMobile && users[parentMobile]){
     users[parentMobile].balance = (users[parentMobile].balance||0) + COMMISSION_ON_ORDER;
     saveAll();
     alert("Order completed. Commission credited to sponsor: ₹" + COMMISSION_ON_ORDER);
-    updateWalletUI();
-    renderTeamList();
   } else {
     alert("Order completed. No sponsor found to credit commission.");
   }
+  updateWalletUI();
+  renderTeamList();
 });
 
-/* ========= ADMIN PANEL ========= */
+/* Admin */
 menuAdminBtn.addEventListener('click', ()=> {
   drawer.classList.remove('open');
   const pwd = prompt("Enter admin password:");
@@ -520,7 +457,7 @@ menuAdminBtn.addEventListener('click', ()=> {
   if(pwd !== ADMIN_PASSWORD){ alert("Wrong password"); return; }
   adminPanel.style.display = 'block';
   renderWithdrawRequests();
-  window.scrollTo({top:0, behavior:'smooth'});
+  showSection('admin'); // show admin panel area only
 });
 function renderWithdrawRequests(){
   withdrawRequests.innerHTML = "";
@@ -532,54 +469,85 @@ function renderWithdrawRequests(){
     if(r.status === "pending"){
       const approve = document.createElement('button'); approve.className='primary'; approve.innerText='Approve';
       approve.addEventListener('click', ()=> {
-        r.status = 'approved';
-        r.approvedAt = now();
-        saveAll();
-        alert('Request approved (demo). Please transfer externally.');
-        renderWithdrawRequests();
+        r.status = 'approved'; r.approvedAt = now(); saveAll(); alert('Request approved (demo). Please transfer externally.'); renderWithdrawRequests();
       });
       right.appendChild(approve);
     } else {
       right.innerText = "✅ " + r.status;
     }
-    wrapper.appendChild(left); wrapper.appendChild(right);
-    li.appendChild(wrapper);
-    withdrawRequests.appendChild(li);
+    wrapper.appendChild(left); wrapper.appendChild(right); li.appendChild(wrapper); withdrawRequests.appendChild(li);
   });
 }
 
-/* ========= Withdraw requests render for admin initial ========= */
-renderWithdrawRequests();
-
-/* ========= Menu actions ========= */
+/* Menu actions: CRITICAL update so that each button shows ONLY its section */
 menuWalletBtn.addEventListener('click', ()=> { drawer.classList.remove('open'); showSection('wallet'); });
 menuMyTeamBtn.addEventListener('click', ()=> { drawer.classList.remove('open'); showSection('team'); });
 menuTreeBtn.addEventListener('click', ()=> { drawer.classList.remove('open'); showSection('tree'); });
-function showSection(s){
-  walletCard.style.display='none'; myTeamCard.style.display='none'; treeCard.style.display='none'; adminPanel.style.display='none';
-  if(s==='wallet') { walletCard.style.display='block'; updateWalletUI(); }
-  if(s==='team') { myTeamCard.style.display='block'; renderTeamList(); }
-  if(s==='tree') { treeCard.style.display='block'; renderTreeVisual(); }
+
+/* central showSection function: show ONLY requested panel; hide banners if showing wallet/team etc */
+function showSection(name){
+  // hide everything first
+  bannersWrap.style.display = 'none';
+  walletCard.style.display = 'none';
+  myTeamCard.style.display = 'none';
+  treeCard.style.display = 'none';
+  adminPanel.style.display = 'none';
+
+  // Now show only the requested
+  if(name === 'wallet'){
+    walletCard.style.display = 'block';
+    updateWalletUI();
+    // scroll to top
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(name === 'team'){
+    myTeamCard.style.display = 'block';
+    renderTeamList();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(name === 'tree'){
+    treeCard.style.display = 'block';
+    renderTreeVisual();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(name === 'admin'){
+    adminPanel.style.display = 'block';
+    renderWithdrawRequests();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(name === 'home'){
+    // show banners + hide others
+    bannersWrap.style.display = 'block';
+  }
 }
 
-/* ========= Persist and initial render ========= */
-saveAll();
-if(me) showRegisterIfNeeded();
+/* initial: if logged in show home banners, else register */
+if(me) { showSection('home'); }
 
-/* ========= Extras: ensure public demo data for visualization if none ========= */
+/* Withdraw UI & add amount */
+addAmountBtn.addEventListener('click', ()=> { if(!me){ alert("Please login/register"); return; } const amt = parseFloat(addAmountInp.value||0); if(!amt||amt<=0){ alert("Enter valid amount"); return; } users[me.mobile].balance = (users[me.mobile].balance||0) + amt; saveAll(); updateWalletUI(); addAmountInp.value=""; alert("Amount added (demo)."); });
+withdrawBtn.addEventListener('click', ()=> { if(!me){ alert("Please login/register"); return; } const u = users[me.mobile]; if((u.balance||0) <= 0){ alert("No balance"); return; } const want = prompt("Enter withdraw amount (₹). 10% fee will be deducted."); const amount = parseFloat(want); if(!amount||amount<=0){ alert("Invalid"); return; } if(amount > u.balance){ alert("Not enough balance"); return; } const fee = Math.round(amount * 0.10); const afterFee = amount - fee; u.balance = Math.round((u.balance - amount) * 100)/100; const req = { id: "wd_"+Date.now(), mobile: me.mobile, amount, fee, afterFee, status:"pending", created: now() }; withdraws.push(req); saveAll(); updateWalletUI(); renderWithdrawRequests(); alert("Withdraw requested. Admin will approve."); });
+
+/* render team + tree helpers repeated to ensure available */
+function renderTeamList(){ if(!me) return; myTeamCard.style.display = "block"; teamList.innerHTML = ""; const root = me.mobile; const nodes = loadTreeNodes(root); nodes.forEach((m)=> { const el = document.createElement('div'); el.className = "tree-node"; const left = document.createElement('div'); left.className = "node-left"; const emoji = document.createElement('div'); emoji.className="emoji"; emoji.innerText = (users[m] && users[m].name && users[m].name.toLowerCase().includes("a"))? "👩":"👨"; const nm = document.createElement('div'); nm.innerText = (users[m] && users[m].name) ? users[m].name : m; left.appendChild(emoji); left.appendChild(nm); const right = document.createElement('div'); const plus = document.createElement('button'); plus.className="small-ghost"; plus.innerText="[+]"; plus.addEventListener('click', ()=> { toggleNodeExpand(m, el); }); right.appendChild(plus); el.appendChild(left); el.appendChild(right); teamList.appendChild(el); }); }
+function loadTreeNodes(root){ const u = users[root]; if(!u) return []; return (u.children && u.children.slice(0)) || []; }
+function toggleNodeExpand(mobileId, containerEl){ const expanded = containerEl._expanded; if(expanded){ const childs = containerEl.querySelectorAll('.child-node'); childs.forEach(n=>n.remove()); containerEl._expanded=false; } else { const kids = users[mobileId] && users[mobileId].children ? users[mobileId].children : []; kids.forEach(k=>{ const c = document.createElement('div'); c.className='child-node'; c.style.padding="8px 12px"; c.style.marginTop="6px"; c.style.background="#fafafa"; c.style.borderRadius="8px"; c.innerText = (users[k] && users[k].name) ? users[k].name : k; containerEl.appendChild(c); }); containerEl._expanded=true; } }
+
+/* tree visual */
+function renderTreeVisual(){ treeCard.style.display='block'; treeCanvasWrap.innerHTML=''; if(!me) return; const root = me.mobile; const rootNode = users[root]; const wrapper = document.createElement('div'); wrapper.style.display="flex"; wrapper.style.gap="24px"; wrapper.style.justifyContent="center"; wrapper.style.alignItems="flex-start"; const rootCard = createNodeCard(root); wrapper.appendChild(rootCard); const children = (rootNode && rootNode.children) ? rootNode.children : []; const box = document.createElement('div'); box.style.display="flex"; box.style.gap="14px"; box.style.justifyContent="center"; box.style.marginTop="20px"; const left = children[0]; const right = children[1]; if(left) box.appendChild(createNodeCard(left)); else box.appendChild(createEmptySlot(root,"left")); if(right) box.appendChild(createNodeCard(right)); else box.appendChild(createEmptySlot(root,"right")); treeCanvasWrap.appendChild(wrapper); treeCanvasWrap.appendChild(box); }
+function createNodeCard(mobile){ const node = document.createElement('div'); node.className='card'; node.style.minWidth='180px'; node.style.textAlign="left"; const title = document.createElement('div'); title.style.fontWeight="700"; title.innerText = (users[mobile] && users[mobile].name) ? users[mobile].name : mobile; const row = document.createElement('div'); row.style.marginTop="10px"; row.style.display="flex"; row.style.justifyContent="space-between"; row.style.alignItems="center"; const info = document.createElement('div'); info.className='muted'; info.innerText = "ID: " + mobile; const plus = document.createElement('button'); plus.className='plusbtn'; plus.innerText='+'; plus.addEventListener('click', ()=> { drawer.classList.remove('open'); registerScreen.style.display = 'flex'; mainArea.style.display = 'none'; registerJoinedInp.value = mobile; logoPage.classList.add('hidden'); }); row.appendChild(info); row.appendChild(plus); node.appendChild(title); node.appendChild(row); return node; }
+function createEmptySlot(parent, side){ const node = document.createElement('div'); node.className='card'; node.style.minWidth='180px'; node.style.textAlign="center"; const p = document.createElement('div'); p.className='muted'; p.style.marginBottom='12px'; p.innerText = "Empty slot"; const btn = document.createElement('button'); btn.className='primary'; btn.innerText = "Join here"; btn.addEventListener('click', ()=> { registerScreen.style.display='flex'; mainArea.style.display='none'; registerJoinedInp.value = parent; logoPage.classList.add('hidden'); drawer.classList.remove('open'); }); node.appendChild(p); node.appendChild(btn); return node; }
+
+/* initial demo data if empty (helps visualization) */
 if(!me && Object.keys(users).length===0){
-  // create demo users for visualization only
   users["9990000001"] = {mobile:"9990000001", name:"Rajesh parmar", balance:1500, parent:null, children:["9990000002","9990000003"]};
   users["9990000002"] = {mobile:"9990000002", name:"Maan", balance:200, parent:"9990000001", children:[]};
   users["9990000003"] = {mobile:"9990000003", name:"Bhavna", balance:100, parent:"9990000001", children:[]};
   saveAll();
 }
 
-/* save on unload */
+/* save periodically and on unload */
+setInterval(saveAll, 2000);
 window.addEventListener('beforeunload', ()=> saveAll());
 
-/* small helpers for debugging in console (optional) */
-window.RP = {users, saveAll, renderTeamList, renderTreeVisual, updateWalletUI, withdraws};
+/* final UI update if logged in */
+if(me){ showRegisterIfNeeded(); showSection('home'); }
 </script>
 
 </body>

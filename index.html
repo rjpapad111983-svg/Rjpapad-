@@ -332,7 +332,12 @@ showRegisterForJoinBtn.onclick = ()=>{
 
 /* ========== APP entry ========== */
 function enterApp(){
-  authCard.classList.add('hidden');
+  authCard.classList.add('hidden');   // Login/Register page hide
+  hideAll();                          // बाकी सब सेक्शन छिपाओ
+  updateLoggedAs();                   // Login info update
+  setLang(lang);                      // भाषा सेट करो
+  walletArea.classList.remove('hidden'); // ✅ सिर्फ Wallet दिखाओ
+}
   updateLoggedAs();
   setLang(lang);
   // per request: open WALLET immediately after login/register

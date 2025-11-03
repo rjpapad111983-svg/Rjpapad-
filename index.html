@@ -30,6 +30,30 @@ button.ghost{background:#f5f5f5;border:none}
 .logo-top img{max-width:160px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,0.15);}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{border:1px solid #eee;padding:8px;text-align:left}
+  /* === Make Register/Login buttons smaller and side-by-side === */
+#registerBtn, #registerCancelBtn,
+#loginOnlyBtn, #showRegisterForJoinBtn {
+  display: inline-block;
+  width: auto !important;
+  min-width: 110px;
+  padding: 10px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+/* Give gap between buttons */
+div[style*="display:flex"] {
+  gap: 10px !important;
+}
+
+/* Small screens — buttons half width */
+@media (max-width:420px){
+  #registerBtn, #registerCancelBtn {
+    min-width: 45%;
+    padding: 8px;
+  }
+}
 @media(min-width:900px){.logo-top img{max-width:220px}}
 </style>
 </head>

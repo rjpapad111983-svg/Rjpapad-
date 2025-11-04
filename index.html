@@ -222,34 +222,60 @@
     let selectedLang = "hindi";
 
     function selectLang(lang) {
-  selectedLang = lang;
-  const t = translations[lang] || translations['hindi'];
-
-  // Debug log (आप console पर देख सकते हैं)
   try {
-    console.log('selectLang called:', lang);
-  } catch (e) {}
+    console.log('selectLang called with:', lang);
+    if (!lang) return;
 
-  // भाषा अनुसार content बदलो — try/catch से safe रखें
-  try {
-    const titleEl = document.getElementById("title");
-    if (titleEl) titleEl.innerText = t.title;
+    selectedLang = lang;
+    const t = (translations && translations[lang]) ? translations[lang] : translations['hindi'] || {};
 
-    const nameEl = document.getElementById("name");
-    if (nameEl) nameEl.placeholder = t.name;
+    const titleEl = document.getElementById('title');
+    const nameEl = document.getElementById('name');
+    const mobileEl = document.getElementById('mobile');
+    const regBtn = document.getElementById('registerBtn');
+    const bannerTop = document.getElementById('bannerTop');
+    const bannerBottom = document.getElementById('bannerBottom');
+    const welcomeEl = document.getElementById('welcomeText');
+    const resultEl = document.getElementById('result');
 
-    const mobileEl = document.getElementById("mobile");
-    if (mobileEl) mobileEl.placeholder = t.mobile;
+    console.log('Elements found:', {
+      titleEl: !!titleEl,
+      nameEl: !!nameEl,
+      mobileEl: !!mobileEl,
+      regBtn: !!regBtn,
+      bannerTop: !!bannerTop,
+      bannerBottom: !!bannerBottom,
+      welcomeEl: !!welcomeEl,
+      resultEl: !!resultEl
+    });
 
-    const regBtn = document.getElementById("registerBtn");
-    if (regBtn) regBtn.innerText = t.button;
+    if (titleEl && t.title) titleEl.innerText = t.title;
+    if (nameEl && t.name) nameEl.placeholder = t.name;
+    if (mobileEl && t.mobile) mobileEl.placeholder = t.mobile;
+    if (regBtn && t.button) regBtn.innerText = t.button;
+    if (welcomeEl && t.welcome) welcomeEl.innerText = t.welcome;
 
-    const welcomeEl = document.getElementById("welcomeText");
-    if (welcomeEl) welcomeEl.innerText = t.welcome;
+    try {
+      if (bannerTop && t.bannerTop) bannerTop.src = t.bannerTop;
+      if (bannerBottom && t.bannerBottom) bannerBottom.src = t.bannerBottom;
+    } catch (e) {
+      console.log('banner update error:', e);
+    }
+
+    const content = document.getElementById('content');
+    if (content) content.style.display = 'block';
+
+    if (resultEl) resultEl.innerText = '';
+
+    console.log('selectLang applied translations for:', lang);
   } catch (err) {
-    // non-fatal, आगे भी proceed करेंगे
-    console.log('translation apply error:', err);
+    console.error('selectLang failure:', err);
+    try { 
+      const r = document.getElementById('result'); 
+      if (r) r.innerText = 'Lang apply error: ' + err.message; 
+    } catch(e) {}
   }
+}
 
   // Banner images set करना भी safe रखें (कुछ paths गलत हों तो error न रोके)
   try {

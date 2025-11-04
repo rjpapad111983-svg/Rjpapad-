@@ -1,401 +1,60 @@
 <!doctype html>
-<html>
+<html lang="hi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RJ Papad - Register</title>
+  <title>Rjpapad - Demo</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #fffbe6;
-      overflow: hidden;
-    }
-
-    /* Splash Screen */
+    body { margin:0; font-family: Arial, sans-serif; background:#0f1720; color:#fff; }
+    /* splash overlay */
     #splash {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(circle, #fffbe6 40%, #ffe69a 100%);
-      transition: opacity 0.8s ease;
-      z-index: 10;
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(180deg,#0b1220,#0f1720); z-index:1000;
+      flex-direction:column; gap:18px; padding:24px;
     }
-
-    #splash img.logo {
-      width: 180px;
-      border-radius: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    /* Language Buttons */
-    .lang-buttons {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .lang-buttons button {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
-      color: #000;
-    }
-
-    .lang-buttons button img {
-      width: 22px;
-      height: 16px;
-      border-radius: 3px;
-      box-shadow: 0 0 3px rgba(0,0,0,0.3);
-    }
-
-    .lang-buttons button:hover {
-      transform: scale(1.08);
-    }
-
-    .hindi { background: #ffcc33; }
-    .english { background: #33ccff; }
-    .gujarati { background: #cc99ff; }
-
-    /* Hidden Content */
-    #content {
-      display: none;
-      padding: 20px;
-      text-align: center;
-      animation: fadeInUp 0.8s ease;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    input, button {
-      padding: 10px;
-      margin: 6px 0;
-      width: 100%;
-      max-width: 320px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button#registerBtn {
-      background: #ffcc33;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    button#registerBtn:hover {
-      background: #ffbb00;
-    }
-
-    pre {
-      background: #f4f4f4;
-      padding: 10px;
-      max-width: 600px;
-      margin: 0 auto;
-      border-radius: 6px;
-      text-align: left;
-    }
-
-    /* Banner Section */
-    .banner {
-      margin: 10px auto;
-    }
-    .banner img {
-      width: 100%;
-      max-width: 600px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-
-    /* Welcome Text */
-    .welcome-text {
-      font-size: 20px;
-      font-weight: bold;
-      color: #c47f00;
-      margin: 10px 0 20px 0;
-    }
+    #splash .logo { width:140px; height:140px; border-radius:12px; background:#1f2937; display:flex; align-items:center; justify-content:center; font-weight:bold; }
+    #splash h1{ margin:0; font-size:20px; }
+    #splash p{ margin:0; opacity:0.8; font-size:14px; }
+    .btn { padding:10px 18px; border-radius:8px; border:0; cursor:pointer; font-weight:600; }
+    .btn-primary { background:#16a34a; color:white; }
+    /* main content hidden under splash */
+    #main { padding:24px; display:none; }
   </style>
 </head>
 <body>
-  <!-- Splash Screen -->
-  <div id="splash">
-    <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"alt="RJ Papad Logo" class="logo" />
-    <div class="lang-buttons">
-      <button class="hindi" onclick="selectLang('hindi')">
-        <img src="https://flagcdn.com/w20/in.png" alt="IN"> हिंदी
-      </button>
-      <button class="english" onclick="selectLang('english')">
-        <img src="https://flagcdn.com/w20/gb.png" alt="EN"> English
-      </button>
-      <button class="gujarati" onclick="selectLang('gujarati')">
-        <img src="https://flagcdn.com/w20/in.png" alt="IN"> ગુજરાતી
-      </button>
+
+  <!-- SPLASH -->
+  <div id="splash" aria-hidden="false">
+    <div class="logo">RJ</div>
+    <h1>Welcome to Rjpapad</h1>
+    <p>साइट देखने के लिए 'Get started' दबाएँ</p>
+    <div>
+      <button id="btnStart" class="btn btn-primary">Get started</button>
     </div>
   </div>
 
-  <!-- Hidden Content -->
-  <div id="content">
-    <!-- ✅ पहला बैनर -->
-    <div class="banner">
-      <img id="bannerTop" src="banner1-hindi.jpg" alt="Top Banner" />
-    </div>
-
-    <!-- 🌟 Welcome Text (भाषा अनुसार बदलेगा) -->
-    <div id="welcomeText" class="welcome-text">
-      RJ पापड़ में आपका स्वागत है!
-    </div>
-
-    <!-- ✅ दूसरा बैनर -->
-    <div class="banner">
-      <img id="bannerBottom" src="banner2-hindi.jpg" alt="Bottom Banner" />
-    </div>
-
-    <!-- पहले वाला Register form (लाइन ~172 बदलें) -->
-<div id="registerForm">
-  <input id="name" placeholder="नाम (वैकल्पिक)" />
-  <input id="mobile" placeholder="मोबाइल नंबर (अनिवार्य)" />
-  <button id="registerBtn">रजिस्टर करें</button>
-</div>
-
-<!-- नया Login form — जोड़ें ठीक इसके नीचे (लाइन ~177 के बाद) -->
-<div id="loginForm" style="display:none;">
-  <h2 id="loginTitle">लॉगिन करें</h2>
-  <input id="loginMobile" placeholder="मोबाइल नंबर डालें" />
-  <button id="loginBtn">लॉगिन करें</button>
-</div>
-
-  
-
-    <pre id="result"></pre>
+  <!-- MAIN CONTENT -->
+  <div id="main" aria-hidden="true">
+    <h2>मुख्य पेज</h2>
+    <p>यहाँ आपकी वेबसाइट का कंटेंट आएगा — अब splash गायब हो चुका है।</p>
   </div>
 
   <script>
-    const translations = {
-      hindi: {
-        title: "रजिस्टर करें (Mobile Number से)",
-        name: "नाम (वैकल्पिक)",
-        mobile: "मोबाइल नंबर (अनिवार्य)",
-        button: "रजिस्टर करें",
-        error: "❌ कृपया मोबाइल नंबर डालें",
-        bannerTop: "banner1-hindi.jpg",
-        bannerBottom: "banner2-hindi.jpg",
-        welcome: "RJ पापड़ में आपका स्वागत है!"
-      },
-      english: {
-        title: "Register (Using Mobile Number)",
-        name: "Name (optional)",
-        mobile: "Mobile number (required)",
-        button: "Register",
-        error: "❌ Please enter your mobile number",
-        bannerTop: "banner1-english.jpg",
-        bannerBottom: "banner2-english.jpg",
-        welcome: "Welcome to RJ Papad!"
-      },
-      gujarati: {
-        title: "નોંધણી કરો (મોબાઇલ નંબરથી)",
-        name: "નામ (વૈકલ્પિક)",
-        mobile: "મોબાઇલ નંબર (જરૂરી)",
-        button: "નોંધણી કરો",
-        error: "❌ કૃપા કરીને મોબાઇલ નંબર દાખલ કરો",
-        bannerTop: "banner1-gujarati.jpg",
-        bannerBottom: "banner2-gujarati.jpg",
-        welcome: "RJ પાપડમાં આપનું સ્વાગત છે!"
-      }
-    };
+    // कोई auto hide/redirect नहीं — केवल बटन से काम होगा
+    const splash = document.getElementById('splash');
+    const main = document.getElementById('main');
+    const btn = document.getElementById('btnStart');
 
-    let selectedLang = "hindi";
-
-    function selectLang(lang) {
-  try {
-    console.log('selectLang called with:', lang);
-    if (!lang) return;
-
-    selectedLang = lang;
-    const t = (translations && translations[lang]) ? translations[lang] : translations['hindi'] || {};
-
-    const titleEl = document.getElementById('title');
-    const nameEl = document.getElementById('name');
-    const mobileEl = document.getElementById('mobile');
-    const regBtn = document.getElementById('registerBtn');
-    const bannerTop = document.getElementById('bannerTop');
-    const bannerBottom = document.getElementById('bannerBottom');
-    const welcomeEl = document.getElementById('welcomeText');
-    const resultEl = document.getElementById('result');
-
-    console.log('Elements found:', {
-      titleEl: !!titleEl,
-      nameEl: !!nameEl,
-      mobileEl: !!mobileEl,
-      regBtn: !!regBtn,
-      bannerTop: !!bannerTop,
-      bannerBottom: !!bannerBottom,
-      welcomeEl: !!welcomeEl,
-      resultEl: !!resultEl
+    btn.addEventListener('click', function (e) {
+      // splash छिपाएँ
+      splash.style.display = 'none';
+      splash.setAttribute('aria-hidden','true');
+      // मुख्य कंटेंट दिखाएँ
+      main.style.display = 'block';
+      main.setAttribute('aria-hidden','false');
+      // अगर चाहें तो url बदलना: history.pushState(null,'','/home')  (optional)
     });
-
-    if (titleEl && t.title) titleEl.innerText = t.title;
-    if (nameEl && t.name) nameEl.placeholder = t.name;
-    if (mobileEl && t.mobile) mobileEl.placeholder = t.mobile;
-    if (regBtn && t.button) regBtn.innerText = t.button;
-    if (welcomeEl && t.welcome) welcomeEl.innerText = t.welcome;
-
-    try {
-      if (bannerTop && t.bannerTop) bannerTop.src = t.bannerTop;
-      if (bannerBottom && t.bannerBottom) bannerBottom.src = t.bannerBottom;
-    } catch (e) {
-      console.log('banner update error:', e);
-    }
-
-    const content = document.getElementById('content');
-    if (content) content.style.display = 'block';
-
-    if (resultEl) resultEl.innerText = '';
-
-    console.log('selectLang applied translations for:', lang);
-  } catch (err) {
-    console.error('selectLang failure:', err);
-    try { 
-      const r = document.getElementById('result'); 
-      if (r) r.innerText = 'Lang apply error: ' + err.message; 
-    } catch(e) {}
-  }
-}
-
-  // Banner images set करना भी safe रखें (कुछ paths गलत हों तो error न रोके)
-  try {
-    const top = document.getElementById("bannerTop");
-    if (top) top.src = t.bannerTop ? ("banners/" + t.bannerTop + ".png") : top.src;
-
-    const bottom = document.getElementById("bannerBottom");
-    if (bottom) bottom.src = t.bannerBottom ? ("banners/" + t.bannerBottom + ".png") : bottom.src;
-  } catch (err) {
-    console.log('banner set error:', err);
-  }
-
-  // ============================
-  // यहाँ से splash को hide करो — यह हिस्सा हमेशा चलेगा
-  // ============================
-  const splash = document.getElementById("splash");
-  const content = document.getElementById("content");
-
-  // पहले opacity बदलो ताकि fade effect हो (CSS में transition रखना ठीक रहेगा)
-  if (splash) {
-    splash.style.opacity = "0";
-    // pointer-events हटाओ ताकि नीचे के buttons/interactions enable हों
-    splash.style.pointerEvents = "none";
-  }
-
-  // 800ms बाद display none और content दिखाओ
-  setTimeout(() => {
-    try {
-      if (splash) {
-        // कुछ ब्राउज़र में पहले display:none करने से transition और click-block ठीक होता है
-        splash.style.display = "none";
-        splash.classList.add('hidden'); // optional class
-      }
-      document.body.style.overflow = "auto";
-      if (content) content.style.display = "block";
-    } catch (e) {
-      console.log('final hide error:', e);
-    }
-  }, 400); // 400ms से भी तेज़ hide करने के लिए — अगर आप fade चाहिए तो 800 रखिए
-}
-// ताकि inline onclick="selectLang('hindi')" काम करे
-window.selectLang = selectLang;
-    document.getElementById("registerBtn").addEventListener("click", async () => {
-      const name = document.getElementById("name").value.trim();
-      const mobile = document.getElementById("mobile").value.trim();
-      const t = translations[selectedLang];
-
-      if (!mobile) {
-        document.getElementById("result").innerText = t.error;
-        return;
-      }
-
-      // ===== GET version (replace BASE_URL with your real endpoint) =====
-try {
-  const BASE_URL = "https://your-domain.com/your-get-endpoint"; // <-- change this (must start with https://)
-  const params = new URLSearchParams({
-    name: name || "",
-    mobile: mobile || "",
-    lang: selectedLang || "hindi"
-  });
-  const url = BASE_URL + "?" + params.toString();
-
-  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
-  const text = await res.text();
-  if (!res.ok) throw new Error("Server returned " + res.status + ": " + text.slice(0,200));
-  const data = JSON.parse(text);
-
-  // success
-  localStorage.setItem("registered","true");
-  localStorage.setItem("userMobile", mobile);
-  window.location.href = "people.html";
-} catch (err) {
-  document.getElementById("result").innerText = "Error: " + err.message;
-  // ===== replace the existing language-listener block with this robust debug version =====
-window.addEventListener('DOMContentLoaded', () => {
-  console.log('DOMContentLoaded fired for language setup');
-  const resultEl = document.getElementById('result');
-
-  function debugLog(...args) {
-    try {
-      console.log(...args);
-      if (resultEl) {
-        resultEl.innerText +=
-          args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ') + '\n';
-      }
-    } catch (e) { console.log('debugLog error', e); }
-  }
-
-  const buttons = document.querySelectorAll('.lang-buttons button');
-  debugLog('Language listeners attaching — found', buttons.length, 'buttons');
-
-  buttons.forEach((btn, i) => {
-    const lang = btn.classList.contains('hindi')
-      ? 'hindi'
-      : btn.classList.contains('english')
-      ? 'english'
-      : btn.classList.contains('gujarati')
-      ? 'gujarati'
-      : null;
-
-    debugLog('Attach listener to button', i, 'lang=', lang, 'text=', btn.innerText);
-
-    btn.addEventListener('click', () => {
-      debugLog('Language button clicked:', lang || '(no-class)');
-      if (resultEl) resultEl.innerText = 'Clicked language: ' + (lang || 'unknown') + '\n';
-
-      if (typeof selectLang === 'function') {
-        try {
-          selectLang(lang || 'hindi');
-          debugLog('Called selectLang with', lang || 'hindi');
-        } catch (e) {
-          debugLog('selectLang threw error:', e.message || e);
-        }
-      } else {
-        debugLog('ERROR: selectLang is not defined');
-        alert('selectLang function not found — check script order');
-      }
-    });
-  });
-});
   </script>
+
 </body>
 </html>

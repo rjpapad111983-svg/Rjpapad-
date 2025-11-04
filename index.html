@@ -222,31 +222,80 @@
         welcome: "RJ પાપડમાં આપનું સ્વાગત છે!"
       }
     };
-window.selectLang = selectLang;
+
     let selectedLang = "hindi";
 
     function selectLang(lang) {
-      selectedLang = lang;
-      const t = translations[lang];
+  selectedLang = lang;
+  const t = translations[lang] || translations['hindi'];
 
-      // भाषा अनुसार content बदलो
-      document.getElementById("title").textContent = t.title;
-      document.getElementById("name").placeholder = t.name;
-      document.getElementById("mobile").placeholder = t.mobile;
-      document.getElementById("registerBtn").textContent = t.button;
-      document.getElementById("bannerTop").src = t.bannerTop;
-      document.getElementById("bannerBottom").src = t.bannerBottom;
-      document.getElementById("welcomeText").textContent = t.welcome;
+  // Debug log (आप console पर देख सकते हैं)
+  try {
+    console.log('selectLang called:', lang);
+  } catch (e) {}
 
-      // Splash छुपाओ और content दिखाओ
-      document.getElementById("splash").style.opacity = "0";
-      setTimeout(() => {
-        document.getElementById("splash").style.display = "none";
-        document.body.style.overflow = "auto";
-        document.getElementById("content").style.display = "block";
-      }, 800);
+  // भाषा अनुसार content बदलो — try/catch से safe रखें
+  try {
+    const titleEl = document.getElementById("title");
+    if (titleEl) titleEl.innerText = t.title;
+
+    const nameEl = document.getElementById("name");
+    if (nameEl) nameEl.placeholder = t.name;
+
+    const mobileEl = document.getElementById("mobile");
+    if (mobileEl) mobileEl.placeholder = t.mobile;
+
+    const regBtn = document.getElementById("registerBtn");
+    if (regBtn) regBtn.innerText = t.button;
+
+    const welcomeEl = document.getElementById("welcomeText");
+    if (welcomeEl) welcomeEl.innerText = t.welcome;
+  } catch (err) {
+    // non-fatal, आगे भी proceed करेंगे
+    console.log('translation apply error:', err);
+  }
+
+  // Banner images set करना भी safe रखें (कुछ paths गलत हों तो error न रोके)
+  try {
+    const top = document.getElementById("bannerTop");
+    if (top) top.src = t.bannerTop ? ("banners/" + t.bannerTop + ".png") : top.src;
+
+    const bottom = document.getElementById("bannerBottom");
+    if (bottom) bottom.src = t.bannerBottom ? ("banners/" + t.bannerBottom + ".png") : bottom.src;
+  } catch (err) {
+    console.log('banner set error:', err);
+  }
+
+  // ============================
+  // यहाँ से splash को hide करो — यह हिस्सा हमेशा चलेगा
+  // ============================
+  const splash = document.getElementById("splash");
+  const content = document.getElementById("content");
+
+  // पहले opacity बदलो ताकि fade effect हो (CSS में transition रखना ठीक रहेगा)
+  if (splash) {
+    splash.style.opacity = "0";
+    // pointer-events हटाओ ताकि नीचे के buttons/interactions enable हों
+    splash.style.pointerEvents = "none";
+  }
+
+  // 800ms बाद display none और content दिखाओ
+  setTimeout(() => {
+    try {
+      if (splash) {
+        // कुछ ब्राउज़र में पहले display:none करने से transition और click-block ठीक होता है
+        splash.style.display = "none";
+        splash.classList.add('hidden'); // optional class
+      }
+      document.body.style.overflow = "auto";
+      if (content) content.style.display = "block";
+    } catch (e) {
+      console.log('final hide error:', e);
     }
-
+  }, 400); // 400ms से भी तेज़ hide करने के लिए — अगर आप fade चाहिए तो 800 रखिए
+}
+// ताकि inline onclick="selectLang('hindi')" काम करे
+window.selectLang = selectLang;
     document.getElementById("registerBtn").addEventListener("click", async () => {
       const name = document.getElementById("name").value.trim();
       const mobile = document.getElementById("mobile").value.trim();

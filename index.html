@@ -1,60 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Rjpapad - Demo</title>
-  <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#0f1720; color:#fff; }
-    /* splash overlay */
-    #splash {
-      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-      background: linear-gradient(180deg,#0b1220,#0f1720); z-index:1000;
-      flex-direction:column; gap:18px; padding:24px;
-    }
-    #splash .logo { width:140px; height:140px; border-radius:12px; background:#1f2937; display:flex; align-items:center; justify-content:center; font-weight:bold; }
-    #splash h1{ margin:0; font-size:20px; }
-    #splash p{ margin:0; opacity:0.8; font-size:14px; }
-    .btn { padding:10px 18px; border-radius:8px; border:0; cursor:pointer; font-weight:600; }
-    .btn-primary { background:#16a34a; color:white; }
-    /* main content hidden under splash */
-    #main { padding:24px; display:none; }
-  </style>
+  <title>RJ Papad — Demo Wallet</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- SPLASH -->
-  <div id="splash" aria-hidden="false">
-    <div class="logo">RJ</div>
-    <h1>Welcome to Rjpapad</h1>
-    <p>साइट देखने के लिए 'Get started' दबाएँ</p>
-    <div>
-      <button id="btnStart" class="btn btn-primary">Get started</button>
+  <header class="site-header">
+    <div class="brand">
+      <img src="images/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+      <div class="brand-text">
+        <div class="brand-title">RJ Papad</div>
+        <div class="brand-sub">MLM Demo — Wallet & Admin (Demo)</div>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <!-- MAIN CONTENT -->
-  <div id="main" aria-hidden="true">
-    <h2>मुख्य पेज</h2>
-    <p>यहाँ आपकी वेबसाइट का कंटेंट आएगा — अब splash गायब हो चुका है।</p>
-  </div>
+  <main class="container">
+    <!-- AUTH AREA -->
+    <section id="authArea" class="card">
+      <div id="registerCard">
+        <h2>रजिस्टर करें</h2>
+        <input id="regName" placeholder="पूरा नाम">
+        <input id="regMobile" placeholder="मोबाइल (10 अंक)">
+        <input id="regPass" placeholder="पासवर्ड" type="password">
+        <select id="regGender">
+          <option value="male">पुरुष</option>
+          <option value="female">महिला</option>
+          <option value="other">अन्य</option>
+        </select>
+        <input id="regSponsor" placeholder="Sponsor ID (optional)">
+        <div class="row">
+          <button class="btn btn-primary" onclick="registerUser()">Register</button>
+          <button class="btn" onclick="seenLogin()">Already have account — Login</button>
+        </div>
+        <div id="regNote" class="notice hidden"></div>
+      </div>
 
-  <script>
-    // कोई auto hide/redirect नहीं — केवल बटन से काम होगा
-    const splash = document.getElementById('splash');
-    const main = document.getElementById('main');
-    const btn = document.getElementById('btnStart');
+      <div id="loginCard" class="hidden">
+        <h2>Login</h2>
+        <input id="logMobile" placeholder="मोबाइल">
+        <input id="logPass" placeholder="पासवर्ड" type="password">
+        <div class="row">
+          <button class="btn btn-primary" onclick="loginUser()">Login</button>
+          <button class="btn" onclick="showRegister()">Register</button>
+        </div>
+        <div id="loginNote" class="notice hidden"></div>
+      </div>
+    </section>
 
-    btn.addEventListener('click', function (e) {
-      // splash छिपाएँ
-      splash.style.display = 'none';
-      splash.setAttribute('aria-hidden','true');
-      // मुख्य कंटेंट दिखाएँ
-      main.style.display = 'block';
-      main.setAttribute('aria-hidden','false');
-      // अगर चाहें तो url बदलना: history.pushState(null,'','/home')  (optional)
-    });
-  </script>
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="card hidden">
+      <div class="dash-top">
+        <div>
+          <div class="small">Welcome, <strong id="userName">User</strong></div>
+          <div class="balance">₹ <span id="walletBalance">0.00</span></div>
+          <div id="nextLevelInfo" class="next-level-box hidden"></div>
+        </div>
+        <div class="dash-actions">
+          <button class="btn" id="backupBtn" onclick="backupData()">Backup</button>
+          <button class="btn" id="restoreBtn" onclick="restoreData()">Restore</button>
+          <button class="btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
 
+      <div id="contentArea">
+        <section id="walletSection" class="section hidden">
+          <h3>Wallet & Ledger</h3>
+          <ul id="ledgerList" class="list"></ul>
+        </section>
+
+        <section id="withdrawSection" class="section hidden">
+          <h3>Withdraw Request</h3>
+          <input id="withdrawAmt" placeholder="Amount (e.g. 100)">
+          <input id="withdrawVpa" placeholder="UPI ID (like abc@upi)">
+          <button class="btn btn-primary" onclick="handleWithdraw()">Create Withdraw Request</button>
+          <div id="walletMsg" class="notice hidden"></div>
+        </section>
+
+        <section id="bankSection" class="section hidden">
+          <h3>Bank Details</h3>
+          <input id="bankName" placeholder="Bank Name">
+          <input id="accHolder" placeholder="Account Holder Name">
+          <input id="accNumber" placeholder="Account Number">
+          <input id="ifsc" placeholder="IFSC Code">
+          <input id="upiId" placeholder="UPI ID (optional)">
+          <button class="btn btn-primary" onclick="saveBankDetailsForCurrent()">Save Bank Details</button>
+        </section>
+
+        <section id="treeSection" class="section hidden">
+          <h3>MLM Tree</h3>
+          <div id="mlmTree" class="mlm-tree"></div>
+        </section>
+
+        <section id="levelProgressSection" class="section hidden">
+          <h3>Level Progress</h3>
+          <div id="levelProgressBox"></div>
+        </section>
+
+        <section id="settingsSection" class="section hidden">
+          <h3>Settings</h3>
+          <div class="small">Demo settings — admin functions are in admin.html</div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Menu -->
+  <nav class="menu-bar">
+    <button title="Wallet" onclick="showWallet()">💰</button>
+    <button title="Withdraw" onclick="showWithdraw()">💸</button>
+    <button title="MLM Tree" onclick="showTree()">👥</button>
+    <button title="Bank Details" onclick="showBankForm()">🏦</button>
+    <button title="Progress" onclick="showProgress()">📈</button>
+    <button title="Settings" onclick="showSettings()">⚙️</button>
+  </nav>
+
+  <script src="script.js"></script>
 </body>
-</html>
+  </html>

@@ -325,7 +325,13 @@ try {
   document.getElementById("result").innerText = "Error: " + err.message;
   // ✅ Step 2: Language buttons को दोबारा चलाने के लिए
 window.addEventListener('DOMContentLoaded', () => {
-  // सभी language buttons पकड़ो
+
+  // 🟩 Debug Statement — यह बतायेगा कितने बटन मिले
+  console.log('Language listeners attaching — found',
+    document.querySelectorAll('.lang-buttons button').length,
+    'buttons');
+
+  // सभी language बटन पकड़ो
   document.querySelectorAll('.lang-buttons button').forEach(btn => {
     // class देखकर भाषा पहचानो
     const lang = btn.classList.contains('hindi')
@@ -345,7 +351,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
-}
   </script>
 </body>
 </html>

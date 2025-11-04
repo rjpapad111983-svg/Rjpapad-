@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RJ Papad — Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <img src="images/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
+      <div class="brand-text">
+        <div class="brand-title">RJ Papad — Admin</div>
+        <div class="brand-sub">Demo Control Panel</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Admin Login Section -->
+    <section class="card">
+      <h2>Admin Login</h2>
+      <input id="adminSecret" placeholder="Admin Password" type="password">
+      <div class="row">
+        <button class="btn btn-primary" onclick="adminLogin()">Login</button>
+      </div>
+      <div id="adminNote" class="notice hidden"></div>
+    </section>
+
+    <!-- Admin Control Panel -->
+    <section id="adminPanel" class="card hidden">
+      <h3>➕ Add Customer (Admin)</h3>
+      <input id="newName" placeholder="नाम">
+      <input id="newMobile" placeholder="मोबाइल नंबर">
+      <input id="newPass" placeholder="पासवर्ड">
+      <select id="newGender">
+        <option value="male">पुरुष</option>
+        <option value="female">महिला</option>
+        <option value="other">अन्य</option>
+      </select>
+      <input id="newParent" placeholder="Parent ID (optional)">
+      <div class="row">
+        <button class="btn btn-primary" onclick="adminAddUser()">Add Customer</button>
+        <button class="btn" onclick="renderPendingWithdraws()">Refresh</button>
+      </div>
+      <p id="activationCodeDisplay" class="small"></p>
+
+      <hr>
+
+      <h3>💸 Pending Withdrawals</h3>
+      <div id="pendingWithdraws"></div>
+
+      <hr>
+
+      <h3>⚙️ Monthly Operations</h3>
+      <div class="row">
+        <button class="btn" onclick="runMonthlyPayout()">Run Monthly Payout</button>
+        <button class="btn" onclick="applyInactivityPrompt()">Apply Inactivity Penalties</button>
+      </div>
+
+      <hr>
+
+      <h3>💾 Backup / Restore</h3>
+      <div class="row">
+        <button class="btn" onclick="backupData()">Export Backup</button>
+        <button class="btn" onclick="restoreData()">Import Backup</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

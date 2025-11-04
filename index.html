@@ -349,30 +349,49 @@ try {
   window.location.href = "people.html";
 } catch (err) {
   document.getElementById("result").innerText = "Error: " + err.message;
-  // ✅ Step 2: Language buttons को दोबारा चलाने के लिए
+  // ===== replace the existing language-listener block with this robust debug version =====
 window.addEventListener('DOMContentLoaded', () => {
+  console.log('DOMContentLoaded fired for language setup');
+  const resultEl = document.getElementById('result');
 
-  // 🟩 Debug Statement — यह बतायेगा कितने बटन मिले
-  console.log('Language listeners attaching — found',
-    document.querySelectorAll('.lang-buttons button').length,
-    'buttons');
+  function debugLog(...args) {
+    try {
+      console.log(...args);
+      if (resultEl) {
+        resultEl.innerText +=
+          args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ') + '\n';
+      }
+    } catch (e) { console.log('debugLog error', e); }
+  }
 
-  // सभी language बटन पकड़ो
-  document.querySelectorAll('.lang-buttons button').forEach(btn => {
-    // class देखकर भाषा पहचानो
+  const buttons = document.querySelectorAll('.lang-buttons button');
+  debugLog('Language listeners attaching — found', buttons.length, 'buttons');
+
+  buttons.forEach((btn, i) => {
     const lang = btn.classList.contains('hindi')
       ? 'hindi'
       : btn.classList.contains('english')
       ? 'english'
-      : 'gujarati';
+      : btn.classList.contains('gujarati')
+      ? 'gujarati'
+      : null;
 
-    // क्लिक होने पर भाषा बदलो
+    debugLog('Attach listener to button', i, 'lang=', lang, 'text=', btn.innerText);
+
     btn.addEventListener('click', () => {
-      console.log('Language selected:', lang);
+      debugLog('Language button clicked:', lang || '(no-class)');
+      if (resultEl) resultEl.innerText = 'Clicked language: ' + (lang || 'unknown') + '\n';
+
       if (typeof selectLang === 'function') {
-        selectLang(lang);
+        try {
+          selectLang(lang || 'hindi');
+          debugLog('Called selectLang with', lang || 'hindi');
+        } catch (e) {
+          debugLog('selectLang threw error:', e.message || e);
+        }
       } else {
-        alert('selectLang function not found!');
+        debugLog('ERROR: selectLang is not defined');
+        alert('selectLang function not found — check script order');
       }
     });
   });

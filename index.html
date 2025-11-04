@@ -302,16 +302,28 @@ window.selectLang = selectLang;
         return;
       }
 
-// temporary network test - paste inside your register handler instead of real fetch
+      // ===== GET version (replace BASE_URL with your real endpoint) =====
 try {
-  const testUrl = "https://httpbin.org/get?name=" + encodeURIComponent(name || "") + "&mobile=" + encodeURIComponent(mobile || "");
-  const res = await fetch(testUrl, { method: "GET" });
+  const BASE_URL = "https://your-domain.com/your-get-endpoint"; // <-- change this (must start with https://)
+  const params = new URLSearchParams({
+    name: name || "",
+    mobile: mobile || "",
+    lang: selectedLang || "hindi"
+  });
+  const url = BASE_URL + "?" + params.toString();
+
+  const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
   const text = await res.text();
-  document.getElementById('result').innerText = 'Test OK: ' + text.slice(0,200);
+  if (!res.ok) throw new Error("Server returned " + res.status + ": " + text.slice(0,200));
+  const data = JSON.parse(text);
+
+  // success
+  localStorage.setItem("registered","true");
+  localStorage.setItem("userMobile", mobile);
+  window.location.href = "people.html";
 } catch (err) {
-  document.getElementById('result').innerText = 'Network test failed: ' + err.message;
+  document.getElementById("result").innerText = "Error: " + err.message;
 }
-    });
   </script>
 </body>
 </html>

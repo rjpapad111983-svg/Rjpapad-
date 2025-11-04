@@ -302,17 +302,19 @@ window.selectLang = selectLang;
         return;
       }
 
-// DELETE the previous try/await fetch(...) block and paste this instead
 try {
-  // YOUR_API_URL_HERE को अपने असली endpoint से बदलें
-  const url = new URL("YOUR_API_URL_HERE");
-  url.searchParams.set("name", name);
-  url.searchParams.set("mobile", mobile);
-  url.searchParams.set("lang", selectedLang);
+  // <-- बदलें: नीचे का URL अपने असली endpoint से बदलें (यहाँ दिखा example है)
+  const base = "https://your-api-domain.com/register"; // <-- full URL होना चाहिए (https://...)
+  const params = new URLSearchParams({
+    name: name || "",
+    mobile: mobile || "",
+    lang: selectedLang || "hindi"
+  });
+  const url = base + "?" + params.toString();
 
-  const res = await fetch(url.toString(), {
+  const res = await fetch(url, {
     method: "GET",
-    headers: { "Accept": "application/json" } // optional
+    headers: { "Accept": "application/json" }
   });
 
   const text = await res.text();
@@ -326,6 +328,7 @@ try {
   localStorage.setItem("registered","true");
   localStorage.setItem("userMobile", mobile);
   window.location.href = "people.html";
+
 } catch (err) {
   document.getElementById("result").innerText = "Error: " + err.message;
     }

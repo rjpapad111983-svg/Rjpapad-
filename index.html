@@ -166,8 +166,19 @@
       <img id="bannerBottom" src="banner2-hindi.jpg" alt="Bottom Banner" />
     </div>
 
-    <!-- Registration Form -->
-    <h2 id="title">रजिस्टर करें (Mobile Number से)</h2>
+    <!-- पहले वाला Register form (लाइन ~172 बदलें) -->
+<div id="registerForm">
+  <input id="name" placeholder="नाम (वैकल्पिक)" />
+  <input id="mobile" placeholder="मोबाइल नंबर (अनिवार्य)" />
+  <button id="registerBtn">रजिस्टर करें</button>
+</div>
+
+<!-- नया Login form — जोड़ें ठीक इसके नीचे (लाइन ~177 के बाद) -->
+<div id="loginForm" style="display:none;">
+  <h2 id="loginTitle">लॉगिन करें</h2>
+  <input id="loginMobile" placeholder="मोबाइल नंबर डालें" />
+  <button id="loginBtn">लॉगिन करें</button>
+</div>
 
     <div>
       <input id="name" placeholder="नाम (वैकल्पिक)" />

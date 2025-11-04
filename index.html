@@ -302,17 +302,39 @@ window.selectLang = selectLang;
         return;
       }
 
-      try {
-        const res = await fetch("/api/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, mobile, lang: selectedLang })
-        });
-        const data = await res.json();
-        document.getElementById("result").innerText = JSON.stringify(data, null, 2);
-      } catch (err) {
-        document.getElementById("result").innerText = "Error: " + err.message;
-      }
+try {
+  const res = await fetch("YOUR_API_URL_HERE", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name,
+      mobile,
+      lang: selectedLang
+    })
+  });
+
+  const text = await res.text();
+
+  if (!res.ok) {
+    throw new Error("Server returned " + res.status + ": " + text.slice(0, 200));
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (parseErr) {
+    throw new Error("Invalid JSON response: " + text.slice(0, 200));
+  }
+
+  // ✅ Registration successful
+  localStorage.setItem("registered", "true");
+  localStorage.setItem("userMobile", mobile);
+
+  // redirect to people page (change filename if needed)
+  window.location.href = "people.html";
+} catch (err) {
+  document.getElementById("result").innerText = "Error: " + err.message;
+    }
     });
   </script>
 </body>

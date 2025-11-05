@@ -5,7 +5,8 @@ function hide(el){ if(el) el.classList.add('hidden'); }
 
 function adminLogin(){
   var secret = $('adminSecret').value;
-  if(secret !== 'rj123'){ $('adminNote').textContent='Unauthorized (demo)'; show($('adminNote')); return; }
+  if(secret !== "rj123"){ alert("गलत पासवर्ड ❌"); return; } 
+hide($('adminNote')); show($('adminPanel'));
   hide($('adminNote')); show($('adminPanel'));
   renderPendingWithdraws();
 }

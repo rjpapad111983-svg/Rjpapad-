@@ -29,7 +29,7 @@
     const name=document.getElementById('name').value.trim();
     const mobile=document.getElementById('mobile').value.trim();
     const pwd=document.getElementById('password').value.trim()||'1234';
-    if(!name||!mobile){alert('नाम और मोबाइल ज़रूरी है');return;}
+    if(!name||!mobile){alert('नाम और मोबाइल ज़रूरी है');return;}
     let users=JSON.parse(localStorage.getItem('rj_users_demo_v1')||'[]');
     let existing=users.find(u=>String(u.mobile)===mobile);
     if(existing){document.getElementById('msg').innerText='⚠️ Sponsor पहले से मौजूद है।';return;}

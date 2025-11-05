@@ -1,3 +1,26 @@
+// ✅ Auto Create Admin Account (only once)
+(function(){
+  let users = JSON.parse(localStorage.getItem('rj_users_demo_v1')||'[]');
+  if(users.length === 0){
+    let id = Date.now();
+    let adminUser = {
+      id: id,
+      name: "Admin",
+      mobile: "9999999999",
+      password: "admin",
+      parent_id: null,
+      status: "active",
+      created_at: new Date().toISOString()
+    };
+    users.push(adminUser);
+    localStorage.setItem('rj_users_demo_v1', JSON.stringify(users));
+    let balances = {};
+    balances[id] = 0;
+    localStorage.setItem('rj_balances_demo_v1', JSON.stringify(balances));
+    console.log("✅ Admin ID auto created with mobile 9999999999 & password admin");
+    alert("✅ Admin ID created!\nMobile: 9999999999\nPassword: admin");
+  }
+})();
 // minimal admin helper (only for admin.html functionality)
 function $(id){return document.getElementById(id);}
 function show(el){ if(el) el.classList.remove('hidden'); }

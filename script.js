@@ -1,5 +1,35 @@
 // ---------- Auto-pool registerUser (no sponsor input required) ----------
 function registerUser(){
+  // --- Auto-switch to Login after successful registration ---
+try{
+  // mobile variable वही होना चाहिए जो आपने user बनाते समय use किया (उदा: mobile)
+  // अगर आपका variable नाम different है तो उसे यहाँ बदल दें
+  const registeredMobile = typeof mobile !== 'undefined' ? mobile : (document.getElementById('regMobile') && document.getElementById('regMobile').value);
+
+  // save a flag so page knows a user just registered
+  sessionStorage.setItem('rj_registered_mobile', registeredMobile);
+
+  // Try to hide register card and show login card (IDs used in your HTML)
+  const regCard = document.getElementById('registerCard') || document.querySelector('.register-card');
+  const loginCard = document.getElementById('loginCard') || document.querySelector('.login-card');
+
+  if(regCard) regCard.style.display = 'none';
+  if(loginCard){
+    loginCard.style.display = 'block';
+    // prefill mobile in login form if input exists
+    const logMobile = document.getElementById('logMobile') || document.querySelector('#loginCard input[type="text"], #loginCard input[name="mobile"], input#logMobile');
+    if(logMobile) logMobile.value = registeredMobile || '';
+    // set focus to password field if present
+    const logPass = document.getElementById('logPass') || document.querySelector('#loginCard input[type="password"], input#logPass');
+    if(logPass) logPass.focus();
+  }
+
+  // If you have helper updateAuthVisibility(), call it too
+  if(typeof updateAuthVisibility === 'function') updateAuthVisibility();
+
+}catch(e){
+  console.error('Auto-switch after register failed:', e);
+}
   // form ids (adjust if html ids different)
   const nameEl = document.getElementById('regName');
   const mobileEl = document.getElementById('regMobile');

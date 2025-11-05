@@ -1,87 +1,117 @@
-// ✅ Auto Create Admin Account (only once)
-(function(){
-  let users = JSON.parse(localStorage.getItem('rj_users_demo_v1')||'[]');
-  if(users.length === 0){
-    let id = Date.now();
-    let adminUser = {
-      id: id,
-      name: "Admin",
-      mobile: "9999999999",
-      password: "admin",
-      parent_id: null,
-      status: "active",
-      created_at: new Date().toISOString()
-    };
-    users.push(adminUser);
-    localStorage.setItem('rj_users_demo_v1', JSON.stringify(users));
-    let balances = {};
-    balances[id] = 0;
-    localStorage.setItem('rj_balances_demo_v1', JSON.stringify(balances));
-    console.log("✅ Admin ID auto created with mobile 9999999999 & password admin");
-    alert("✅ Admin ID created!\nMobile: 9999999999\nPassword: admin");
-  }
-})();
-// minimal admin helper (only for admin.html functionality)
-function $(id){return document.getElementById(id);}
-function show(el){ if(el) el.classList.remove('hidden'); }
-function hide(el){ if(el) el.classList.add('hidden'); }
+// ---------- Auto-pool registerUser (no sponsor input required) ----------
+function registerUser(){
+  // form ids (adjust if html ids different)
+  const nameEl = document.getElementById('regName');
+  const mobileEl = document.getElementById('regMobile');
+  const passEl = document.getElementById('regPass');
+  const genderEl = document.getElementById('regGender');
+  // sponsor field may exist but we will ignore it to enforce auto-pool
+  // validation
+  const name = nameEl ? nameEl.value.trim() : '';
+  const mobile = mobileEl ? mobileEl.value.trim() : '';
+  const pass = passEl ? passEl.value : '';
+  const gender = genderEl ? genderEl.value : '';
 
-function adminLogin(){
-  var secret = $('adminSecret').value;
-  // change allowed admin secrets here (comma separated) or keep single value
-  var allowed = ['admin','rj123']; // आप यहाँ अपना admin password जोड़ें
-  if(allowed.indexOf(secret) === -1){
-    alert('Unauthorized (demo) — wrong admin password');
-    hide($('adminNote')); show($('adminPanel')); // keep original behaviour
+  if(!name || !/^\d{10}$/.test(mobile) || !pass){
+    alert('कृपया नाम, 10-अंकों का मोबाइल और पासवर्ड सही भरें');
     return;
   }
-  // if ok, show admin panel
-  hide($('adminNote'));
-  show($('adminPanel'));
-  renderPendingWithdraws();
-}
 
-function adminAddUser(){
-  var name = $('newName').value.trim(); var mobile = $('newMobile').value.trim(); var pass = $('newPass').value||'1234';
-  if(!name||!mobile){ alert('Name & mobile required'); return; }
-  var users = JSON.parse(localStorage.getItem('rj_users_demo_v1')||'[]');
-  if(users.find(u=>u.mobile===mobile)){ alert('Mobile exists'); return; }
-  var id = Date.now()+Math.floor(Math.random()*90);
-  var activation_code = String(100000+Math.floor(Math.random()*900000));
-  users.push({id, name, mobile, password:pass, gender: $('newGender').value, parent_id: $('newParent').value?parseInt($('newParent').value):null, status:'unconfirmed', activation_code, created_at: new Date().toISOString()});
+  // load users
+  let users = JSON.parse(localStorage.getItem('rj_users_demo_v1') || '[]');
+
+  // duplicate check
+  if(users.find(u=>String(u.mobile)===String(mobile))){
+    alert('यह मोबाइल पहले से रजिस्टर है');
+    return;
+  }
+
+  // find parent by auto-pool (first user with children < 2)
+  function findAutoParent(usersArr){
+    if(usersArr.length === 0) return null; // no parent, this will be root
+    // count children
+    const counts = {};
+    usersArr.forEach(u => {
+      if(u.parent_id) counts[u.parent_id] = (counts[u.parent_id]||0)+1;
+    });
+    // find first user in array order with children < 2
+    for(let i=0;i<usersArr.length;i++){
+      const uid = usersArr[i].id;
+      const c = counts[uid]||0;
+      if(c < 2) return uid;
+    }
+    // if all full (rare), place under first user
+    return usersArr[0].id;
+  }
+
+  const parentId = findAutoParent(users);
+
+  // create user
+  const id = Date.now() + Math.floor(Math.random()*90);
+  const user = {
+    id: id,
+    name: name,
+    mobile: mobile,
+    password: pass,
+    gender: gender,
+    parent_id: parentId,   // auto pool parent
+    sponsor_id: parentId,  // for compatibility
+    status: 'active',
+    created_at: new Date().toISOString()
+  };
+
+  users.push(user);
   localStorage.setItem('rj_users_demo_v1', JSON.stringify(users));
-  var balances = JSON.parse(localStorage.getItem('rj_balances_demo_v1')||'{}'); balances[id]=0; localStorage.setItem('rj_balances_demo_v1', JSON.stringify(balances));
-  $('activationCodeDisplay').textContent = 'Activation code for '+mobile+': '+activation_code;
-  alert('Customer created (unconfirmed). Give code to customer.');
-}
 
-function renderPendingWithdraws(){
-  var w = JSON.parse(localStorage.getItem('rj_withdrawals_demo_v1')||'[]').filter(x=>x.status==='pending');
-  var cont = $('pendingWithdraws'); cont.innerHTML='';
-  if(w.length===0){ cont.innerHTML='<div class="small">No pending withdrawals</div>'; return; }
-  w.forEach(item=>{
-    var users = JSON.parse(localStorage.getItem('rj_users_demo_v1')||'[]');
-    var user = users.find(u=>u.id==item.user_id) || {name:'Unknown'};
-    var div = document.createElement('div'); div.className='card';
-    div.innerHTML = `<div><strong>${user.name}</strong> — ₹${item.gross} (net ₹${item.net})</div>
-      <div style="margin-top:8px"><button class="btn btn-primary" onclick="markPaid('${item.id}')">Mark Paid</button>
-      <button class="btn" onclick="rejectWithdrawal('${item.id}')">Reject</button></div>`;
-    cont.appendChild(div);
-  });
-}
+  // init balances & ledger
+  let balances = JSON.parse(localStorage.getItem('rj_balances_demo_v1')||'{}');
+  balances[id] = balances[id] || 0;
+  localStorage.setItem('rj_balances_demo_v1', JSON.stringify(balances));
 
-function markPaid(id){
-  var arr = JSON.parse(localStorage.getItem('rj_withdrawals_demo_v1')||'[]'); var idx = arr.findIndex(x=>x.id===id); if(idx<0) return;
-  arr[idx].status='paid'; arr[idx].paid_at = new Date().toISOString(); localStorage.setItem('rj_withdrawals_demo_v1', JSON.stringify(arr));
-  alert('Marked paid');
-  renderPendingWithdraws();
-}
-function rejectWithdrawal(id){
-  if(!confirm('Reject & refund?')) return;
-  var arr = JSON.parse(localStorage.getItem('rj_withdrawals_demo_v1')||'[]'); var idx = arr.findIndex(x=>x.id===id); if(idx<0) return;
-  var it = arr[idx];
-  var balances = JSON.parse(localStorage.getItem('rj_balances_demo_v1')||'{}'); balances[it.user_id] = (parseFloat(balances[it.user_id]||0)+parseFloat(it.gross)).toFixed(2); localStorage.setItem('rj_balances_demo_v1', JSON.stringify(balances));
-  arr[idx].status='rejected'; localStorage.setItem('rj_withdrawals_demo_v1', JSON.stringify(arr));
-  alert('Rejected & refunded');
-  renderPendingWithdraws();
+  let ledger = JSON.parse(localStorage.getItem('rj_ledger_demo_v1')||'[]');
+  ledger.push({ id: 'led_'+Date.now(), user_id:id, type:'credit', amount:0, reason:'Registered', created_at: new Date().toISOString() });
+  localStorage.setItem('rj_ledger_demo_v1', JSON.stringify(ledger));
+
+  // ------- Commission distribution (configurable) -------
+  // If you prefer no commission at registration, set distributeOnJoin = false
+  const distributeOnJoin = true;
+  // amounts per level (level 1 = direct parent, level2 = parent's parent, ...)
+  // adjust these numbers as per your plan. Here example rupee amounts:
+  const LEVEL_COMM = [5,3,2,1,1]; // up to 5 levels default
+  if(distributeOnJoin){
+    // build map for quick id->user lookup
+    const usersMap = {};
+    users.forEach(u=> usersMap[u.id] = u);
+    // helper to get ancestor at n levels above (n=1 => parent)
+    function getAncestor(startId, n){
+      let cur = startId;
+      for(let i=0;i<n;i++){
+        if(!cur) return null;
+        const parent = usersMap[cur] ? usersMap[cur].parent_id : null;
+        cur = parent;
+      }
+      return cur;
+    }
+    for(let lvl=0; lvl<LEVEL_COMM.length; lvl++){
+      const ancestorId = getAncestor(id, lvl+1); // lvl+1 up
+      if(ancestorId && String(ancestorId) in balances){
+        // credit amount
+        const amt = LEVEL_COMM[lvl];
+        balances[ancestorId] = (parseFloat(balances[ancestorId]) || 0) + amt;
+        ledger.push({ id:'led_comm_'+Date.now()+'_'+lvl, user_id: ancestorId, type:'credit', amount: amt, reason: `Level ${lvl+1} join commission from ${mobile}`, created_at: new Date().toISOString() });
+      }
+    }
+    // save updated balances & ledger
+    localStorage.setItem('rj_balances_demo_v1', JSON.stringify(balances));
+    localStorage.setItem('rj_ledger_demo_v1', JSON.stringify(ledger));
+  }
+
+  // remember session so register hides if you used that behavior
+  sessionStorage.setItem('rj_registered_mobile', mobile);
+
+  alert('रजिस्ट्रेशन सफल! ID: ' + id + (parentId ? ('\nParent ID: '+parentId) : '\n(You are root)'));
+  if(typeof updateAuthVisibility === 'function') updateAuthVisibility();
+
+  console.log('Registered (auto-pool):', user);
+  return user;
 }

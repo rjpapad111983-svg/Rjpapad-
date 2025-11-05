@@ -28,9 +28,16 @@ function hide(el){ if(el) el.classList.add('hidden'); }
 
 function adminLogin(){
   var secret = $('adminSecret').value;
-  if(secret !== "rj123"){ alert("गलत पासवर्ड ❌"); return; } 
-hide($('adminNote')); show($('adminPanel'));
-  hide($('adminNote')); show($('adminPanel'));
+  // change allowed admin secrets here (comma separated) or keep single value
+  var allowed = ['admin','rj123']; // आप यहाँ अपना admin password जोड़ें
+  if(allowed.indexOf(secret) === -1){
+    alert('Unauthorized (demo) — wrong admin password');
+    hide($('adminNote')); show($('adminPanel')); // keep original behaviour
+    return;
+  }
+  // if ok, show admin panel
+  hide($('adminNote'));
+  show($('adminPanel'));
   renderPendingWithdraws();
 }
 

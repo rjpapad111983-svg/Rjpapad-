@@ -197,6 +197,7 @@ function afterRegisterSuccess(mobile) {
   sessionStorage.setItem('rj_registered_mobile', mobile);
 
   alert('रजिस्ट्रेशन सफल! ID: ' + id + (parentId ? ('\nParent ID: '+parentId) : '\n(You are root)'));
+  afterRegisterSuccess(mobile);
   if(typeof updateAuthVisibility === 'function') updateAuthVisibility();
 
   console.log('Registered (auto-pool):', user);

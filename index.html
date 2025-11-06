@@ -1,49 +1,165 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RJ Papad Panel</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RJ Papad Admin - Debug Version</title>
   <style>
-    body { font-family: sans-serif; text-align:center; padding:20px; }
-    input, select, button { display:block; margin:10px auto; padding:8px; width:220px; }
-    #dashboard { display:none; }
-    .btn { background:#007bff; color:#fff; border:none; border-radius:5px; }
+    body{font-family:Arial,Helvetica,sans-serif;margin:20px;text-align:center}
+    h1{font-size:28px;margin-bottom:18px}
+    .card{display:inline-block;text-align:left;padding:16px;border:1px solid #ddd;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.05);width:320px}
+    input,select,button{display:block;width:100%;padding:8px;margin:8px 0;border-radius:6px;border:1px solid #ccc}
+    .btn{background:#007bff;color:#fff;border:none;cursor:pointer}
+    #dashboard{display:none}
+    #debug{margin-top:18px;font-size:13px;color:#333;background:#f8f8f8;padding:10px;border-radius:6px}
   </style>
 </head>
 <body>
-
-  <h1>RJ Papad Admin Panel</h1>
+  <h1>RJ Papad Admin Panel (Debug)</h1>
 
   <!-- REGISTER -->
-  <div id="regSection">
-    <h2>रजिस्टर करें</h2>
-    <input id="regName" placeholder="नाम" />
+  <div id="regSection" class="card">
+    <h3>Register</h3>
+    <input id="regName" placeholder="नाम (उदा. Rajesh Parmar)" />
     <input id="regMobile" placeholder="मोबाइल (10 अंक)" maxlength="10" />
     <input id="regPass" type="password" placeholder="पासवर्ड" />
-    <select id="regGender">
-      <option value="">लिंग चुनें</option>
-      <option value="पुरुष">पुरुष</option>
-      <option value="महिला">महिला</option>
-    </select>
-    <button id="regBtn" class="btn">Register</button>
+    <select id="regGender"><option value="">लिंग चुनें</option><option>पुरुष</option><option>महिला</option></select>
+    <button id="regBtn" class="btn">Register (Auto-login)</button>
   </div>
 
   <!-- LOGIN -->
-  <div id="loginSection">
-    <h2>लॉगिन करें</h2>
+  <div id="loginSection" class="card" style="margin-top:12px">
+    <h3>Login</h3>
     <input id="logMobile" placeholder="मोबाइल (10 अंक)" maxlength="10" />
     <input id="logPass" type="password" placeholder="पासवर्ड" />
     <button id="logBtn" class="btn">Login</button>
   </div>
 
   <!-- DASHBOARD -->
-  <section id="dashboard">
-    <h2>Dashboard</h2>
-    <p id="welcomeText"></p>
+  <div id="dashboard" class="card" style="margin-top:12px">
+    <h3>Dashboard</h3>
+    <p id="welcomeText">स्वागत!</p>
+    <p><strong>Users saved:</strong> <span id="userCount">0</span></p>
     <button id="logoutBtn" class="btn">Logout</button>
-  </section>
+  </div>
 
-  <script src="script.js"></script>
+  <!-- DEBUG AREA -->
+  <div id="debug" class="card" style="width:680px;margin-top:16px">
+    <strong>Debug:</strong>
+    <div>localStorage users: <pre id="dbgUsers">[]</pre></div>
+    <div>loggedInUser: <pre id="dbgLogged">null</pre></div>
+    <div style="margin-top:8px">
+      <button id="dbgClear" style="padding:6px;border-radius:6px">Clear localStorage</button>
+      <button id="dbgRefresh" style="padding:6px;border-radius:6px;margin-left:8px">Refresh Debug</button>
+    </div>
+    <div style="margin-top:8px;color:#666;font-size:12px">
+      Tip: यदि पेज पर सिर्फ़ header दिख रहा है, तो पहले "Clear localStorage" दबाकर reload करें।
+    </div>
+  </div>
+
+<script>
+/* ---------- helpers ---------- */
+const show = el => el && (el.style.display = '');
+const hide = el => el && (el.style.display = 'none');
+
+function safeParse(s){ try{ return JSON.parse(s); } catch(e){ return null; } }
+
+/* ---------- elements ---------- */
+const regSection = document.getElementById('regSection');
+const loginSection = document.getElementById('loginSection');
+const dashboard = document.getElementById('dashboard');
+const welcomeText = document.getElementById('welcomeText');
+
+const dbgUsersEl = document.getElementById('dbgUsers');
+const dbgLoggedEl = document.getElementById('dbgLogged');
+const dbgClearBtn = document.getElementById('dbgClear');
+const dbgRefreshBtn = document.getElementById('dbgRefresh');
+
+/* ---------- core logic ---------- */
+function updateDebugArea(){
+  const users = safeParse(localStorage.getItem('users')) || [];
+  const logged = safeParse(localStorage.getItem('loggedInUser')) || null;
+  dbgUsersEl.textContent = JSON.stringify(users, null, 2);
+  dbgLoggedEl.textContent = JSON.stringify(logged, null, 2);
+  document.getElementById('userCount').textContent = users.length;
+}
+
+function showDashboard(user){
+  hide(regSection);
+  hide(loginSection);
+  show(dashboard);
+  welcomeText.textContent = `स्वागत है, ${user.name || user.mobile}!`;
+  updateDebugArea();
+}
+
+function showForms(){
+  show(regSection);
+  show(loginSection);
+  hide(dashboard);
+  updateDebugArea();
+}
+
+/* ---------- register/login handlers ---------- */
+document.getElementById('regBtn').addEventListener('click', () => {
+  const name = document.getElementById('regName').value.trim();
+  const mobile = document.getElementById('regMobile').value.trim();
+  const pass = document.getElementById('regPass').value.trim();
+  const gender = document.getElementById('regGender').value;
+
+  if (!name || !/^[0-9]{10}$/.test(mobile)){ alert('कृपया नाम और 10 अंकों का मोबाइल सही भरें'); return; }
+  if (!pass){ alert('कृपया पासवर्ड भरें'); return; }
+
+  const users = safeParse(localStorage.getItem('users')) || [];
+  if (users.find(u=>u.mobile===mobile)){ alert('यह मोबाइल पहले से रजिस्टर्ड है'); return; }
+
+  const user = { name, mobile, pass, gender, created: Date.now() };
+  users.push(user);
+  localStorage.setItem('users', JSON.stringify(users));
+  // Auto-login:
+  localStorage.setItem('loggedInUser', JSON.stringify(user));
+  showDashboard(user);
+});
+
+document.getElementById('logBtn').addEventListener('click', () => {
+  const mobile = document.getElementById('logMobile').value.trim();
+  const pass = document.getElementById('logPass').value.trim();
+  if (!/^[0-9]{10}$/.test(mobile) || !pass){ alert('कृपया सही मोबाइल और पासवर्ड भरें'); return; }
+  const users = safeParse(localStorage.getItem('users')) || [];
+  const user = users.find(u=>u.mobile===mobile && u.pass===pass);
+  if (!user){ alert('मोबाइल या पासवर्ड गलत है'); return; }
+  localStorage.setItem('loggedInUser', JSON.stringify(user));
+  showDashboard(user);
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem('loggedInUser');
+  showForms();
+});
+
+/* ---------- debug buttons ---------- */
+dbgClearBtn.addEventListener('click', () => {
+  if (confirm('Clear localStorage?')) {
+    localStorage.removeItem('users');
+    localStorage.removeItem('loggedInUser');
+    updateDebugArea();
+    alert('localStorage cleared — पेज reload करें');
+  }
+});
+dbgRefreshBtn.addEventListener('click', updateDebugArea);
+
+/* ---------- on load: check logged user ---------- */
+(function init(){
+  // small delay to ensure everything rendered on some slow devices
+  setTimeout(() => {
+    updateDebugArea();
+    const logged = safeParse(localStorage.getItem('loggedInUser')) || null;
+    if (logged && logged.mobile) {
+      showDashboard(logged);
+    } else {
+      showForms();
+    }
+  }, 50);
+})();
+</script>
 </body>
 </html>

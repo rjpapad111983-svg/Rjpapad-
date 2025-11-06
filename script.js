@@ -201,6 +201,7 @@ function afterRegisterSuccess(mobile) {
   if(typeof updateAuthVisibility === 'function') updateAuthVisibility();
 
   console.log('Registered (auto-pool):', user);
+  removeOldMobileBeforeRegister(mobile);
   return user;
 }
 // ✅ Fix: Allow re-registration by removing old record of same mobile

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>मुख्य पेज</title>
+  <style>
+    body{ font-family: Arial, sans-serif; background:#ffffff; margin:0; padding:20px; color:#111827; }
+    header{ display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+    .logo{ width:64px; height:64px; object-fit:contain; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    h1{ margin:0; font-size:20px; }
+    .card{ background:#f8fafc; padding:16px; border-radius:10px; margin-top:12px; }
+    button{ padding:8px 12px; background:#ef4444; color:#fff; border:0; border-radius:8px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="logo" src="logo.png" alt="Logo" onerror="this.style.display='none'">
+    <div>
+      <h1>RjPapad - Canteen</h1>
+      <div style="color:#6b7280;font-size:13px">आपका स्वागत है</div>
+    </div>
+    <div style="margin-left:auto">
+      <button onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <h3>स्वागत है!</h3>
+      <p>यह आपका मुख्य कंटेंट/कैंटीन पेज है — यहाँ आप अपनी सामग्री रख सकते हैं।</p>
+    </div>
+  </main>
+
+<script>
+  function logout(){
+    // बस login page पर वापस जाएँ
+    window.location.href = 'login.html';
+  }
+</script>
+</body>
+</html>

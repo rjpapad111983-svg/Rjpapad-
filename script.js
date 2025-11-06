@@ -203,3 +203,33 @@ function afterRegisterSuccess(mobile) {
   console.log('Registered (auto-pool):', user);
   return user;
 }
+// ✅ Fix: Allow re-registration by removing old record of same mobile
+
+function removeOldMobileBeforeRegister(mobile) {
+  try {
+    let users = JSON.parse(localStorage.getItem("rj_users_demo_v1") || "[]");
+    let balances = JSON.parse(localStorage.getItem("rj_balances_demo_v1") || "{}");
+    let ledger = JSON.parse(localStorage.getItem("rj_ledger_demo_v1") || "[]");
+    let regList = JSON.parse(localStorage.getItem("rj_registered_mobiles") || "[]");
+
+    // पहले से मौजूद यूज़र को हटाओ
+    users = users.filter(u => String(u.mobile) !== String(mobile));
+    regList = regList.filter(m => String(m) !== String(mobile));
+
+    // पुराना balance भी हटा दो (सुरक्षित)
+    Object.keys(balances).forEach(k => {
+      const obj = balances[k];
+      if (obj && obj.mobile === mobile) delete balances[k];
+    });
+
+    // अपडेट करके localStorage में वापस डालो
+    localStorage.setItem("rj_users_demo_v1", JSON.stringify(users));
+    localStorage.setItem("rj_registered_mobiles", JSON.stringify(regList));
+    localStorage.setItem("rj_balances_demo_v1", JSON.stringify(balances));
+    localStorage.setItem("rj_ledger_demo_v1", JSON.stringify(ledger));
+
+    console.log("✅ पुराना मोबाइल हटाया गया:", mobile);
+  } catch (e) {
+    console.error("❌ Error while removing old mobile:", e);
+  }
+}

@@ -3,58 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RJ Papad Admin Panel</title>
-
-  <!-- अपनी CSS link वही रखें -->
-  <link rel="stylesheet" href="style.css">
+  <title>RJ Papad Panel</title>
+  <style>
+    body { font-family: sans-serif; text-align:center; padding:20px; }
+    input, select, button { display:block; margin:10px auto; padding:8px; width:220px; }
+    #dashboard { display:none; }
+    .btn { background:#007bff; color:#fff; border:none; border-radius:5px; }
+  </style>
 </head>
 <body>
 
   <h1>RJ Papad Admin Panel</h1>
 
-  <!-- ========================= -->
-  <!-- Register Section (Line ~40 to 65) -->
-  <!-- ========================= -->
+  <!-- REGISTER -->
   <div id="regSection">
-    <h2>Register</h2>
+    <h2>रजिस्टर करें</h2>
     <input id="regName" placeholder="नाम" />
-    <input id="regMobile" placeholder="मोबाइल (10 अंक)" type="tel" inputmode="numeric" maxlength="10" />
-    <input id="regPass" placeholder="पासवर्ड" type="password" />
+    <input id="regMobile" placeholder="मोबाइल (10 अंक)" maxlength="10" />
+    <input id="regPass" type="password" placeholder="पासवर्ड" />
     <select id="regGender">
       <option value="">लिंग चुनें</option>
       <option value="पुरुष">पुरुष</option>
       <option value="महिला">महिला</option>
     </select>
-    <button id="regBtn" class="btn">रजिस्टर करें</button>
+    <button id="regBtn" class="btn">Register</button>
   </div>
 
-  <!-- ========================= -->
-  <!-- Login Section (Line ~70 to 90) -->
-  <!-- ========================= -->
+  <!-- LOGIN -->
   <div id="loginSection">
-    <h2>Login</h2>
-    <input id="logMobile" placeholder="मोबाइल (10 अंक)" type="tel" inputmode="numeric" maxlength="10" />
-    <input id="logPass" placeholder="पासवर्ड" type="password" />
-    <button id="logBtn" class="btn">लॉगिन करें</button>
+    <h2>लॉगिन करें</h2>
+    <input id="logMobile" placeholder="मोबाइल (10 अंक)" maxlength="10" />
+    <input id="logPass" type="password" placeholder="पासवर्ड" />
+    <button id="logBtn" class="btn">Login</button>
   </div>
 
-  <!-- ========================= -->
-  <!-- Dashboard Section (Line ~95 to 120) -->
-  <!-- ========================= -->
-  <section id="dashboard" style="display:none;">
+  <!-- DASHBOARD -->
+  <section id="dashboard">
     <h2>Dashboard</h2>
     <p id="welcomeText"></p>
     <button id="logoutBtn" class="btn">Logout</button>
-
-    <!-- आप चाहें तो यहाँ अपने डेटा / कार्ड्स / स्टैटिस्टिक्स जोड़ सकते हैं -->
-    <div class="info-box">
-      <p>यहाँ आप ऑर्डर, रिपोर्ट, यूज़र या प्रोडक्ट लिस्ट दिखा सकते हैं।</p>
-    </div>
   </section>
 
-  <!-- ========================= -->
-  <!-- Script (Line ~125 to End) -->
-  <!-- ========================= -->
   <script src="script.js"></script>
 </body>
 </html>

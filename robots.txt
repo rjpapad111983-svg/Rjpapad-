@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://rjpapad111983-svg.github.io/Rjpapad-/sitemap.xml

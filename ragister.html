@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>रजिस्टर करें</title>
+  <style>
+    body{ font-family: Arial, sans-serif; background:#f7fafc; height:100vh; margin:0; display:flex; align-items:center; justify-content:center; }
+    .card{ background:#fff; padding:20px; border-radius:12px; width:360px; max-width:94%; box-shadow:0 8px 30px rgba(2,6,23,0.06); text-align:center; }
+    input{ width:100%; padding:10px; margin-top:8px; border-radius:8px; border:1px solid #ddd; box-sizing:border-box; }
+    button{ width:100%; padding:10px; margin-top:12px; border-radius:8px; border:0; background:#16a34a; color:#fff; font-weight:600; cursor:pointer; }
+    p.msg{ margin-top:10px; font-size:14px; color:#6b7280; }
+    p.error{ color:#b91c1c; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>नया रजिस्ट्रेशन</h2>
+    <input id="mobile" type="tel" maxlength="10" placeholder="अपना मोबाइल नंबर डालें" />
+    <button onclick="doRegister()">रजिस्टर करें</button>
+    <p id="msg" class="msg"></p>
+    <p style="margin-top:12px;font-size:13px;color:#6b7280;">रजिस्टर होने के बाद आप सीधे मुख्य पेज पर पहुँच जाओगे।</p>
+  </div>
+
+<script>
+  const mobileInput = document.getElementById('mobile');
+  const msg = document.getElementById('msg');
+
+  function validate(m){ return /^[0-9]{10}$/.test(m); }
+
+  function doRegister(){
+    const mobile = mobileInput.value.trim();
+    msg.className = 'msg';
+    msg.textContent = '';
+
+    if (!validate(mobile)){ msg.className='msg error'; msg.textContent='कृपया 10 अंकों का सही मोबाइल नंबर डालें।'; return; }
+
+    // get existing from localStorage
+    const arr = JSON.parse(localStorage.getItem('registeredNumbers') || '[]');
+    if (!arr.includes(mobile)) arr.push(mobile);
+    localStorage.setItem('registeredNumbers', JSON.stringify(arr));
+
+    msg.textContent = 'रजिस्ट्रेशन सफल! अब आप भेजे जा रहे हैं मुख्य पेज पर...';
+    // redirect to main (simulate fade not necessary here)
+    setTimeout(()=> { window.location.href = 'main.html'; }, 700);
+  }
+
+  mobileInput.addEventListener('keyup', (e)=>{ if (e.key === 'Enter') doRegister(); });
+</script>
+</body>
+</html>

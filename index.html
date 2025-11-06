@@ -1,149 +1,60 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RJ Papad — Demo Wallet</title>
-  <style>
-:root{--bg:#fff8e1;--accent:#b30000;--muted:#6b7280}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:#111}
-.container{max-width:980px;margin:16px auto;padding:12px}
-.site-header{background:var(--accent);color:#fff;padding:12px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{height:64px;border-radius:8px;background:#fff;padding:4px}
-.brand-title{font-weight:800;font-size:20px}
-.brand-sub{font-size:12px;opacity:0.9}
-.card{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 16px rgba(0,0,0,0.06);margin-bottom:12px}
-input,select,textarea{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #ddd}
-.btn{padding:10px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer}
-.row{display:flex;gap:8px}
-.row > *{flex:1}
-.hidden{display:none}
-.notice{background:#f3f4f6;padding:8px;border-radius:8px;color:var(--muted);margin-top:8px}
-.small{font-size:13px;color:var(--muted)}
-.menu-bar{position:fixed;bottom:0;left:0;right:0;background:#fff3cd;border-top:2px solid #ffc107;display:flex;justify-content:space-around;padding:10px 0}
-.menu-bar button{background:none;border:0;font-size:22px}
-.balance{font-size:24px;font-weight:800;margin-top:6px}
-.mlm-tree{max-height:320px;overflow:auto;padding:8px;border-radius:8px;background:#f8fafc}
-.list{padding-left:14px}
-.next-level-box{background:#fff3e0;padding:10px;border-radius:8px;border:1px solid #ffd7a8;margin-top:8px}
-.section{margin-top:12px}
-.dash-top{display:flex;justify-content:space-between;align-items:center}
-.dash-actions{display:flex;gap:8px}
-@media(min-width:900px){ .menu-bar{display:none} }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RJ Papad Admin Panel</title>
+
+  <!-- अपनी CSS link वही रखें -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="brand">
-      <img src="images/logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
-      <div class="brand-text">
-        <div class="brand-title">RJ Papad</div>
-        <div class="brand-sub">MLM Demo — Wallet & Admin (Demo)</div>
-      </div>
+
+  <h1>RJ Papad Admin Panel</h1>
+
+  <!-- ========================= -->
+  <!-- Register Section (Line ~40 to 65) -->
+  <!-- ========================= -->
+  <div id="regSection">
+    <h2>Register</h2>
+    <input id="regName" placeholder="नाम" />
+    <input id="regMobile" placeholder="मोबाइल (10 अंक)" type="tel" inputmode="numeric" maxlength="10" />
+    <input id="regPass" placeholder="पासवर्ड" type="password" />
+    <select id="regGender">
+      <option value="">लिंग चुनें</option>
+      <option value="पुरुष">पुरुष</option>
+      <option value="महिला">महिला</option>
+    </select>
+    <button id="regBtn" class="btn">रजिस्टर करें</button>
+  </div>
+
+  <!-- ========================= -->
+  <!-- Login Section (Line ~70 to 90) -->
+  <!-- ========================= -->
+  <div id="loginSection">
+    <h2>Login</h2>
+    <input id="logMobile" placeholder="मोबाइल (10 अंक)" type="tel" inputmode="numeric" maxlength="10" />
+    <input id="logPass" placeholder="पासवर्ड" type="password" />
+    <button id="logBtn" class="btn">लॉगिन करें</button>
+  </div>
+
+  <!-- ========================= -->
+  <!-- Dashboard Section (Line ~95 to 120) -->
+  <!-- ========================= -->
+  <section id="dashboard" style="display:none;">
+    <h2>Dashboard</h2>
+    <p id="welcomeText"></p>
+    <button id="logoutBtn" class="btn">Logout</button>
+
+    <!-- आप चाहें तो यहाँ अपने डेटा / कार्ड्स / स्टैटिस्टिक्स जोड़ सकते हैं -->
+    <div class="info-box">
+      <p>यहाँ आप ऑर्डर, रिपोर्ट, यूज़र या प्रोडक्ट लिस्ट दिखा सकते हैं।</p>
     </div>
-  </header>
+  </section>
 
-  <main class="container">
-    <!-- AUTH AREA -->
-    <section id="authArea" class="card">
-      <div id="registerCard">
-        <h2>रजिस्टर करें</h2>
-        <input id="regName" placeholder="पूरा नाम">
-        <input id="regMobile" placeholder="मोबाइल (10 अंक)">
-        <input id="regPass" placeholder="पासवर्ड" type="password">
-        <select id="regGender">
-          <option value="male">पुरुष</option>
-          <option value="female">महिला</option>
-          <option value="other">अन्य</option>
-        </select>
-        <div class="row">
-          <button class="btn btn-primary" onclick="registerUser()">Register</button>
-          <button class="btn" onclick="seenLogin()">Already have account — Login</button>
-        </div>
-        <div id="regNote" class="notice hidden"></div>
-      </div>
-
-      <div id="loginCard" class="hidden">
-        <h2>Login</h2>
-        <input id="logMobile" placeholder="मोबाइल">
-        <input id="logPass" placeholder="पासवर्ड" type="password">
-        <div class="row">
-          <button class="btn btn-primary" onclick="loginUser()">Login</button>
-          <button class="btn" onclick="showRegister()">Register</button>
-        </div>
-        <div id="loginNote" class="notice hidden"></div>
-      </div>
-    </section>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard" class="card hidden">
-      <div class="dash-top">
-        <div>
-          <div class="small">Welcome, <strong id="userName">User</strong></div>
-          <div class="balance">₹ <span id="walletBalance">0.00</span></div>
-          <div id="nextLevelInfo" class="next-level-box hidden"></div>
-        </div>
-        <div class="dash-actions">
-          <button class="btn" id="backupBtn" onclick="backupData()">Backup</button>
-          <button class="btn" id="restoreBtn" onclick="restoreData()">Restore</button>
-          <button class="btn" onclick="logout()">Logout</button>
-        </div>
-      </div>
-
-      <div id="contentArea">
-        <section id="walletSection" class="section hidden">
-          <h3>Wallet & Ledger</h3>
-          <ul id="ledgerList" class="list"></ul>
-        </section>
-
-        <section id="withdrawSection" class="section hidden">
-          <h3>Withdraw Request</h3>
-          <input id="withdrawAmt" placeholder="Amount (e.g. 100)">
-          <input id="withdrawVpa" placeholder="UPI ID (like abc@upi)">
-          <button class="btn btn-primary" onclick="handleWithdraw()">Create Withdraw Request</button>
-          <div id="walletMsg" class="notice hidden"></div>
-        </section>
-
-        <section id="bankSection" class="section hidden">
-          <h3>Bank Details</h3>
-          <input id="bankName" placeholder="Bank Name">
-          <input id="accHolder" placeholder="Account Holder Name">
-          <input id="accNumber" placeholder="Account Number">
-          <input id="ifsc" placeholder="IFSC Code">
-          <input id="upiId" placeholder="UPI ID (optional)">
-          <button class="btn btn-primary" onclick="saveBankDetailsForCurrent()">Save Bank Details</button>
-        </section>
-
-        <section id="treeSection" class="section hidden">
-          <h3>MLM Tree</h3>
-          <div id="mlmTree" class="mlm-tree"></div>
-        </section>
-
-        <section id="levelProgressSection" class="section hidden">
-          <h3>Level Progress</h3>
-          <div id="levelProgressBox"></div>
-        </section>
-
-        <section id="settingsSection" class="section hidden">
-          <h3>Settings</h3>
-          <div class="small">Demo settings — admin functions are in admin.html</div>
-        </section>
-      </div>
-    </section>
-  </main>
-
-  <!-- Mobile Menu -->
-  <nav class="menu-bar">
-    <button title="Wallet" onclick="showWallet()">💰</button>
-    <button title="Withdraw" onclick="showWithdraw()">💸</button>
-    <button title="MLM Tree" onclick="showTree()">👥</button>
-    <button title="Bank Details" onclick="showBankForm()">🏦</button>
-    <button title="Progress" onclick="showProgress()">📈</button>
-    <button title="Settings" onclick="showSettings()">⚙️</button>
-  </nav>
-
+  <!-- ========================= -->
+  <!-- Script (Line ~125 to End) -->
+  <!-- ========================= -->
   <script src="script.js"></script>
 </body>
-  </html>
+</html>

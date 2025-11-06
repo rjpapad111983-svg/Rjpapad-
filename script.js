@@ -135,7 +135,64 @@ try{
     localStorage.setItem('rj_balances_demo_v1', JSON.stringify(balances));
     localStorage.setItem('rj_ledger_demo_v1', JSON.stringify(ledger));
   }
+// ✅ Auto hide Register Form after first registration
+document.addEventListener("DOMContentLoaded", () => {
+  try {
+    // 1️⃣ LocalStorage से register list निकालो
+    let regList = JSON.parse(localStorage.getItem("rj_registered_mobiles") || "[]");
 
+    // 2️⃣ Register और Login फॉर्म ढूंढो
+    const regCard =
+      document.getElementById("registerCard") ||
+      document.querySelector(".register-card") ||
+      document.querySelector("#registerSection");
+    const loginCard =
+      document.getElementById("loginCard") ||
+      document.querySelector(".login-card") ||
+      document.querySelector("#loginSection");
+
+    // 3️⃣ अगर कोई mobile पहले register हो चुका है तो Register छुपाओ और Login दिखाओ
+    if (regList.length > 0) {
+      if (regCard) regCard.style.display = "none";
+      if (loginCard) loginCard.style.display = "block";
+    }
+  } catch (e) {
+    console.error("Auto-hide failed:", e);
+  }
+});
+
+// ✅ Register होने के बाद फॉर्म खुद ही छिप जाए
+function afterRegisterSuccess(mobile) {
+  try {
+    // 1️⃣ LocalStorage में मोबाइल सेव करो
+    let regList = JSON.parse(localStorage.getItem("rj_registered_mobiles") || "[]");
+    if (mobile && !regList.includes(mobile)) {
+      regList.push(mobile);
+      localStorage.setItem("rj_registered_mobiles", JSON.stringify(regList));
+    }
+
+    // 2️⃣ Register फॉर्म छिपाओ और Login दिखाओ
+    const regCard =
+      document.getElementById("registerCard") ||
+      document.querySelector(".register-card") ||
+      document.querySelector("#registerSection");
+    const loginCard =
+      document.getElementById("loginCard") ||
+      document.querySelector(".login-card") ||
+      document.querySelector("#loginSection");
+
+    if (regCard) regCard.style.display = "none";
+    if (loginCard) loginCard.style.display = "block";
+
+    // 3️⃣ Login मोबाइल भर दो
+    const logMobile =
+      document.getElementById("logMobile") ||
+      document.querySelector("#loginCard input[type='text']");
+    if (logMobile) logMobile.value = mobile;
+  } catch (e) {
+    console.error("afterRegisterSuccess error:", e);
+  }
+}
   // remember session so register hides if you used that behavior
   sessionStorage.setItem('rj_registered_mobile', mobile);
 

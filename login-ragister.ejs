@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="centered-page">
+
+    <!-- Logo area: image with your provided link -->
+    <div class="logo-wrap">
+      <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png"
+           alt="Logo"
+           class="logo-img">
+    </div>
+
+    <div class="card" id="authCard">
+      <!-- Login form shown first -->
+      <div id="loginBox">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <label>Mobile number</label>
+          <input name="mobile" id="mobile" required placeholder="e.g. 9876543210" />
+          <label>Password</label>
+          <input name="password" id="password" type="password" required />
+          <button type="submit">Login</button>
+        </form>
+        <p class="muted">यदि आप रजिस्टर नहीं हैं, तो फॉर्म स्वतः रजिस्टर फॉर्म बन जाएगा।</p>
+      </div>
+
+      <!-- Register box hidden initially -->
+      <div id="registerBox" style="display:none; opacity:0">
+        <h2>Register</h2>
+        <form action="/register" method="POST">
+          <label>Name</label>
+          <input name="name" required />
+          <label>Mobile number</label>
+          <input name="mobile" required />
+          <label>Password</label>
+          <input name="password" type="password" required />
+          <label>Sponsor ID (optional)</label>
+          <input name="sponsor_id" />
+          <label>Position</label>
+          <select name="position"><option value="L">Left</option><option value="R">Right</option></select>
+          <button type="submit">Register</button>
+        </form>
+        <p class="muted">पहले से रजिस्टर हैं? ऊपर लॉगिन करें।</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const loginBox = document.getElementById('loginBox');
+    const registerBox = document.getElementById('registerBox');
+
+    function fadeOut(el, cb) {
+      el.style.transition = 'opacity 600ms ease, transform 600ms ease';
+      el.style.opacity = 0;
+      el.style.transform = 'translateY(-8px)';
+      setTimeout(() => { el.style.display = 'none'; if(cb) cb(); }, 650);
+    }
+    function fadeIn(el) {
+      el.style.display = 'block';
+      requestAnimationFrame(() => {
+        el.style.transition = 'opacity 600ms ease, transform 600ms ease';
+        el.style.opacity = 1;
+        el.style.transform = 'translateY(0)';
+      });
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(loginForm);
+      const mobile = formData.get('mobile');
+      const password = formData.get('password');
+
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ mobile, password })
+      });
+
+      const data = await res.json();
+
+      if (data.ok && data.redirect) {
+        window.location = data.redirect;
+        return;
+      }
+
+      if (data.notRegistered) {
+        fadeOut(loginBox, () => {
+          registerBox.querySelector('input[name="mobile"]').value = mobile;
+          fadeIn(registerBox);
+        });
+      } else {
+        alert(data.message || 'Login failed');
+      }
+    });
+  </script>
+</body>
+</html>

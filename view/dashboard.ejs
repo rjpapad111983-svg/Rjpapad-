@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="centered-page">
+    <div class="logo-wrap">
+      <img src="https://raw.githubusercontent.com/rjpapad111983-svg/Rjpapad-/refs/heads/main/file_0000000040986208ae9fdd85a3a3cbc8.png" class="logo-img" alt="Logo">
+    </div>
+    <div class="card">
+      <h2>Dashboard</h2>
+      <p>Welcome, <%= currentUser.name %> (<%= currentUser.mobile %>)</p>
+      <form action="/logout" method="POST"><button type="submit">Logout</button></form>
+    </div>
+  </div>
+</body>
+</html>

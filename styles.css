@@ -1,0 +1,57 @@
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: linear-gradient(180deg,#0f172a,#0b1220);
+  margin:0;
+  color:#111;
+}
+.centered-page {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:24px;
+}
+.logo-wrap {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  margin-bottom:18px;
+}
+.logo-img {
+  max-width:220px;
+  width:60%;
+  height:auto;
+  display:block;
+}
+.card {
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 10px 30px rgba(2,6,23,0.6);
+}
+h2 { margin-top:0; }
+label { display:block; margin-top:12px; font-size:14px; }
+input, select {
+  width:100%;
+  padding:10px; margin-top:6px;
+  box-sizing:border-box;
+  border-radius:6px;
+  border:1px solid #ddd;
+}
+button {
+  margin-top:14px; padding:10px 14px;
+  border:none; border-radius:6px;
+  cursor:pointer;
+  background:#0f172a; color:#fff;
+}
+.muted {
+  margin-top:8px; color:#666; font-size:13px;
+}
+@media (max-width:520px) {
+  .card { padding:16px; }
+  .logo-img { width:70%; }
+}
